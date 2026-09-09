@@ -22,7 +22,6 @@ import { ConcreteSeries, SeriesDerivation } from "../series/concrete-series";
 import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../sort/sort";
 
 export abstract class SortOn {
-
   static fromSort(sort: Sort, essence: Essence): SortOn {
     const { type, reference } = sort;
     switch (type) {
@@ -49,8 +48,11 @@ export abstract class SortOn {
     return sortOn.equals(other);
   }
 
-  protected constructor(public key: string, protected title: string, protected period?: SeriesDerivation) {
-  }
+  protected constructor(
+    public key: string,
+    protected title: string,
+    protected period?: SeriesDerivation
+  ) {}
 
   abstract equals(other: SortOn): boolean;
 
@@ -58,15 +60,12 @@ export abstract class SortOn {
 }
 
 export class DimensionSortOn extends SortOn {
-
   constructor(dimension: Dimension) {
     super(dimension.name, dimension.title);
   }
 
   equals(other: SortOn): boolean {
-    return other instanceof DimensionSortOn
-      && this.key === other.key
-      && this.title === other.title;
+    return other instanceof DimensionSortOn && this.key === other.key && this.title === other.title;
   }
 
   toSort(direction: SortDirection): Sort {
@@ -75,20 +74,24 @@ export class DimensionSortOn extends SortOn {
 }
 
 export class SeriesSortOn extends SortOn {
-
   constructor(series: ConcreteSeries, period = SeriesDerivation.CURRENT) {
     super(series.definition.key(), series.title(period), period);
   }
 
   equals(other: SortOn): boolean {
-    return other instanceof SeriesSortOn
-      && this.key === other.key
-      && this.title === other.title
-      && this.period === other.period;
+    return (
+      other instanceof SeriesSortOn &&
+      this.key === other.key &&
+      this.title === other.title &&
+      this.period === other.period
+    );
   }
 
   toSort(direction: SortDirection): Sort {
-    return new SeriesSort({ reference: this.key, direction, period: this.period });
+    return new SeriesSort({
+      reference: this.key,
+      direction,
+      period: this.period,
+    });
   }
-
 }

@@ -23,26 +23,33 @@ import { Filter } from "../../../../common/models/filter/filter";
 import { numberSplitCombine } from "../../../../common/models/split/split.fixtures";
 import { Splits } from "../../../../common/models/splits/splits";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
-import { createDailyNominalDatasetInJanuary, january, makeDataset } from "../../../utils/dataset/selectors/dataset-fixtures";
+import {
+  createDailyNominalDatasetInJanuary,
+  january,
+  makeDataset,
+} from "../../../utils/dataset/selectors/dataset-fixtures";
 import equivalent from "../../../utils/test-utils/equivalent";
 import { calculateXRange } from "./x-scale";
 
 use(equivalent);
 
-const essenceInJanuary = (start: number, end: number) => EssenceFixtures
-  .wikiLineChartNoNominalSplit()
-  .changeFilter(Filter.fromClause(timeRange("time", january(start), january(end))));
+const essenceInJanuary = (start: number, end: number) =>
+  EssenceFixtures.wikiLineChartNoNominalSplit().changeFilter(
+    Filter.fromClause(timeRange("time", january(start), january(end)))
+  );
 
-const timeRangeInJanuary = (start: number, end: number) => new TimeRange({
-  start: january(start),
-  end: january(end)
-});
+const timeRangeInJanuary = (start: number, end: number) =>
+  new TimeRange({
+    start: january(start),
+    end: january(end),
+  });
 
 const timekeeper = Timekeeper.EMPTY;
 
-const essenceWithoutFilterOnContinuousSplit = EssenceFixtures
-  .wikiLineChartNoNominalSplit()
-  .changeSplits(Splits.fromSplit(numberSplitCombine("commentLength", 10)), VisStrategy.KeepAlways);
+const essenceWithoutFilterOnContinuousSplit = EssenceFixtures.wikiLineChartNoNominalSplit().changeSplits(
+  Splits.fromSplit(numberSplitCombine("commentLength", 10)),
+  VisStrategy.KeepAlways
+);
 
 describe("x-scale", () => {
   describe("calculateXRange", () => {
@@ -74,11 +81,11 @@ describe("x-scale", () => {
       const dataset = makeDataset([
         { commentLength: { type: "NUMBER_RANGE", start: 10, end: 20 } },
         { commentLength: { type: "NUMBER_RANGE", start: 20, end: 30 } },
-        { commentLength: { type: "NUMBER_RANGE", start: 30, end: 40 } }
+        { commentLength: { type: "NUMBER_RANGE", start: 30, end: 40 } },
       ]);
       const expected = new NumberRange({
         start: 10,
-        end: 40
+        end: 40,
       });
       const range = calculateXRange(essence, timekeeper, dataset);
       expect(range).to.be.equivalent(expected);

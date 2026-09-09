@@ -29,22 +29,22 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     const { essence, report } = this.props;
     const series = essence.getConcreteSeries().toArray();
     const datum = dataset.data[0];
-    return series.map(series =>
+    return series.map((series) => (
       <Total
-        color={report ? report.colorText: null}
+        color={report ? report.colorText : null}
         key={series.reactKey()}
         series={series}
         datum={datum}
         showPrevious={essence.hasComparison()}
-      />);
-
+      />
+    ));
   }
 
   renderInternals(dataset: Dataset) {
-    return <div className="internals">
-      <div className="total-container">
-        {this.renderTotals(dataset)}
+    return (
+      <div className="internals">
+        <div className="total-container">{this.renderTotals(dataset)}</div>
       </div>
-    </div>;
+    );
   }
 }

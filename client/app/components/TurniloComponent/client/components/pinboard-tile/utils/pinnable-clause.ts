@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { BooleanFilterClause, FilterClause, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import {
+  BooleanFilterClause,
+  FilterClause,
+  StringFilterClause,
+} from "../../../../common/models/filter-clause/filter-clause";
 
 export type PinnableClause = StringFilterClause | BooleanFilterClause;
 

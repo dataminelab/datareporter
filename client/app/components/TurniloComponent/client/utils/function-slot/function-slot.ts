@@ -23,12 +23,16 @@ export interface FunctionSlot<T> {
 }
 
 export function createFunctionSlot<T>(): FunctionSlot<T> {
-  var myFn: (...args: any[]) => T;
-  var slot: FunctionSlot<T> = (...args: any[]) => {
+  let myFn: (...args: any[]) => T;
+  const slot: FunctionSlot<T> = function (this: FunctionSlot<T>, ...args: any[]) {
     if (myFn) return myFn.apply(this, args);
     return undefined;
   };
-  slot.fill = (fn: (...args: any[]) => T) => { myFn = fn; };
-  slot.clear = () => { myFn = null; };
+  slot.fill = (fn: (...args: any[]) => T) => {
+    myFn = fn;
+  };
+  slot.clear = () => {
+    myFn = null;
+  };
   return slot;
 }

@@ -23,10 +23,11 @@ import { toFilterClause, toPlywoodRange } from "./highlight-clause";
 use(equivalent);
 
 describe("highlightClause", () => {
-
   describe("toFilterClause", () => {
     it("should throw on invalid range type", () => {
-      expect(() => toFilterClause(new StringRange({ start: "a", end: "z" }) as any, "foobar")).to.throw("Expected Number or Time range");
+      expect(() => toFilterClause(new StringRange({ start: "a", end: "z" }) as any, "foobar")).to.throw(
+        "Expected Number or Time range"
+      );
     });
 
     it("should create fixed time clause for time range", () => {

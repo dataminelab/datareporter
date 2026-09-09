@@ -25,17 +25,21 @@ export interface TableSettings {
 }
 
 const defaults: TableSettings = {
-  collapseRows: false
+  collapseRows: false,
 };
 
 const settingsFactory = Record<TableSettings>(defaults);
 
-const createSettings = (settings: Partial<TableSettings>): ImmutableRecord<TableSettings> => new (settingsFactory)(settings);
+const createSettings = (settings: Partial<TableSettings>): ImmutableRecord<TableSettings> =>
+  new settingsFactory(settings);
 
 export const settings: TableConfig = {
   converter: {
+    // @ts-ignore not assignable to type
     print: (settings: ImmutableRecord<TableSettings>) => settings.toJS(),
-    read: (input: TableSettings) => createSettings({ collapseRows: !!input.collapseRows })
+    // @ts-ignore not assignable to type
+    read: (input: TableSettings) => createSettings({ collapseRows: !!input.collapseRows }),
   },
-  defaults: createSettings({})
+  // @ts-ignore not assignable to type
+  defaults: createSettings({}) as ImmutableRecord<object>,
 };

@@ -17,7 +17,14 @@
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
 import { Visualization } from "../../models/visualization-manifest/visualization-manifest";
-import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters, definitionUrlEncoders, LEGACY_VIEW_DEFINITION_VERSION, version2Visualizations, ViewDefinitionVersion } from "../../view-definitions";
+import {
+  DEFAULT_VIEW_DEFINITION_VERSION,
+  definitionConverters,
+  definitionUrlEncoders,
+  LEGACY_VIEW_DEFINITION_VERSION,
+  version2Visualizations,
+  ViewDefinitionVersion,
+} from "../../view-definitions";
 
 const SEGMENT_SEPARATOR = "/";
 const MINIMAL_HASH_SEGMENTS_COUNT = 2;
@@ -30,7 +37,11 @@ export interface UrlHashConverter {
 
 function isLegacyWithVisualizationPrefix(hashParts: string[]) {
   const [visualization, version] = hashParts;
-  return version2Visualizations.has(visualization as Visualization) && version === LEGACY_VIEW_DEFINITION_VERSION && hashParts.length >= 3;
+  return (
+    version2Visualizations.has(visualization as Visualization) &&
+    version === LEGACY_VIEW_DEFINITION_VERSION &&
+    hashParts.length >= 3
+  );
 }
 
 function isVersion3VisualizationPrefix(hashParts: string[]) {
@@ -58,19 +69,19 @@ export function getHashSegments(hash: string): HashSegments {
     return {
       version: hashParts[1] as ViewDefinitionVersion,
       encodedModel: hashParts.splice(2).join(SEGMENT_SEPARATOR),
-      visualization: hashParts[0]
+      visualization: hashParts[0],
     };
   } else if (isVersion3VisualizationPrefix(hashParts)) {
     return {
       version: hashParts[0] as ViewDefinitionVersion,
       encodedModel: hashParts.splice(1).join(SEGMENT_SEPARATOR),
-      visualization: undefined
+      visualization: undefined,
     };
   } else if (isVersion4VisualizationPrefix(hashParts)) {
     return {
       version: hashParts[0] as ViewDefinitionVersion,
       encodedModel: hashParts.splice(1).join(SEGMENT_SEPARATOR),
-      visualization: undefined
+      visualization: undefined,
     };
   } else {
     throw new Error(`Unsupported url hash: ${hash}.`);
@@ -79,7 +90,6 @@ export function getHashSegments(hash: string): HashSegments {
 
 export const urlHashConverter: UrlHashConverter = {
   essenceFromHash(hash: string, dataCube: DataCube): Essence {
-
     const { version, encodedModel, visualization } = getHashSegments(hash);
 
     const urlEncoder = definitionUrlEncoders[version];
@@ -109,5 +119,5 @@ export const urlHashConverter: UrlHashConverter = {
     }
 
     return hashParts.join(SEGMENT_SEPARATOR);
-  }
+  },
 };

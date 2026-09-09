@@ -19,10 +19,12 @@ export default function useReportFlags(report, dataSource = null) {
       canViewSource: currentUser.hasPermission("view_source"),
       canExecute:
         !isEmpty(report.report) &&
-        (report.is_safe || (currentUser.hasPermission("execute_query") && !dataSource.view_only)),
+        (report.is_safe ||
+          (currentUser.hasPermission("execute_query") &&
+            !dataSource.view_only)),
       canFork: currentUser.hasPermission("edit_query") && !dataSource.view_only,
       canSchedule: currentUser.hasPermission("schedule_query"),
     }),
-    [report, dataSource.view_only]
+    [report, dataSource.view_only],
   );
 }

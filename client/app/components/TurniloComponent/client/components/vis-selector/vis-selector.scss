@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .vis-selector {
   @extend %module;
 
   &::before {
     @include pin-full;
-    content: '';
+    content: "";
     z-index: 6;
     background-color: rgba($white, 0.65);
     pointer-events: none;
@@ -31,8 +31,8 @@
   }
 
   &::after {
-    @include triangle(down, 7px, 9px, 'text-medium');
-    content: '';
+    @include triangle(down, 7px, 9px, "text-medium");
+    content: "";
     z-index: 7;
     position: absolute;
     top: 50%;
@@ -46,7 +46,8 @@
 
   &:hover,
   &.active {
-    &::after, &::before {
+    &::after,
+    &::before {
       opacity: 1;
     }
   }

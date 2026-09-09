@@ -30,7 +30,7 @@ export function SortableContainer({ disabled, containerComponent, containerProps
     // Enabled state:
 
     // - use container element as a default helper element
-    wrapperProps.helperContainer = wrap(wrapperProps.helperContainer, helperContainer =>
+    wrapperProps.helperContainer = wrap(wrapperProps.helperContainer, (helperContainer) =>
       isFunction(helperContainer) ? helperContainer(containerRef.current) : containerRef.current
     );
 
@@ -41,6 +41,15 @@ export function SortableContainer({ disabled, containerComponent, containerProps
         updateBeforeSortStart(...args);
       }
     });
+    wrapperProps.onSortStart = wrap(wrapperProps.onSortStart, (onSortStart, ...args) => {
+      if (isFunction(onSortStart)) {
+        onSortStart(...args);
+      } else {
+        const event = args[1];
+        event.preventDefault();
+      }
+    });
+
     wrapperProps.onSortEnd = wrap(wrapperProps.onSortEnd, (onSortEnd, ...args) => {
       setIsDragging(false);
       if (isFunction(onSortEnd)) {

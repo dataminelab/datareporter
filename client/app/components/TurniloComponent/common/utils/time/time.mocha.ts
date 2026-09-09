@@ -19,19 +19,32 @@ import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { tz } from "moment-timezone";
-import { datesEqual, formatDatesInTimeRange, formatYearMonth, getDayInMonth, scaleTicksFormat, scaleTicksFormatter } from "./time";
+import {
+  datesEqual,
+  formatDatesInTimeRange,
+  formatYearMonth,
+  getDayInMonth,
+  scaleTicksFormat,
+  scaleTicksFormatter,
+} from "./time";
 
 describe("Time", () => {
   it("calculates date equality properly", () => {
     expect(datesEqual(null, new Date()), "null and not null").to.equal(false);
     expect(datesEqual(null, null), "null and null").to.equal(true);
-    expect(datesEqual(new Date("1995-02-24T00:00:00.000Z"), new Date("1995-02-24T00:00:00.000Z")), "equal dates").to.equal(true);
-    expect(datesEqual(new Date("1995-02-24T00:00:00.000Z"), new Date("1995-02-24T00:02:00.000Z")), "not equal dates").to.equal(false);
+    expect(
+      datesEqual(new Date("1995-02-24T00:00:00.000Z"), new Date("1995-02-24T00:00:00.000Z")),
+      "equal dates"
+    ).to.equal(true);
+    expect(
+      datesEqual(new Date("1995-02-24T00:00:00.000Z"), new Date("1995-02-24T00:02:00.000Z")),
+      "not equal dates"
+    ).to.equal(false);
   });
 
   const TZ_KATHMANDU = new Timezone("Asia/Kathmandu"); // +5.8;
   const TZ_TIJUANA = new Timezone("America/Tijuana"); // -8.0
-  const TZ_Kiritimati = new Timezone("Pacific/Kiritimati");  // +14.0
+  const TZ_Kiritimati = new Timezone("Pacific/Kiritimati"); // +14.0
 
   it("get walltime day returns day according to walltime", () => {
     const date = new Date("1995-03-09T00:00:00.000Z");
@@ -57,8 +70,8 @@ describe("Time", () => {
   describe("scaleTicksFormatter", () => {
     const createScale = (...dates: Date[]) => {
       return {
-        ticks: () => dates
-      } as d3.time.Scale<number, number>;
+        ticks: () => dates,
+      } as d3.ScaleTime<number, number>;
     };
 
     it("should hide year when just year is the same in all ticks", () => {
@@ -135,7 +148,6 @@ describe("Time", () => {
   });
 
   describe("formatDatesInTimeRange", () => {
-
     function coerceToYear(date: Date, year: number): Date {
       date.setFullYear(year);
       return date;
@@ -150,7 +162,7 @@ describe("Time", () => {
       it("should use long format for different years", () => {
         const range = {
           start: new Date("1997-02-21T11:00Z"),
-          end: new Date("1999-05-30T16:21Z")
+          end: new Date("1999-05-30T16:21Z"),
         };
         expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb 1997 11:00", "30 May 1999 16:21"]);
       });
@@ -158,7 +170,7 @@ describe("Time", () => {
       it("should use long format for same year but not current", () => {
         const range = {
           start: new Date("1997-02-21T11:00Z"),
-          end: new Date("1997-05-30T16:21Z")
+          end: new Date("1997-05-30T16:21Z"),
         };
         expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb 1997 11:00", "30 May 1997 16:21"]);
       });
@@ -166,10 +178,13 @@ describe("Time", () => {
       it("should use long format when just one date in current year", () => {
         const range = {
           start: new Date("1997-02-21T11:00Z"),
-          end: coerceToCurrentYear(new Date("2019-05-30T16:21Z"))
+          end: coerceToCurrentYear(new Date("2019-05-30T16:21Z")),
         };
         const currentYear = new Date().getFullYear();
-        expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb 1997 11:00", `30 May ${currentYear} 16:21`]);
+        expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq([
+          "21 Feb 1997 11:00",
+          `30 May ${currentYear} 16:21`,
+        ]);
       });
 
       it("should omit year for both current years", () => {
@@ -184,7 +199,7 @@ describe("Time", () => {
       it("should show one date with year when not current year", () => {
         const range = {
           start: new Date("1999-02-21Z"),
-          end: new Date("1999-02-22Z")
+          end: new Date("1999-02-22Z"),
         };
         expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb 1999"]);
       });
@@ -192,7 +207,7 @@ describe("Time", () => {
       it("should show one short date for current year", () => {
         const range = {
           start: coerceToCurrentYear(new Date("2019-02-21Z")),
-          end: coerceToCurrentYear(new Date("2019-02-22Z"))
+          end: coerceToCurrentYear(new Date("2019-02-22Z")),
         };
         expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb"]);
       });
@@ -202,7 +217,7 @@ describe("Time", () => {
       it("should show just dates with year when not current year", () => {
         const range = {
           start: new Date("1997-02-21Z"),
-          end: new Date("1999-05-30Z")
+          end: new Date("1999-05-30Z"),
         };
         expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb 1997", "29 May 1999"]);
       });
@@ -210,7 +225,7 @@ describe("Time", () => {
       it("should show just days and months without year when current year", () => {
         const range = {
           start: coerceToCurrentYear(new Date("2019-02-21Z")),
-          end: coerceToCurrentYear(new Date("2019-05-30Z"))
+          end: coerceToCurrentYear(new Date("2019-05-30Z")),
         };
         expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb", "29 May"]);
       });
@@ -220,7 +235,7 @@ describe("Time", () => {
         const nextYear = currentYear + 1;
         const range = {
           start: new Date(Date.UTC(currentYear, 0, 1, 0, 0, 0)),
-          end: new Date(Date.UTC(nextYear, 0, 1, 0, 0, 0))
+          end: new Date(Date.UTC(nextYear, 0, 1, 0, 0, 0)),
         };
         expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["1 Jan", "31 Dec"]);
       });

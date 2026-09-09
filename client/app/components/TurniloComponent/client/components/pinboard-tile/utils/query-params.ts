@@ -29,10 +29,18 @@ export interface QueryParams {
 
 export function equalParams(params: QueryParams, otherParams: Partial<QueryParams>): boolean {
   const { essence, searchText, sortOn, dimension, timekeeper } = params;
-  const { essence: otherEssence, searchText: otherSearchText, sortOn: otherSortOn, dimension: otherDimension, timekeeper: otherTimekeeper } = otherParams;
-  return essence.equals(otherEssence) &&
+  const {
+    essence: otherEssence,
+    searchText: otherSearchText,
+    sortOn: otherSortOn,
+    dimension: otherDimension,
+    timekeeper: otherTimekeeper,
+  } = otherParams;
+  return (
+    essence.equals(otherEssence) &&
     searchText === otherSearchText &&
     timekeeper === otherTimekeeper &&
     dimension === otherDimension &&
-    sortOn.equals(otherSortOn);
+    sortOn.equals(otherSortOn)
+  );
 }

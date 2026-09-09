@@ -33,7 +33,7 @@ describe("nestedSplitName", () => {
   it("should return formatted third split values for nest 3", () => {
     const datum = {
       __nest: 3,
-      commentLength: new NumberRange({ start: 42, end: 71 })
+      commentLength: new NumberRange({ start: 42, end: 71 }),
     };
     expect(nestedSplitName(datum, wikiTable)).to.equal("42 to 71");
   });
@@ -41,7 +41,10 @@ describe("nestedSplitName", () => {
   it("should return formatted fourth split values for nest 4", () => {
     const datum = {
       __nest: 4,
-      time: new TimeRange({ start: new Date("2010-01-01"), end: new Date("2010-01-02") })
+      time: new TimeRange({
+        start: new Date("2010-01-01"),
+        end: new Date("2010-01-02"),
+      }),
     };
     expect(nestedSplitName(datum, wikiTable)).to.equal("1 Jan 2010");
   });

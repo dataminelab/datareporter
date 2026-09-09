@@ -22,9 +22,9 @@ interface SeriesLegend {
   essence: Essence;
 }
 
-export const SeriesLegend: React.SFC<SeriesLegend> = props => {
+export const SeriesLegend: React.SFC<SeriesLegend> = (props) => {
   const { essence } = props;
   const series = essence.getConcreteSeries().toArray();
-  const values = series.map(series => series.title());
+  const values = series.map((series) => series.title());
   return <Legend values={values} title="Series" />;
 };

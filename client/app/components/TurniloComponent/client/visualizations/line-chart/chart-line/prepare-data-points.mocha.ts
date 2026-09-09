@@ -24,33 +24,33 @@ const getMeasure = (d: Datum) => d.measure as number;
 const januaryFirst: Datum = {
   time: new TimeRange({
     start: new Date("2000-01-01"),
-    end: new Date("2000-01-02")
+    end: new Date("2000-01-02"),
   }),
-  measure: 234
+  measure: 234,
 };
 
 const januarySecond: Datum = {
   time: new TimeRange({
     start: new Date("2000-01-02"),
-    end: new Date("2000-01-03")
+    end: new Date("2000-01-03"),
   }),
-  measure: 298
+  measure: 298,
 };
 
 const januaryThird: Datum = {
   time: new TimeRange({
     start: new Date("2000-01-03"),
-    end: new Date("2000-01-04")
+    end: new Date("2000-01-04"),
   }),
-  measure: 9
+  measure: 9,
 };
 
 const januaryFourth: Datum = {
   time: new TimeRange({
     start: new Date("2000-01-04"),
-    end: new Date("2000-01-05")
+    end: new Date("2000-01-05"),
   }),
-  measure: 10000
+  measure: 10000,
 };
 
 const januaryFirstNoon = new Date("2000-01-01T12:00Z");
@@ -69,7 +69,7 @@ describe("prepareDataPoints", () => {
     expect(points).to.be.deep.equal([
       [+januaryFirstNoon, 234],
       [+januarySecondNoon, 298],
-      [+januaryThirdNoon, 9]
+      [+januaryThirdNoon, 9],
     ]);
   });
 
@@ -79,7 +79,7 @@ describe("prepareDataPoints", () => {
       [+januaryFirstNoon, 234],
       [+januarySecondNoon, 0],
       [+januarySecondNoon, 0],
-      [+januaryThirdNoon, 9]
+      [+januaryThirdNoon, 9],
     ]);
   });
 
@@ -89,7 +89,7 @@ describe("prepareDataPoints", () => {
       [+januaryFirstNoon, 234],
       [+januarySecondNoon, 0],
       [+januaryThirdNoon, 0],
-      [+januaryFourthNoon, 10000]
+      [+januaryFourthNoon, 10000],
     ]);
   });
 
@@ -97,7 +97,7 @@ describe("prepareDataPoints", () => {
     const points = prepareDataPoints([januaryThird, januaryFourth], getTime, getMeasure);
     expect(points).to.be.deep.equal([
       [+januaryThirdNoon, 9],
-      [+januaryFourthNoon, 10000]
+      [+januaryFourthNoon, 10000],
     ]);
   });
 
@@ -105,7 +105,7 @@ describe("prepareDataPoints", () => {
     const points = prepareDataPoints([januaryFirst, januarySecond], getTime, getMeasure);
     expect(points).to.be.deep.equal([
       [+januaryFirstNoon, 234],
-      [+januarySecondNoon, 298]
+      [+januarySecondNoon, 298],
     ]);
   });
 });

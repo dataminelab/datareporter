@@ -26,14 +26,15 @@ import { GoldenCenter } from "./golden-center";
 
 describe("GoldenCenter", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <GoldenCenter>
         <div className="Hello">Is it me you're looking for?</div>
       </GoldenCenter>
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("golden-center");
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain(
+      "golden-center"
+    );
   });
-
 });

@@ -50,7 +50,6 @@ describe("isValidTimeShift", () => {
   });
 
   describe("constrainToFilter", () => {
-
     const oneDay = TimeShift.fromJS("P1D");
     const empty = TimeShift.empty();
 
@@ -58,10 +57,12 @@ describe("isValidTimeShift", () => {
       it("does not touch if shifted period do not overlap with original", () => {
         const filter = new FixedTimeFilterClause({
           reference: "time",
-          values: List.of(new DateRange({
-            start: new Date("2010-01-01"),
-            end: new Date("2010-01-02")
-          }))
+          values: List.of(
+            new DateRange({
+              start: new Date("2010-01-01"),
+              end: new Date("2010-01-02"),
+            })
+          ),
         });
         expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(oneDay);
       });
@@ -69,10 +70,12 @@ describe("isValidTimeShift", () => {
       it("returns empty time shift if shifted period overlap with original", () => {
         const filter = new FixedTimeFilterClause({
           reference: "time",
-          values: List.of(new DateRange({
-            start: new Date("2010-01-01"),
-            end: new Date("2010-01-03")
-          }))
+          values: List.of(
+            new DateRange({
+              start: new Date("2010-01-01"),
+              end: new Date("2010-01-03"),
+            })
+          ),
         });
         expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(empty);
       });
@@ -84,7 +87,7 @@ describe("isValidTimeShift", () => {
           const filter = new RelativeTimeFilterClause({
             reference: "time",
             period: TimeFilterPeriod.LATEST,
-            duration: Duration.fromJS("P1D")
+            duration: Duration.fromJS("P1D"),
           });
           expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(oneDay);
         });
@@ -93,7 +96,7 @@ describe("isValidTimeShift", () => {
           const filter = new RelativeTimeFilterClause({
             reference: "time",
             period: TimeFilterPeriod.LATEST,
-            duration: Duration.fromJS("P2D")
+            duration: Duration.fromJS("P2D"),
           });
           expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(empty);
         });
@@ -104,7 +107,7 @@ describe("isValidTimeShift", () => {
           const filter = new RelativeTimeFilterClause({
             reference: "time",
             period: TimeFilterPeriod.PREVIOUS,
-            duration: Duration.fromJS("P1D")
+            duration: Duration.fromJS("P1D"),
           });
           expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(oneDay);
         });
@@ -113,7 +116,7 @@ describe("isValidTimeShift", () => {
           const filter = new RelativeTimeFilterClause({
             reference: "time",
             period: TimeFilterPeriod.PREVIOUS,
-            duration: Duration.fromJS("P2D")
+            duration: Duration.fromJS("P2D"),
           });
           expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(empty);
         });
@@ -124,7 +127,7 @@ describe("isValidTimeShift", () => {
           const filter = new RelativeTimeFilterClause({
             reference: "time",
             period: TimeFilterPeriod.CURRENT,
-            duration: Duration.fromJS("P1D")
+            duration: Duration.fromJS("P1D"),
           });
           expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(oneDay);
         });
@@ -133,7 +136,7 @@ describe("isValidTimeShift", () => {
           const filter = new RelativeTimeFilterClause({
             reference: "time",
             period: TimeFilterPeriod.CURRENT,
-            duration: Duration.fromJS("P2D")
+            duration: Duration.fromJS("P2D"),
           });
           expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(empty);
         });

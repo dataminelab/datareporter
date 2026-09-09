@@ -18,10 +18,10 @@ import * as Chai from "chai";
 import { Expression } from "plywood";
 import some from "../../../common/utils/plywood/some";
 
-export default function(chai: typeof Chai) {
-  chai.Assertion.addMethod("haveSubExpression", function(exp: Expression) {
+export default function (chai: typeof Chai) {
+  chai.Assertion.addMethod("haveSubExpression", function (exp: Expression) {
     this.assert(
-      some(this._obj, e => exp.equals(e)),
+      some(this._obj, (e) => exp.equals(e)),
       `expected to have expression ${exp.toString()}`,
       `expected to not have expression ${exp.toString()}`,
       exp,

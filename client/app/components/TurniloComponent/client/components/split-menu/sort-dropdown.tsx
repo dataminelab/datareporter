@@ -31,7 +31,6 @@ export interface SortDropdownProps {
 }
 
 export const SortDropdown: React.SFC<SortDropdownProps> = ({ direction, options, selected, onChange }) => {
-
   function toggleDirection() {
     const newDirection = direction === SortDirection.descending ? SortDirection.ascending : SortDirection.descending;
     onChange(selected.toSort(newDirection));
@@ -41,18 +40,20 @@ export const SortDropdown: React.SFC<SortDropdownProps> = ({ direction, options,
     onChange(sortOn.toSort(direction));
   }
 
-  return <div className="sort-direction">
-    <Dropdown<SortOn>
-      label={STRINGS.sortBy}
-      items={options}
-      selectedItem={selected}
-      equal={SortOn.equals}
-      renderItem={SortOn.getTitle}
-      keyItem={SortOn.getKey}
-      onSelect={selectSort}
-    />
-    <div className={"direction " + direction} onClick={toggleDirection}>
-      <SvgIcon svg={require("../../icons/sort-arrow.svg")} />
+  return (
+    <div className="sort-direction">
+      <Dropdown<SortOn>
+        label={STRINGS.sortBy}
+        items={options}
+        selectedItem={selected}
+        equal={SortOn.equals}
+        renderItem={SortOn.getTitle}
+        keyItem={SortOn.getKey}
+        onSelect={selectSort}
+      />
+      <div className={"direction " + direction} onClick={toggleDirection}>
+        <SvgIcon svg={require("../../icons/sort-arrow.svg")} />
+      </div>
     </div>
-  </div>;
+  );
 };

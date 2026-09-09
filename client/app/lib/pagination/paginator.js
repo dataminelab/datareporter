@@ -1,7 +1,10 @@
 import { sortBy } from "lodash";
 
 export default class Paginator {
-  constructor(rows, { page = 1, itemsPerPage = 20, totalCount = undefined } = {}) {
+  constructor(
+    rows,
+    { page = 1, itemsPerPage = 20, totalCount = undefined } = {},
+  ) {
     this.page = page;
     this.itemsPerPage = itemsPerPage;
     this.updateRows(rows, totalCount);

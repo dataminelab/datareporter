@@ -7,8 +7,6 @@ x-redash-service: &redash-service
       - ${TAG-latest}
     cache_from:
       - "eu.gcr.io/datareporter/datareporter:cache"
-    cache_to:
-      - "eu.gcr.io/datareporter/datareporter:cache"
     args:
       skip_frontend_build: "${skip_frontend_build-true}"
       skip_dev_deps: "${skip_dev_deps-false}"
@@ -30,12 +28,14 @@ services:
     environment:
       <<: *redash-environment
       REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+      OLLAMA_API_URL: "http://ollama:11434"
       PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://plywood:3000"
     volumes:
       - .:/app
   redis:
-    image: redis:6-alpine
+    image: redis:7-alpine
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -48,12 +48,10 @@ services:
     restart: unless-stopped
   plywood:
     build:
-      context: ../plywood/server
+      context: ../plywood
       tags:
         - ${TAG-latest}
       cache_from:
-        - "eu.gcr.io/datareporter/plywood:cache"
-      cache_to:
         - "eu.gcr.io/datareporter/plywood:cache"
     ports:
       - "3000:3000"

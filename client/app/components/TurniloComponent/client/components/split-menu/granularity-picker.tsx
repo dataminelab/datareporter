@@ -16,7 +16,13 @@
 
 import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { ContinuousDimensionKind, formatGranularity, getGranularities, granularityToString, validateGranularity } from "../../../common/models/granularity/granularity";
+import {
+  ContinuousDimensionKind,
+  formatGranularity,
+  getGranularities,
+  granularityToString,
+  validateGranularity,
+} from "../../../common/models/granularity/granularity";
 import { Bucket } from "../../../common/models/split/split";
 import { Unary } from "../../../common/utils/functional/functional";
 import { STRINGS } from "../../config/constants";
@@ -31,21 +37,25 @@ export interface GranularityPickerProps {
 export const GranularityPicker: React.SFC<GranularityPickerProps> = ({ dimension, granularity, granularityChange }) => {
   if (!dimension.isContinuous()) return null;
 
-  const granularities = dimension.granularities || getGranularities(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy);
+  const granularities =
+    dimension.granularities || getGranularities(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy);
   const presets = granularities.map((g: Bucket) => {
     return {
       name: formatGranularity(g),
-      identity: granularityToString(g)
+      identity: granularityToString(g),
     };
   });
 
   const placeholder = dimension.kind === "time" ? STRINGS.floorableDurationsExamples : "Bucket size";
 
-  return <StringInputWithPresets
-    title={STRINGS.granularity}
-    selected={granularity}
-    errorMessage={validateGranularity(dimension.kind, granularity)}
-    onChange={granularityChange}
-    placeholder={placeholder}
-    presets={presets} />;
+  return (
+    <StringInputWithPresets
+      title={STRINGS.granularity}
+      selected={granularity}
+      errorMessage={validateGranularity(dimension.kind, granularity)}
+      onChange={granularityChange}
+      placeholder={placeholder}
+      presets={presets}
+    />
+  );
 };

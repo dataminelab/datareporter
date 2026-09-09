@@ -15,7 +15,7 @@
  */
 
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { FilterMode } from "../../../common/models/filter/filter";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -34,20 +34,27 @@ interface PreviewListProps {
 
 const errorNotice = (content: string) => <div className="error-notice">{content}</div>;
 
-export const row = (content: string, highlight: string) => <div className="row no-select" key={content} title={content}>
-  <div className="row-wrapper">
-    <HighlightString className="label" text={content} highlight={highlight} />
+interface RowProps {
+  content: string;
+  highlight: string;
+}
+
+const Row: React.FunctionComponent<RowProps> = ({ content, highlight }) => (
+  <div className="row no-select" title={content}>
+    <div className="row-wrapper">
+      <HighlightString className="label" text={content} highlight={highlight} />
+    </div>
   </div>
-</div>;
+);
 
 function predicate(filterMode: PreviewFilterMode, searchText: string): Unary<unknown, boolean> {
   switch (filterMode) {
     case FilterMode.CONTAINS:
-      return d => String(d).includes(searchText);
+      return (d) => String(d).includes(searchText);
     case FilterMode.REGEX:
       const escaped = searchText.replace(/\\[^\\]]/g, "\\\\");
       const regexp = new RegExp(escaped);
-      return d => regexp.test(String(d));
+      return (d) => regexp.test(String(d));
   }
 }
 
@@ -56,7 +63,7 @@ function filterValues<T>(list: T[], filterMode: PreviewFilterMode, searchText: s
   return list.filter(predicate(filterMode, searchText));
 }
 
-export const PreviewList: React.SFC<PreviewListProps> = props => {
+export const PreviewList: React.FunctionComponent<PreviewListProps> = (props) => {
   const { regexErrorMessage, searchText, dataset, filterMode, dimension, limit } = props;
 
   if (regexErrorMessage) return errorNotice(regexErrorMessage);
@@ -64,11 +71,15 @@ export const PreviewList: React.SFC<PreviewListProps> = props => {
   const data = dataset.data;
   if (searchText && data.length === 0) return errorNotice(`No results for "${searchText}"`);
 
-  const list = data.slice(0, limit).map(d => d[dimension.name]);
+  const list = data.slice(0, limit).map((d) => d[dimension.name]);
   const filtered = filterValues(list, filterMode, searchText);
 
-  return <React.Fragment>
-    {searchText && <div className="matching-values-message">Matching Values</div>}
-    {filtered.map(value => row(String(value), searchText))}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      {searchText && <div className="matching-values-message">Matching Values</div>}
+      {filtered.map((value) => (
+        <Row content={String(value)} highlight={searchText} key={String(value)} />
+      ))}
+    </React.Fragment>
+  );
 };

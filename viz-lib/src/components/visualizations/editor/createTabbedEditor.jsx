@@ -15,12 +15,15 @@ export function TabbedEditor({ tabs, options, data, onOptionsChange, ...restProp
     onOptionsChange(updateStrategy(options, newOptions));
   };
 
-  tabs = filter(tabs, tab => (isFunction(tab.isAvailable) ? tab.isAvailable(options, data) : true));
+  tabs = filter(tabs, (tab) => (isFunction(tab.isAvailable) ? tab.isAvailable(options, data) : true));
 
   return (
-    <Tabs animated={false} tabBarGutter={0}>
+    <Tabs animated={false} tabBarGutter={20}>
       {map(tabs, ({ key, title, component: Component }) => (
-        <Tabs.TabPane key={key} tab={<span data-test={`VisualizationEditor.Tabs.${key}`}>{title}</span>}>
+        <Tabs.TabPane
+          key={key}
+          tab={<span data-test={`VisualizationEditor.Tabs.${key}`}>{isFunction(title) ? title(options) : title}</span>}
+        >
           <Component options={options} data={data} onOptionsChange={optionsChanged} {...restProps} />
         </Tabs.TabPane>
       ))}

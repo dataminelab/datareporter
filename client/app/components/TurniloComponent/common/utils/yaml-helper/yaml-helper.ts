@@ -25,11 +25,11 @@ import { Dimension } from "../../models/dimension/dimension";
 import { Measure } from "../../models/measure/measure";
 
 function spaces(n: number) {
-  return (new Array(n + 1)).join(" ");
+  return new Array(n + 1).join(" ");
 }
 
 function extend(a: any, b: any): any {
-  for (let key in a) {
+  for (const key in a) {
     b[key] = a[key];
   }
 
@@ -46,7 +46,7 @@ function yamlObject(lines: string[], indent = 2): string[] {
 
 function yamlMap(map: Record<string, string>, indent = 2): string[] {
   const pad = spaces(indent);
-  return Object.keys(map).map(key => {
+  return Object.keys(map).map((key) => {
     return `${pad}${key}: "${map[key]}"`;
   });
 }
@@ -59,7 +59,7 @@ interface PropAdderOptions {
 }
 
 function commentLines(comment: string): string[] {
-  return comment.split("\n").map(line => `# ${line}`);
+  return comment.split("\n").map((line) => `# ${line}`);
 }
 
 function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdderOptions): void {
@@ -68,18 +68,11 @@ function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdde
   const value = object[propName];
   if (value == null) {
     if (withComments && typeof defaultValue !== "undefined") {
-      lines.push(
-        "",
-        ...commentLines(comment),
-        `#${propName}: ${defaultValue} # <- default`
-      );
+      lines.push("", ...commentLines(comment), `#${propName}: ${defaultValue} # <- default`);
     }
   } else {
     if (withComments) {
-      lines.push(
-        "",
-        ...commentLines(comment)
-      );
+      lines.push("", ...commentLines(comment));
     }
     lines.push(`${propName}: ${value}`);
   }
@@ -87,7 +80,7 @@ function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdde
 
 function getYamlPropAdder(object: any, labels: any, lines: string[], withComments = false) {
   const adder = (propName: string, additionalOptions?: { defaultValue?: any }) => {
-    let propVerbiage = labels[propName];
+    const propVerbiage = labels[propName];
     let comment: string;
 
     if (!propVerbiage) {
@@ -111,7 +104,7 @@ function getYamlPropAdder(object: any, labels: any, lines: string[], withComment
 
 function customizationToYAML(customization: Customization, withComments: boolean): string[] {
   const { timezones, externalViews, cssVariables } = customization;
-  let lines: string[] = [];
+  const lines: string[] = [];
 
   getYamlPropAdder(customization, CUSTOMIZATION, lines, withComments)
     .add("customLogoSvg")
@@ -121,16 +114,13 @@ function customizationToYAML(customization: Customization, withComments: boolean
 
   if (timezones && timezones.length) {
     lines.push("timezones:");
-    lines.push(...timezones.map(tz => `- ${tz.toString()}`));
+    lines.push(...timezones.map((tz) => `- ${tz.toString()}`));
   }
 
   if (externalViews && externalViews.length) {
     lines.push("externalViews:");
     externalViews.forEach(({ title, linkGenerator }) => {
-      lines.push(...yamlObject([
-        `title: ${title}`,
-        `linkGenerator: ${linkGenerator}`
-      ]));
+      lines.push(...yamlObject([`title: ${title}`, `linkGenerator: ${linkGenerator}`]));
     });
   }
 
@@ -143,15 +133,13 @@ function customizationToYAML(customization: Customization, withComments: boolean
   }
 
   const pad = spaces(2);
-  return lines.map(line => `${pad}${line}`);
+  return lines.map((line) => `${pad}${line}`);
 }
 
 function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
-  let lines: string[] = [
-    `name: ${cluster.name}`
-  ];
+  const lines: string[] = [`name: ${cluster.name}`];
 
-  let props = getYamlPropAdder(cluster, CLUSTER, lines, withComments);
+  const props = getYamlPropAdder(cluster, CLUSTER, lines, withComments);
 
   props
     .add("url")
@@ -159,23 +147,24 @@ function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
     .add("timeout", { defaultValue: Cluster.DEFAULT_TIMEOUT })
     .add("sourceListScan", { defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN })
     .add("sourceListRefreshOnLoad", { defaultValue: false })
-    .add("sourceListRefreshInterval", { defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL })
+    .add("sourceListRefreshInterval", {
+      defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
+    })
     .add("sourceReintrospectOnLoad", { defaultValue: false })
-    .add("sourceReintrospectInterval", { defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL })
-  ;
+    .add("sourceReintrospectInterval", {
+      defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
+    });
 
   if (withComments) {
-    lines.push(
-      "",
-      `# Database specific (${cluster.type}) ===============`
-    );
+    lines.push("", `# Database specific (${cluster.type}) ===============`);
   }
   switch (cluster.type) {
     case "druid":
       props
-        .add("introspectionStrategy", { defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY })
-        .add("requestDecorator")
-      ;
+        .add("introspectionStrategy", {
+          defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY,
+        })
+        .add("requestDecorator");
       break;
   }
 
@@ -184,10 +173,7 @@ function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
 }
 
 function attributeToYAML(attribute: AttributeInfo): string[] {
-  let lines: string[] = [
-    `name: ${attribute.name}`,
-    `type: ${attribute.type}`
-  ];
+  const lines: string[] = [`name: ${attribute.name}`, `type: ${attribute.type}`];
 
   if (attribute.nativeType) {
     lines.push(`nativeType: ${attribute.nativeType}`);
@@ -198,10 +184,7 @@ function attributeToYAML(attribute: AttributeInfo): string[] {
 }
 
 function dimensionToYAML(dimension: Dimension): string[] {
-  let lines: string[] = [
-    `name: ${dimension.name}`,
-    `title: ${dimension.title}`
-  ];
+  const lines: string[] = [`name: ${dimension.name}`, `title: ${dimension.title}`];
 
   if (dimension.kind !== "string") {
     lines.push(`kind: ${dimension.kind}`);
@@ -218,10 +201,7 @@ function dimensionToYAML(dimension: Dimension): string[] {
 }
 
 function measureToYAML(measure: Measure): string[] {
-  let lines: string[] = [
-    `name: ${measure.name}`,
-    `title: ${measure.title}`
-  ];
+  const lines: string[] = [`name: ${measure.name}`, `title: ${measure.title}`];
 
   if (measure.units) {
     lines.push(`units: ${measure.units}`);
@@ -230,7 +210,7 @@ function measureToYAML(measure: Measure): string[] {
   lines.push(`formula: ${measure.formula}`);
 
   const format = measure.format;
-  if (!!format) {
+  if (format) {
     lines.push(`format: ${format}`);
   }
 
@@ -239,7 +219,7 @@ function measureToYAML(measure: Measure): string[] {
 }
 
 function yamlArray(values: string[]) {
-  return `[${values.map(s => `"${s}"`).join(", ")}]`;
+  return `[${values.map((s) => `"${s}"`).join(", ")}]`;
 }
 
 function sourceToYAML(source: Source): string {
@@ -252,7 +232,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
     `name: ${dataCube.name}`,
     `title: ${dataCube.title}`,
     `clusterName: ${dataCube.clusterName}`,
-    `source: ${sourceToYAML(dataCube.source)}`
+    `source: ${sourceToYAML(dataCube.source)}`,
   ];
 
   const timeAttribute = dataCube.timeAttribute;
@@ -266,7 +246,9 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
 
   const refreshRule = dataCube.refreshRule;
   if (withComments) {
-    lines.push("# The refresh rule describes how often the data cube looks for new data. Default: 'query'/PT1M (every minute)");
+    lines.push(
+      "# The refresh rule describes how often the data cube looks for new data. Default: 'query'/PT1M (every minute)"
+    );
   }
   lines.push("refreshRule:");
   lines.push(`  rule: ${refreshRule.rule}`);
@@ -275,13 +257,14 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
   }
   lines.push("");
 
-  let addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);
+  const addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);
 
   addProps
     .add("defaultTimezone", { defaultValue: DataCube.DEFAULT_DEFAULT_TIMEZONE })
     .add("defaultDuration", { defaultValue: DataCube.DEFAULT_DEFAULT_DURATION })
-    .add("defaultSortMeasure", { defaultValue: dataCube.getDefaultSortMeasure() })
-  ;
+    .add("defaultSortMeasure", {
+      defaultValue: dataCube.getDefaultSortMeasure(),
+    });
 
   const defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures.toArray() : null;
   if (withComments) {
@@ -295,7 +278,10 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
 
   const defaultPinnedDimensions = dataCube.defaultPinnedDimensions ? dataCube.defaultPinnedDimensions.toArray() : null;
   if (withComments) {
-    lines.push("", "# The names of dimensions that are pinned by default (in order that they will appear in the pin bar)");
+    lines.push(
+      "",
+      "# The names of dimensions that are pinned by default (in order that they will appear in the pin bar)"
+    );
   }
   if (defaultPinnedDimensions) {
     lines.push("", `defaultPinnedDimensions: ${JSON.stringify(defaultPinnedDimensions)}`);
@@ -338,7 +324,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       ""
     );
   }
-  lines = lines.concat.apply(lines, attributeOverrides.map(attributeToYAML));
+  lines = lines.concat(...attributeOverrides.map(attributeToYAML));
 
   if (withComments) {
     lines.push("", "# The list of dimensions defined in the UI. The order here will be reflected in the UI");
@@ -368,7 +354,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       ""
     );
   }
-  lines = lines.concat.apply(lines, dataCube.dimensions.mapDimensions(dimensionToYAML));
+  lines = lines.concat(...dataCube.dimensions.mapDimensions(dimensionToYAML));
   if (withComments) {
     lines.push(
       "  # This is the place where you might want to add derived dimensions.",
@@ -406,7 +392,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       ""
     );
   }
-  lines = lines.concat.apply(lines, dataCube.measures.mapMeasures(measureToYAML));
+  lines = lines.concat(...dataCube.measures.mapMeasures(measureToYAML));
   if (withComments) {
     lines.push(
       "  # This is the place where you might want to add derived measures (a.k.a Post Aggregators).",
@@ -466,7 +452,7 @@ export function appSettingsToYAML(appSettings: AppSettings, withComments: boolea
 
   if (clusters.length) {
     lines.push("clusters:");
-    lines = lines.concat.apply(lines, clusters.map(c => clusterToYAML(c, withComments)));
+    lines = lines.concat(...clusters.map((c) => clusterToYAML(c, withComments)));
   }
 
   if (customization) {
@@ -475,7 +461,7 @@ export function appSettingsToYAML(appSettings: AppSettings, withComments: boolea
   }
 
   lines.push("dataCubes:");
-  lines = lines.concat.apply(lines, dataCubes.map(d => dataCubeToYAML(d, withComments)));
+  lines = lines.concat(...dataCubes.map((d) => dataCubeToYAML(d, withComments)));
 
   return lines.join("\n");
 }

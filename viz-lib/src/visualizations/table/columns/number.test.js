@@ -12,7 +12,7 @@ function mount(column, done) {
     <Column.Editor
       visualizationName="Test"
       column={column}
-      onChange={changedColumn => {
+      onChange={(changedColumn) => {
         expect(changedColumn).toMatchSnapshot();
         done();
       }}
@@ -22,7 +22,7 @@ function mount(column, done) {
 
 describe("Visualizations -> Table -> Columns -> Number", () => {
   describe("Editor", () => {
-    test("Changes format", done => {
+    test("Changes format", (done) => {
       const el = mount(
         {
           name: "a",

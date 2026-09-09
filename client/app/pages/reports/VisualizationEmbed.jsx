@@ -6,9 +6,9 @@ import { markdown } from "markdown";
 
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
-import Icon from "antd/lib/icon";
 import Menu from "antd/lib/menu";
-import Tooltip from "antd/lib/tooltip";
+import Tooltip from "@/components/Tooltip";
+import Link from "@/components/Link";
 import routeWithApiKeySession from "@/components/ApplicationArea/routeWithApiKeySession";
 import Parameters from "@/components/Parameters";
 import { Moment } from "@/components/proptypes";
@@ -17,6 +17,9 @@ import Timer from "@/components/Timer";
 import ReportResultsLink from "@/components/EditVisualizationButton/ReportResultsLink";
 import VisualizationName from "@/components/visualizations/VisualizationName";
 import VisualizationRenderer from "@/components/visualizations/VisualizationRenderer";
+
+import FileOutlinedIcon from "@ant-design/icons/FileOutlined";
+import FileExcelOutlinedIcon from "@ant-design/icons/FileExcelOutlined";
 
 import { VisualizationType } from "@redash/viz/lib";
 import HtmlContent from "@redash/viz/lib/components/HtmlContent";
@@ -29,15 +32,32 @@ import routes from "@/services/routes";
 
 import logoUrl from "@/assets/images/report_icon_small.png";
 
-function VisualizationEmbedHeader({ queryName, queryDescription, visualization }) {
+const DEFAULT_EMBED_VISUALIZATION = {
+  type: "TABLE",
+  name: "Table",
+  id: null,
+  options: {},
+};
+
+function VisualizationEmbedHeader({
+  reportName,
+  queryDescription,
+  visualization,
+}) {
   return (
     <div className="embed-heading p-b-10 p-r-15 p-l-15">
       <h3>
-        <img src={logoUrl} alt="Data reporter Logo" style={{ height: "24px", verticalAlign: "text-bottom" }} />
-        <VisualizationName visualization={visualization} /> {queryName}
+        <img
+          src={logoUrl}
+          alt="Data Reporter Logo"
+          style={{ height: "24px", verticalAlign: "text-bottom" }}
+        />
+        <VisualizationName visualization={visualization} /> {reportName}
         {queryDescription && (
           <small>
-            <HtmlContent className="markdown text-muted">{markdown.toHTML(queryDescription || "")}</HtmlContent>
+            <HtmlContent className="markdown text-muted">
+              {markdown.toHTML(queryDescription || "")}
+            </HtmlContent>
           </small>
         )}
       </h3>
@@ -46,7 +66,7 @@ function VisualizationEmbedHeader({ queryName, queryDescription, visualization }
 }
 
 VisualizationEmbedHeader.propTypes = {
-  queryName: PropTypes.string.isRequired,
+  reportName: PropTypes.string.isRequired,
   queryDescription: PropTypes.string,
   visualization: VisualizationType.isRequired,
 };
@@ -70,9 +90,12 @@ function VisualizationEmbedFooter({
           report={report}
           queryResult={queryResults}
           apiKey={apiKey}
-          disabled={!queryResults || !queryResults.getData || !queryResults.getData()}
-          embed>
-          <Icon type="file" /> Download as CSV File
+          disabled={
+            !queryResults || !queryResults.getData || !queryResults.getData()
+          }
+          embed
+        >
+          <FileOutlinedIcon /> Download as CSV File
         </ReportResultsLink>
       </Menu.Item>
       <Menu.Item>
@@ -81,9 +104,12 @@ function VisualizationEmbedFooter({
           report={report}
           queryResult={queryResults}
           apiKey={apiKey}
-          disabled={!queryResults || !queryResults.getData || !queryResults.getData()}
-          embed>
-          <Icon type="file" /> Download as TSV File
+          disabled={
+            !queryResults || !queryResults.getData || !queryResults.getData()
+          }
+          embed
+        >
+          <FileOutlinedIcon /> Download as TSV File
         </ReportResultsLink>
       </Menu.Item>
       <Menu.Item>
@@ -92,9 +118,12 @@ function VisualizationEmbedFooter({
           report={report}
           queryResult={queryResults}
           apiKey={apiKey}
-          disabled={!queryResults || !queryResults.getData || !queryResults.getData()}
-          embed>
-          <Icon type="file-excel" /> Download as Excel File
+          disabled={
+            !queryResults || !queryResults.getData || !queryResults.getData()
+          }
+          embed
+        >
+          <FileExcelOutlinedIcon /> Download as Excel File
         </ReportResultsLink>
       </Menu.Item>
     </Menu>
@@ -104,27 +133,45 @@ function VisualizationEmbedFooter({
     <div className="tile__bottom-control">
       {!hideTimestamp && (
         <span>
-          <a className="small hidden-print">
-            <i className="zmdi zmdi-time-restore" />{" "}
-            {refreshStartedAt ? <Timer from={refreshStartedAt} /> : <TimeAgo date={updatedAt} />}
-          </a>
+          <span className="small hidden-print">
+            <i className="zmdi zmdi-time-restore" aria-hidden="true" />{" "}
+            {refreshStartedAt ? (
+              <Timer from={refreshStartedAt} />
+            ) : (
+              <TimeAgo date={updatedAt} />
+            )}
+          </span>
           <span className="small visible-print">
-            <i className="zmdi zmdi-time-restore" /> {formatDateTime(updatedAt)}
+            <i className="zmdi zmdi-time-restore" aria-hidden="true" />{" "}
+            {formatDateTime(updatedAt)}
           </span>
         </span>
       )}
       {queryUrl && (
         <span className="hidden-print">
-          <Tooltip title="Open in Data reporter">
-            <Button className="icon-button" href={queryUrl} target="_blank">
-              <i className="fa fa-external-link" />
-            </Button>
+          <Tooltip title="Open in Data Reporter">
+            <Link.Button
+              className="icon-button"
+              href={queryUrl}
+              target="_blank"
+            >
+              <i className="fa fa-external-link" aria-hidden="true" />
+              <span className="sr-only">Open in Data Reporter</span>
+            </Link.Button>
           </Tooltip>
           {!report.hasParameters() && (
-            <Dropdown overlay={downloadMenu} disabled={!queryResults} trigger={["click"]} placement="topLeft">
-              <Button loading={!queryResults && !!refreshStartedAt} className="m-l-5">
+            <Dropdown
+              overlay={downloadMenu}
+              disabled={!queryResults}
+              trigger={["click"]}
+              placement="topLeft"
+            >
+              <Button
+                loading={!queryResults && !!refreshStartedAt}
+                className="m-l-5"
+              >
                 Download Dataset
-                <i className="fa fa-caret-up m-l-5" />
+                <i className="fa fa-caret-up m-l-5" aria-hidden="true" />
               </Button>
             </Dropdown>
           )}
@@ -135,8 +182,8 @@ function VisualizationEmbedFooter({
 }
 
 VisualizationEmbedFooter.propTypes = {
-  report: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  queryResults: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  report: PropTypes.object.isRequired,
+  queryResults: PropTypes.object,
   updatedAt: PropTypes.string,
   refreshStartedAt: Moment,
   queryUrl: PropTypes.string,
@@ -153,7 +200,7 @@ VisualizationEmbedFooter.defaultProps = {
   apiKey: null,
 };
 
-function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
+function VisualizationEmbed({ reportId, visualizationId, apiKey, onError }) {
   const [report, setReport] = useState(null);
   const [error, setError] = useState(null);
   const [refreshStartedAt, setRefreshStartedAt] = useState(null);
@@ -163,7 +210,15 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
 
   useEffect(() => {
     let isCancelled = false;
-    Report.get({ id: queryId })
+    const reportRequestParams = {};
+    if (has(location, "search.get_results")) {
+      reportRequestParams.get_results = location.search.get_results;
+    }
+
+    Report.get({
+      id: reportId,
+      params: reportRequestParams,
+    })
       .then(result => {
         if (!isCancelled) {
           setReport(result);
@@ -174,7 +229,7 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
     return () => {
       isCancelled = true;
     };
-  }, [queryId, handleError]);
+  }, [reportId, handleError]);
 
   const refreshReportResults = useCallback(() => {
     if (report) {
@@ -183,6 +238,11 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
       report
         .getReportResultPromise()
         .then(result => {
+          if (result && result.query_result) {
+            report.latest_report_data = result.query_result;
+            report.latest_report_data_id = result.query_result.id;
+            report.reportResult = result;
+          }
           setReportResults(result);
         })
         .catch(err => {
@@ -207,8 +267,15 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
   const hideTimestamp = has(location.search, "hide_timestamp");
 
   const showReportDescription = has(location.search, "showDescription");
-  visualizationId = parseInt(visualizationId, 10);
-  const visualization = find(report.visualizations, vis => vis.id === visualizationId);
+  const visualizations =
+    Array.isArray(report.visualizations) && report.visualizations.length > 0
+      ? report.visualizations
+      : [DEFAULT_EMBED_VISUALIZATION];
+  const parsedVisualizationId = parseInt(visualizationId, 10);
+  const visualization = Number.isNaN(parsedVisualizationId)
+    ? visualizations[0]
+    : find(visualizations, vis => vis.id === parsedVisualizationId) ||
+      visualizations[0];
 
   if (!visualization) {
     // call error handler async, otherwise it will destroy the component on render phase
@@ -219,10 +286,13 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
   }
 
   return (
-    <div className="tile m-t-10 m-l-10 m-r-10 p-t-10 embed__vis" data-test="VisualizationEmbed">
+    <div
+      className="tile m-t-10 m-l-10 m-r-10 p-t-10 embed__vis"
+      data-test="VisualizationEmbed"
+    >
       {!hideHeader && (
         <VisualizationEmbedHeader
-          queryName={report.name}
+          reportName={report.name}
           queryDescription={showReportDescription ? report.description : null}
           visualization={visualization}
         />
@@ -230,17 +300,33 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
       <div className="col-md-12 query__vis">
         {!hideParametersUI && report.hasParameters() && (
           <div className="p-t-15 p-b-10">
-            <Parameters parameters={report.getParametersDefs()} onValuesChange={refreshReportResults} />
+            <Parameters
+              parameters={report.getParametersDefs()}
+              onValuesChange={refreshReportResults}
+            />
           </div>
         )}
-        {error && <div className="alert alert-danger" data-test="ErrorMessage">{`Error: ${error}`}</div>}
+        {error && (
+          <div
+            className="alert alert-danger"
+            data-test="ErrorMessage"
+          >{`Error: ${error}`}</div>
+        )}
         {!error && queryResults && (
-          <VisualizationRenderer visualization={visualization} queryResult={queryResults} context="widget" />
+          <VisualizationRenderer
+            visualization={visualization}
+            queryResult={queryResults}
+            context="widget"
+          />
         )}
         {!queryResults && refreshStartedAt && (
           <div className="d-flex justify-content-center">
             <div className="spinner">
-              <i className="zmdi zmdi-refresh zmdi-hc-spin zmdi-hc-5x" />
+              <i
+                className="zmdi zmdi-refresh zmdi-hc-spin zmdi-hc-5x"
+                aria-hidden="true"
+              />
+              <span className="sr-only">Refreshing...</span>
             </div>
           </div>
         )}
@@ -259,7 +345,7 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
 }
 
 VisualizationEmbed.propTypes = {
-  queryId: PropTypes.string.isRequired,
+  reportId: PropTypes.string.isRequired,
   visualizationId: PropTypes.string,
   apiKey: PropTypes.string.isRequired,
   onError: PropTypes.func,
@@ -270,10 +356,19 @@ VisualizationEmbed.defaultProps = {
 };
 
 routes.register(
-  "Visualizations.ViewShared",
+  "Reports.ViewShared",
   routeWithApiKeySession({
-    path: "/embed/report/:queryId/visualization/:visualizationId",
+    path: "/embed/report/:reportId/visualization/:visualizationId",
     render: pageProps => <VisualizationEmbed {...pageProps} />,
     getApiKey: () => location.search.api_key,
-  })
+  }),
+);
+
+routes.register(
+  "Reports.ViewShared.Legacy",
+  routeWithApiKeySession({
+    path: "/embed/report/:reportId",
+    render: pageProps => <VisualizationEmbed {...pageProps} />,
+    getApiKey: () => location.search.api_key,
+  }),
 );

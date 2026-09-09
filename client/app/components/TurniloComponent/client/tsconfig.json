@@ -1,7 +1,7 @@
 {
-  "extends": "../../../../tsconfig.json",
-
+  "extends": "../tsconfig.json",
   "compileOnSave": false,
+  "declaration": true,
   "compilerOptions": {
     "declaration": true,
     "allowSyntheticDefaultImports": true,
@@ -9,9 +9,13 @@
     "outDir": "../../build",
     "experimentalDecorators": true
   },
-
+  "types": ["types/index.d.ts", "highlight.js"],
   "include": [
-    "./**/*.ts",
-    "./**/*.tsx"
+    "../../node_modules/highlight.js/types/index.d.ts",
+    "./types/**/*.d.ts",
+    "./**/*.ts*",
+    "../**/*.ts*",
+    "./**/*.js*",
+    "../**/*.js*"
   ]
 }

@@ -21,7 +21,14 @@ import { Measure } from "../../../common/models/measure/measure";
 import { Series } from "../../../common/models/series/series";
 import { Split } from "../../../common/models/split/split";
 
-enum DraggedElementType { NONE, DIMENSION, MEASURE, SERIES, SPLIT, FILTER }
+export enum DraggedElementType {
+  NONE,
+  DIMENSION,
+  MEASURE,
+  SERIES,
+  SPLIT,
+  FILTER,
+}
 
 interface DraggedElementBase<T> {
   type: DraggedElementType;
@@ -60,9 +67,13 @@ export class DragManager {
   static dragging: DraggedElement = none;
 
   static init() {
-    document.addEventListener("dragend", () => {
-      DragManager.dragging = none;
-    }, false);
+    document.addEventListener(
+      "dragend",
+      () => {
+        DragManager.dragging = none;
+      },
+      false
+    );
   }
 
   static isDraggingSplit(): boolean {

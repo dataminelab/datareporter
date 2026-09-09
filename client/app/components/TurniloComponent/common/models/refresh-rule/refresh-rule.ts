@@ -27,10 +27,9 @@ export interface RefreshRuleJS {
   time?: Date | string;
 }
 
-var check: Class<RefreshRuleValue, RefreshRuleJS>;
+let check: Class<RefreshRuleValue, RefreshRuleJS>;
 
 export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
-
   static FIXED = "fixed";
   static QUERY = "query";
   static REALTIME = "realtime";
@@ -41,16 +40,16 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
   static query(): RefreshRule {
     return new RefreshRule({
-      rule: RefreshRule.QUERY
+      rule: RefreshRule.QUERY,
     });
   }
 
   static fromJS(parameters: RefreshRuleJS): RefreshRule {
-    var value: RefreshRuleValue = {
-      rule: parameters.rule
+    const value: RefreshRuleValue = {
+      rule: parameters.rule,
     };
     if (parameters.time) {
-      value.time = new Date(<any> parameters.time);
+      value.time = new Date(parameters.time as any);
     }
     return new RefreshRule(value);
   }
@@ -59,7 +58,7 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   public time: Date;
 
   constructor(parameters: RefreshRuleValue) {
-    var rule = parameters.rule;
+    const rule = parameters.rule;
     if (rule !== RefreshRule.FIXED && rule !== RefreshRule.QUERY && rule !== RefreshRule.REALTIME) {
       throw new Error(`rule must be on of: ${RefreshRule.FIXED}, ${RefreshRule.QUERY}, or ${RefreshRule.REALTIME}`);
     }
@@ -68,8 +67,8 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   }
 
   public valueOf(): RefreshRuleValue {
-    var value: RefreshRuleValue = {
-      rule: this.rule
+    const value: RefreshRuleValue = {
+      rule: this.rule,
     };
     if (this.time) {
       value.time = this.time;
@@ -78,8 +77,8 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   }
 
   public toJS(): RefreshRuleJS {
-    var js: RefreshRuleJS = {
-      rule: this.rule
+    const js: RefreshRuleJS = {
+      rule: this.rule,
     };
     if (this.time) {
       js.time = this.time;
@@ -96,9 +95,11 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   }
 
   public equals(other: RefreshRule): boolean {
-    return RefreshRule.isRefreshRule(other) &&
+    return (
+      RefreshRule.isRefreshRule(other) &&
       this.rule === other.rule &&
-      (!this.time || this.time.valueOf() === other.time.valueOf());
+      (!this.time || this.time.valueOf() === other.time.valueOf())
+    );
   }
 
   public isFixed(): boolean {
@@ -112,7 +113,6 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   public isRealtime(): boolean {
     return this.rule === RefreshRule.REALTIME;
   }
-
 }
 
 check = RefreshRule;

@@ -24,21 +24,16 @@ import { modalTitle } from "./modal-title";
 const essence = EssenceFixtures.wikiHeatmap();
 
 describe("modalTitle", () => {
-
   let datumByPosStub: sinon.SinonStub;
   let formatSegmentStub: sinon.SinonStub;
 
   beforeEach(() => {
-    datumByPosStub = sinon
-      .stub(datumByPositionModule, "default")
-      .returns([
-        { channel: "row-channel", namespace: "row-namespace" },
-        { namespace: "column-namespace", channel: "column-channel" }
-      ]);
+    datumByPosStub = sinon.stub(datumByPositionModule, "default").returns([
+      { channel: "row-channel", namespace: "row-namespace" },
+      { namespace: "column-namespace", channel: "column-channel" },
+    ]);
 
-    formatSegmentStub = sinon
-      .stub(formatterModule, "formatSegment")
-      .returns("formatted-segment");
+    formatSegmentStub = sinon.stub(formatterModule, "formatSegment").returns("formatted-segment");
   });
 
   afterEach(() => {

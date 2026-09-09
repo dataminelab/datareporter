@@ -28,18 +28,17 @@ interface TextRowsProps {
   onClick?: Unary<unknown, void>;
 }
 
-export const TextRows: React.SFC<TextRowsProps> = props => {
+export const TextRows: React.SFC<TextRowsProps> = (props) => {
   const { data, dimension, onClick, formatter, searchText } = props;
-  return <React.Fragment>
-    {data.map(datum => {
-      const value = datum[dimension.name];
-      const measure = formatter(datum);
-      return <TextRow
-        key={String(value)}
-        value={value}
-        onClick={onClick}
-        measure={measure}
-        searchText={searchText}/>;
-    })}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      {data.map((datum) => {
+        const value = datum[dimension.name];
+        const measure = formatter(datum);
+        return (
+          <TextRow key={String(value)} value={value} onClick={onClick} measure={measure} searchText={searchText} />
+        );
+      })}
+    </React.Fragment>
+  );
 };

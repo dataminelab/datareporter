@@ -9,10 +9,7 @@
         "traceorder": "normal"
       }
     },
-    "series": [
-      { "name": "a" },
-      { "name": "b", "yaxis": "y2" }
-    ]
+    "series": [{ "name": "a" }, { "name": "b", "yaxis": "y2" }]
   },
   "output": {
     "layout": {
@@ -30,11 +27,13 @@
         "automargin": true,
         "showticklabels": true,
         "title": null,
+        "tickformat": null,
         "type": "-"
       },
       "yaxis": {
         "automargin": true,
         "title": null,
+        "tickformat": null,
         "type": "linear",
         "autorange": true,
         "range": null
@@ -42,11 +41,15 @@
       "yaxis2": {
         "automargin": true,
         "title": null,
+        "tickformat": null,
         "type": "linear",
         "autorange": true,
         "range": null,
         "overlaying": "y",
         "side": "right"
+      },
+      "hoverlabel": {
+        "namelength": -1
       }
     }
   }

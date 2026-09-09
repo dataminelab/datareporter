@@ -37,7 +37,11 @@ function previousMidpoint(range: ContinuousRange): number {
   return range.midpoint().valueOf() - rangeWidth;
 }
 
-function shouldInsertPreviousPoint(dataset: Datum[], currentIndex: number, getX: Unary<Datum, ContinuousRange>): boolean {
+function shouldInsertPreviousPoint(
+  dataset: Datum[],
+  currentIndex: number,
+  getX: Unary<Datum, ContinuousRange>
+): boolean {
   const previous = dataset[currentIndex - 1];
   if (!previous) return false;
   const current = dataset[currentIndex];
@@ -51,10 +55,14 @@ function shouldInsertNextPoint(dataset: Datum[], currentIndex: number, getX: Una
   return areDetached(getX(current), getX(next));
 }
 
-export function prepareDataPoints(dataset: Datum[], getX: Unary<Datum, ContinuousRange>, getY: Unary<Datum, number>): DataPoint[] {
+export function prepareDataPoints(
+  dataset: Datum[],
+  getX: Unary<Datum, ContinuousRange>,
+  getY: Unary<Datum, number>
+): DataPoint[] {
   return flatMap(dataset, (datum, index) => {
     const range = getX(datum) as ContinuousRange;
-    var x;
+    let x;
     try {
       x = range.midpoint().valueOf();
     } catch (e) {

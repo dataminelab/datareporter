@@ -20,7 +20,11 @@ import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { compose, Unary } from "../../../../../common/utils/functional/functional";
 import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
-import { selectFirstSplitDatums, selectMainDatum, selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
+import {
+  selectFirstSplitDatums,
+  selectMainDatum,
+  selectSplitDatums,
+} from "../../../../utils/dataset/selectors/selectors";
 import { InteractionsProps } from "../../interactions/interaction-controller";
 import { SeriesLegend } from "../../legend/series-legend";
 import { ContinuousScale } from "../../utils/continuous-types";
@@ -30,7 +34,7 @@ import { calculateChartStage } from "../calculate-chart-stage";
 import { nominalValueKey } from "./nominal-value-key";
 import { SplitChart } from "./split-chart";
 
-interface ChartsPerSplit {
+interface ChartsPerSplitProps {
   interactions: InteractionsProps;
   essence: Essence;
   dataset: Dataset;
@@ -46,34 +50,41 @@ function getChartsSelectors(essence: Essence, dataset: Dataset): Array<Unary<Dat
 
   const splitDatums = selectFirstSplitDatums(dataset);
   return splitDatums.map((datum, index) => {
-    const getNthDatum = compose(selectSplitDatums, datums => datums[index]);
+    const getNthDatum = compose(selectSplitDatums, (datums) => datums[index]);
     return compose<Dataset, Datum, Datum>(selectMainDatum, getNthDatum);
   });
 }
 
-export const ChartsPerSplit: React.SFC<ChartsPerSplit> = props => {
+export const ChartsPerSplit: React.SFC<ChartsPerSplitProps> = (props) => {
   const { interactions, xScale, xTicks, essence, dataset, stage } = props;
 
   const hasMultipleSeries = essence.series.count() > 1;
   const selectors = getChartsSelectors(essence, dataset);
   const chartStage = calculateChartStage(stage, selectors.length);
-  return <React.Fragment>
-    {hasMultipleSeries && <LegendSpot>
-      <SeriesLegend essence={essence} />
-    </LegendSpot>}
-    {selectors.map(selector => {
-      const key = nominalValueKey(selector(dataset), essence);
-      return <SplitChart
-        key={key}
-        chartId={key}
-        interactions={interactions}
-        essence={essence}
-        dataset={dataset}
-        selectDatum={selector}
-        xScale={xScale}
-        xTicks={xTicks}
-        visualisationStage={stage}
-        chartStage={chartStage} />;
-    })}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      {hasMultipleSeries && (
+        <LegendSpot>
+          <SeriesLegend essence={essence} />
+        </LegendSpot>
+      )}
+      {selectors.map((selector) => {
+        const key = nominalValueKey(selector(dataset), essence);
+        return (
+          <SplitChart
+            key={key}
+            chartId={key}
+            interactions={interactions}
+            essence={essence}
+            dataset={dataset}
+            selectDatum={selector}
+            xScale={xScale}
+            xTicks={xTicks}
+            visualisationStage={stage}
+            chartStage={chartStage}
+          />
+        );
+      })}
+    </React.Fragment>
+  );
 };

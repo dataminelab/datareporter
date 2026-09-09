@@ -1,12 +1,14 @@
 import { map } from "lodash";
 import React from "react";
 import Collapse from "antd/lib/collapse";
-import Icon from "antd/lib/icon";
 import Tooltip from "antd/lib/tooltip";
 import Typography from "antd/lib/typography";
 import { sortableElement } from "react-sortable-hoc";
 import { SortableContainer, DragHandle } from "@/components/sortable";
 import { EditorPropTypes } from "@/visualizations/prop-types";
+
+import EyeOutlinedIcon from "@ant-design/icons/EyeOutlined";
+import EyeInvisibleOutlinedIcon from "@ant-design/icons/EyeInvisibleOutlined";
 
 import ColumnEditor from "./ColumnEditor";
 
@@ -19,7 +21,7 @@ export default function ColumnsSettings({ options, onOptionsChange }) {
     if (event) {
       event.stopPropagation();
     }
-    const columns = map(options.columns, c => (c.name === newColumn.name ? newColumn : c));
+    const columns = map(options.columns, (c) => (c.name === newColumn.name ? newColumn : c));
     onOptionsChange({ columns });
   }
 
@@ -35,11 +37,12 @@ export default function ColumnsSettings({ options, onOptionsChange }) {
       lockAxis="y"
       useDragHandle
       helperClass="table-editor-columns-dragged-item"
-      helperContainer={container => container.firstChild}
+      helperContainer={(container) => container.firstChild}
       onSortEnd={handleColumnsReorder}
       containerProps={{
         className: "table-visualization-editor-columns",
-      }}>
+      }}
+    >
       <Collapse bordered={false} defaultActiveKey={[]} expandIconPosition="right">
         {map(options.columns, (column, index) => (
           <SortableItem
@@ -60,13 +63,20 @@ export default function ColumnsSettings({ options, onOptionsChange }) {
             }
             extra={
               <Tooltip title="Toggle visibility" mouseEnterDelay={0} mouseLeaveDelay={0}>
-                <Icon
-                  data-test={`Table.Column.${column.name}.Visibility`}
-                  type={column.visible ? "eye" : "eye-invisible"}
-                  onClick={event => handleColumnChange({ ...column, visible: !column.visible }, event)}
-                />
+                {column.visible ? (
+                  <EyeOutlinedIcon
+                    data-test={`Table.Column.${column.name}.Visibility`}
+                    onClick={(event) => handleColumnChange({ ...column, visible: !column.visible }, event)}
+                  />
+                ) : (
+                  <EyeInvisibleOutlinedIcon
+                    data-test={`Table.Column.${column.name}.Visibility`}
+                    onClick={(event) => handleColumnChange({ ...column, visible: !column.visible }, event)}
+                  />
+                )}
               </Tooltip>
-            }>
+            }
+          >
             <ColumnEditor column={column} onChange={handleColumnChange} />
           </SortableItem>
         ))}

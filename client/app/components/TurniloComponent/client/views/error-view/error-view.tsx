@@ -23,16 +23,21 @@ interface ErrorViewProps {
 
 const reload = () => window.location.reload();
 
-const recordedErrorMsg = (errorId: string) => `Unexpected error occurred. We recorded it and assigned code: ${errorId}.`;
+const recordedErrorMsg = (errorId: string) =>
+  `Unexpected error occurred. We recorded it and assigned code: ${errorId}.`;
 const defaultErrorMsg = "Unexpected error occurred";
 
 export const ErrorView: React.SFC<ErrorViewProps> = ({ errorId }) => {
   const message = errorId !== null ? recordedErrorMsg(errorId) : defaultErrorMsg;
-  return <div className="error-view">
-    <div className="error-view__container">
-      <div className="error-view__title">General error</div>
-      <div className="error-view__message">{message}</div>
-      <div className="error-view__reload" onClick={reload}>Reload view</div>
+  return (
+    <div className="error-view">
+      <div className="error-view__container">
+        <div className="error-view__title">General error</div>
+        <div className="error-view__message">{message}</div>
+        <div className="error-view__reload" onClick={reload}>
+          Reload view
+        </div>
+      </div>
     </div>
-  </div>;
+  );
 };

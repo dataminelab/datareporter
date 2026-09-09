@@ -20,17 +20,27 @@ import { TILE_GAP, TILE_SIZE } from "../labeled-heatmap";
 export type CoordinatesProps = Pick<HeatmapHighlightModalProps, "position" | "layout" | "stage" | "scroll">;
 
 export function calculateLeft(props: CoordinatesProps): number {
-  const { position: { column }, layout, stage, scroll } = props;
+  const {
+    position: { column },
+    layout,
+    stage,
+    scroll,
+  } = props;
   if (column !== null) {
     return column * TILE_SIZE + TILE_GAP + layout.left + 20 + stage.x - scroll.left;
   }
-  return stage.x + Math.min(stage.width / 2, layout.left + (layout.bodyWidth / 2));
+  return stage.x + Math.min(stage.width / 2, layout.left + layout.bodyWidth / 2);
 }
 
 export function calculateTop(props: CoordinatesProps): number {
-  const { position: { row }, layout, stage, scroll } = props;
+  const {
+    position: { row },
+    layout,
+    stage,
+    scroll,
+  } = props;
   if (row !== null) {
     return row * TILE_SIZE + layout.top + stage.y - 5 - scroll.top;
   }
-  return stage.y + Math.min(stage.height / 2, layout.top + (layout.bodyHeight / 2));
+  return stage.y + Math.min(stage.height / 2, layout.top + layout.bodyHeight / 2);
 }

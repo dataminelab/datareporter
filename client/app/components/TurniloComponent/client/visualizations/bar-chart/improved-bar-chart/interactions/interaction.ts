@@ -17,7 +17,10 @@
 import { Datum } from "plywood";
 import { safeEquals } from "../../../../../common/utils/immutable-utils/immutable-utils";
 
-enum InteractionKind { HOVER, HIGHLIGHT }
+enum InteractionKind {
+  HOVER,
+  HIGHLIGHT,
+}
 
 interface InteractionBase {
   kind: InteractionKind;
@@ -32,10 +35,11 @@ export interface Hover extends InteractionBase {
 export const createHover = (key: string, datum: Datum): Hover => ({
   kind: InteractionKind.HOVER,
   datum,
-  key
+  key,
 });
 
-export const isHover = (interaction?: Interaction): interaction is Hover => interaction && interaction.kind === InteractionKind.HOVER;
+export const isHover = (interaction?: Interaction): interaction is Hover =>
+  interaction && interaction.kind === InteractionKind.HOVER;
 
 export interface Highlight extends InteractionBase {
   kind: InteractionKind.HIGHLIGHT;
@@ -44,15 +48,14 @@ export interface Highlight extends InteractionBase {
 export const createHighlight = (key: string, datum: Datum): Highlight => ({
   kind: InteractionKind.HIGHLIGHT,
   datum,
-  key
+  key,
 });
 
-export const isHighlight = (interaction?: Interaction): interaction is Highlight => interaction && interaction.kind === InteractionKind.HIGHLIGHT;
+export const isHighlight = (interaction?: Interaction): interaction is Highlight =>
+  interaction && interaction.kind === InteractionKind.HIGHLIGHT;
 
 export type Interaction = Hover | Highlight;
 
 export function equalInteractions(a: Interaction, b: Interaction): boolean {
-  return a.kind === b.kind
-    && a.key === b.key
-    && safeEquals(a.datum, b.datum);
+  return a.kind === b.kind && a.key === b.key && safeEquals(a.datum, b.datum);
 }

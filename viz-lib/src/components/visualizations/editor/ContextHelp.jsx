@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Popover from "antd/lib/popover";
-import Icon from "antd/lib/icon";
+import QuestionCircleFilledIcon from "@ant-design/icons/QuestionCircleFilled";
 import { visualizationsSettings } from "@/visualizations/visualizationsSettings";
 
 import "./context-help.less";
@@ -24,15 +24,17 @@ ContextHelp.defaultProps = {
   children: null,
 };
 
-ContextHelp.defaultIcon = <Icon className="context-help-default-icon" type="question-circle" theme="filled" />;
+ContextHelp.defaultIcon = <QuestionCircleFilledIcon className="context-help-default-icon" />;
 
 function NumberFormatSpecs() {
   const { HelpTriggerComponent } = visualizationsSettings;
   return (
     <HelpTriggerComponent
+      type="NUMBER_FORMAT_SPECS"
       title="Formatting Numbers"
-      href="https://redash.io/help/user-guide/visualizations/formatting-numbers"
-      className="visualization-editor-context-help">
+      href="https://datareporter.com/docs/user-guide/visualizations/formatting-numbers"
+      className="visualization-editor-context-help"
+    >
       {ContextHelp.defaultIcon}
     </HelpTriggerComponent>
   );
@@ -44,7 +46,21 @@ function DateTimeFormatSpecs() {
     <HelpTriggerComponent
       title="Formatting Dates and Times"
       href="https://momentjs.com/docs/#/displaying/format/"
-      className="visualization-editor-context-help">
+      className="visualization-editor-context-help"
+    >
+      {ContextHelp.defaultIcon}
+    </HelpTriggerComponent>
+  );
+}
+
+function TickFormatSpecs() {
+  const { HelpTriggerComponent } = visualizationsSettings;
+  return (
+    <HelpTriggerComponent
+      title="Tick Formatting"
+      href="https://datareporter.com/docs/user-guide/visualizations/formatting-axis"
+      className="visualization-editor-context-help"
+    >
       {ContextHelp.defaultIcon}
     </HelpTriggerComponent>
   );
@@ -52,3 +68,4 @@ function DateTimeFormatSpecs() {
 
 ContextHelp.NumberFormatSpecs = NumberFormatSpecs;
 ContextHelp.DateTimeFormatSpecs = DateTimeFormatSpecs;
+ContextHelp.TickFormatSpecs = TickFormatSpecs;

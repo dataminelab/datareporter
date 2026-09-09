@@ -29,23 +29,25 @@ export function Highlighter(props: HighlighterProps) {
   const { left, bottom = 0, right, top = 0 } = props;
 
   const whiteoutLeftStyle = {
-    width: Math.max(left, 0)
+    width: Math.max(left, 0),
   };
 
   const frameStyle = {
     left,
     top,
     bottom,
-    width: Math.max(right - left, 0)
+    width: Math.max(right - left, 0),
   };
 
   const whiteoutRightStyle = {
-    left: right
+    left: right,
   };
 
-  return <div className="highlighter">
-    <div className="whiteout left" style={whiteoutLeftStyle}></div>
-    <div className="frame" style={frameStyle}></div>
-    <div className="whiteout right" style={whiteoutRightStyle}></div>
-  </div>;
+  return (
+    <div className="highlighter">
+      <div className="whiteout left" style={whiteoutLeftStyle}></div>
+      <div className="frame" style={frameStyle}></div>
+      <div className="whiteout right" style={whiteoutRightStyle}></div>
+    </div>
+  );
 }

@@ -1,4 +1,13 @@
-import { isArray, isEmpty, includes, intersection, get, map, join, has } from "lodash";
+import {
+  isArray,
+  isEmpty,
+  includes,
+  intersection,
+  get,
+  map,
+  join,
+  has,
+} from "lodash";
 import Parameter from "./Parameter";
 
 class EnumParameter extends Parameter {

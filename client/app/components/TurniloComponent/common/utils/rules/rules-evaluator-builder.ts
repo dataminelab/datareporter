@@ -44,13 +44,16 @@ interface PartialRule<PredicateVars> {
   predicates: Array<Predicate<PredicateVars>>;
 }
 
-type Rule<PredicateVars, ActionVars> = PartialRule<PredicateVars> & { action: Action<ActionVars> };
+type Rule<PredicateVars, ActionVars> = PartialRule<PredicateVars> & {
+  action: Action<ActionVars>;
+};
 
 export class RulesEvaluatorBuilder<PredicateVars, ActionVars>
-  implements RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars>,
+  implements
+    RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars>,
     RulesEvaluatorBuilderWithPartialRule<PredicateVars, ActionVars>,
-    RulesEvaluatorBuilderComplete<PredicateVars, ActionVars> {
-
+    RulesEvaluatorBuilderComplete<PredicateVars, ActionVars>
+{
   static empty<PredicateVars, ActionVars>(): RulesEvaluatorBuilderEmpty<PredicateVars, ActionVars> {
     return new RulesEvaluatorBuilder();
   }
@@ -59,7 +62,11 @@ export class RulesEvaluatorBuilder<PredicateVars, ActionVars>
   private readonly partialRule?: PartialRule<PredicateVars>;
   private readonly otherwiseAction: Action<ActionVars>;
 
-  private constructor(rules?: Array<Rule<PredicateVars, ActionVars>>, partialRule?: PartialRule<PredicateVars>, otherwiseAction?: Action<ActionVars>) {
+  private constructor(
+    rules?: Array<Rule<PredicateVars, ActionVars>>,
+    partialRule?: PartialRule<PredicateVars>,
+    otherwiseAction?: Action<ActionVars>
+  ) {
     this.partialRule = partialRule;
     this.otherwiseAction = otherwiseAction;
     this.rules = rules || [];
@@ -74,7 +81,9 @@ export class RulesEvaluatorBuilder<PredicateVars, ActionVars>
 
   or(predicate: Predicate<PredicateVars>): RulesEvaluatorBuilderWithPartialRule<PredicateVars, ActionVars> {
     const { rules, partialRule } = this;
-    const newPartialRule = { predicates: [...partialRule.predicates, predicate] };
+    const newPartialRule = {
+      predicates: [...partialRule.predicates, predicate],
+    };
 
     return new RulesEvaluatorBuilder(rules, newPartialRule);
   }
@@ -93,9 +102,9 @@ export class RulesEvaluatorBuilder<PredicateVars, ActionVars>
 
   build(): RulesEvaluator<PredicateVars, ActionVars> {
     return (variables: PredicateVars & ActionVars): Resolve => {
-      for (let rule of this.rules) {
+      for (const rule of this.rules) {
         const { predicates, action } = rule;
-        if (predicates.some(predicate => predicate(variables))) {
+        if (predicates.some((predicate) => predicate(variables))) {
           return action(variables);
         }
       }

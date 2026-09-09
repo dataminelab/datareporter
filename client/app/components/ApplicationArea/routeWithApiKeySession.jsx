@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import PropTypes from "prop-types";
 import { ErrorBoundaryContext } from "@redash/viz/lib/components/ErrorBoundary";
-import { Auth } from "@/services/auth";
+import { Auth, clientConfig } from "@/services/auth";
 
 // This wrapper modifies `route.render` function and instead of passing `currentRoute` passes an object
 // that contains:
@@ -33,19 +33,29 @@ function ApiKeySessionWrapper({ apiKey, currentRoute, renderChildren }) {
     };
   }, [apiKey]);
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || clientConfig.disablePublicUrls) {
     return null;
   }
 
   return (
     <React.Fragment key={currentRoute.key}>
-      {renderChildren({ ...currentRoute.routeParams, pageTitle: currentRoute.title, onError: handleError, apiKey })}
+      {renderChildren({
+        ...currentRoute.routeParams,
+        pageTitle: currentRoute.title,
+        onError: handleError,
+        apiKey,
+      })}
     </React.Fragment>
   );
 }
 
 ApiKeySessionWrapper.propTypes = {
   apiKey: PropTypes.string.isRequired,
+  currentRoute: PropTypes.shape({
+    key: PropTypes.any.isRequired,
+    routeParams: PropTypes.object,
+    title: PropTypes.string,
+  }).isRequired,
   renderChildren: PropTypes.func,
 };
 
@@ -57,7 +67,11 @@ export default function routeWithApiKeySession({ render, getApiKey, ...rest }) {
   return {
     ...rest,
     render: currentRoute => (
-      <ApiKeySessionWrapper apiKey={getApiKey(currentRoute)} currentRoute={currentRoute} renderChildren={render} />
+      <ApiKeySessionWrapper
+        apiKey={getApiKey(currentRoute)}
+        currentRoute={currentRoute}
+        renderChildren={render}
+      />
     ),
   };
 }

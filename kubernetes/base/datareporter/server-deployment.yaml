@@ -1,0 +1,75 @@
+---
+# Source: datareporter/templates/server-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter
+  labels:
+    app.kubernetes.io/name: datareporter
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2025.3.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: datareporter
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: datareporter
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: server
+    spec:
+      serviceAccountName: datareporter
+      securityContext: {}
+      containers:
+        - name: datareporter-server
+          securityContext: {}
+          image: "europe-west1-docker.pkg.dev/datareporter/datareporter/datareporter:v2025.3.1"
+          imagePullPolicy: "IfNotPresent"
+          command: ["/bin/sh"]
+          args:
+            [
+              "-c",
+              ". /config/dynamicenv.sh && /app/bin/docker-entrypoint server",
+            ]
+          volumeMounts:
+            - name: config
+              mountPath: /config
+
+          envFrom:
+            - configMapRef:
+                name: datareporter-env
+            - secretRef:
+                name: datareporter
+
+          ports:
+            - containerPort: 5000
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 5000
+            # Datareporter can take a while to come up initially, so we delay checks.
+            initialDelaySeconds: 90
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 5000
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          resources: {}
+      volumes:
+        - name: config
+          configMap:
+            name: datareporter

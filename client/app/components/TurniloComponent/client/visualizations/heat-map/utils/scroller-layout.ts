@@ -17,12 +17,22 @@
 import { Datum } from "plywood";
 import { ScrollerLayout } from "../../../components/scroller/scroller";
 import { clamp } from "../../../utils/dom/dom";
-import { MAX_LEFT_LABELS_WIDTH, MAX_TOP_LABELS_HEIGHT, MIN_LEFT_LABELS_WIDTH, MIN_TOP_LABELS_HEIGHT, TILE_SIZE } from "../labeled-heatmap";
+import {
+  MAX_LEFT_LABELS_WIDTH,
+  MAX_TOP_LABELS_HEIGHT,
+  MIN_LEFT_LABELS_WIDTH,
+  MIN_TOP_LABELS_HEIGHT,
+  TILE_SIZE,
+} from "../labeled-heatmap";
 import { nestedDataset } from "./nested-dataset";
 
-export default function scrollerLayout(dataset: Datum[], topLabelsHeight: number, leftLabelsWidth: number): ScrollerLayout {
-  const top =  clamp(topLabelsHeight, MIN_TOP_LABELS_HEIGHT, MAX_TOP_LABELS_HEIGHT);
-  const left =  clamp(leftLabelsWidth, MIN_LEFT_LABELS_WIDTH, MAX_LEFT_LABELS_WIDTH);
+export default function scrollerLayout(
+  dataset: Datum[],
+  topLabelsHeight: number,
+  leftLabelsWidth: number
+): ScrollerLayout {
+  const top = clamp(topLabelsHeight, MIN_TOP_LABELS_HEIGHT, MAX_TOP_LABELS_HEIGHT);
+  const left = clamp(leftLabelsWidth, MIN_LEFT_LABELS_WIDTH, MAX_LEFT_LABELS_WIDTH);
   const height = dataset.length * TILE_SIZE;
   const width = nestedDataset(dataset[0]).length * TILE_SIZE;
 
@@ -32,6 +42,6 @@ export default function scrollerLayout(dataset: Datum[], topLabelsHeight: number
     top,
     left,
     right: 0,
-    bottom: 0
+    bottom: 0,
   };
 }

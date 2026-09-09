@@ -15,7 +15,7 @@ const API_SHARE_URL = "api/dashboards/{id}/share";
 
 class ShareDashboardDialog extends React.Component {
   static propTypes = {
-    dashboard: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    dashboard: PropTypes.object.isRequired,
     hasOnlySafeQueries: PropTypes.bool.isRequired,
     dialog: DialogPropType.isRequired,
   };
@@ -35,7 +35,20 @@ class ShareDashboardDialog extends React.Component {
     };
 
     this.apiUrl = replace(API_SHARE_URL, "{id}", dashboard.id);
-    this.enabled = this.props.hasOnlySafeQueries || dashboard.publicAccessEnabled;
+    // Create a URL object
+    const url = new URL(window.location.href);
+
+    const query = url.search.substring(1);
+    const params = query.split("&").reduce((acc, param) => {
+      const [key, value] = param.split("=");
+      acc[key] = decodeURIComponent(value);
+      return acc;
+    }, {});
+
+    const paramValue = params["p_turnilo_daterange"];
+    this.apiUrl = `${this.apiUrl}?p_turnilo_daterange=${paramValue}`;
+    this.enabled =
+      this.props.hasOnlySafeQueries || dashboard.publicAccessEnabled;
   }
 
   static get headerContent() {
@@ -43,7 +56,8 @@ class ShareDashboardDialog extends React.Component {
       <React.Fragment>
         Share Dashboard
         <div className="modal-header-desc">
-          Allow public access to this dashboard with a secret address. <HelpTrigger type="SHARE_DASHBOARD" />
+          Allow public access to this dashboard with a secret address.{" "}
+          <HelpTrigger type="SHARE_DASHBOARD" />
         </div>
       </React.Fragment>
     );
@@ -94,12 +108,12 @@ class ShareDashboardDialog extends React.Component {
   };
 
   render() {
-    const { dialog, dashboard } = this.props;
-
+    const { dialog, dashboard, hasOnlySafeQueries } = this.props;
+    const headerContent = this.constructor.headerContent;
     return (
-      <Modal {...dialog.props} title={this.constructor.headerContent} footer={null}>
+      <Modal {...dialog.props} title={headerContent} footer={null}>
         <Form layout="horizontal">
-          {!this.props.hasOnlySafeQueries && (
+          {!hasOnlySafeQueries && (
             <Form.Item>
               <Alert
                 message="For your security, sharing is currently not supported for dashboards containing queries with text parameters. Consider changing the text parameters in your query to a different type."
@@ -107,6 +121,7 @@ class ShareDashboardDialog extends React.Component {
               />
             </Form.Item>
           )}
+
           <Form.Item label="Allow public access" {...this.formItemProps}>
             <Switch
               checked={dashboard.publicAccessEnabled}
@@ -118,7 +133,10 @@ class ShareDashboardDialog extends React.Component {
           </Form.Item>
           {dashboard.public_url && (
             <Form.Item label="Secret address" {...this.formItemProps}>
-              <InputWithCopy value={dashboard.public_url} data-test="SecretAddress" />
+              <InputWithCopy
+                value={dashboard.public_url}
+                data-test="SecretAddress"
+              />
             </Form.Item>
           )}
         </Form>

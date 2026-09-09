@@ -27,7 +27,10 @@ import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
 import { ImmutableDropdown } from "./immutable-dropdown";
 
-const ITEMS = [{ value: "value1", label: "label1" }, { value: "value2", label: "label2" }];
+const ITEMS = [
+  { value: "value1", label: "label1" },
+  { value: "value2", label: "label2" },
+];
 
 describe("ImmutableDropdown", () => {
   let component: any;
@@ -35,7 +38,6 @@ describe("ImmutableDropdown", () => {
   let onChange: any;
 
   beforeEach(() => {
-
     onChange = sinon.spy();
 
     component = renderIntoDocument(
@@ -43,11 +45,8 @@ describe("ImmutableDropdown", () => {
         instance={DataCubeFixtures.twitter()}
         path={"clusterName"}
         label="Cluster"
-
         onChange={onChange}
-
         items={ITEMS}
-
         equal={(a: ListItem, b: ListItem) => a.value === b.value}
         renderItem={(a: ListItem) => a.label}
         keyItem={(a: ListItem) => a.value}
@@ -82,5 +81,4 @@ describe("ImmutableDropdown", () => {
 
     expect(args[2]).to.equal("clusterName");
   });
-
 });

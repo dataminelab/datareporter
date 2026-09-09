@@ -11,8 +11,13 @@ function confirmArchive() {
       title: "Archive Query",
       content: (
         <React.Fragment>
-          <div className="m-b-5">Are you sure you want to archive this query?</div>
-          <div>All alerts and dashboard widgets created with its visualizations will be deleted.</div>
+          <div className="m-b-5">
+            Are you sure you want to archive this query?
+          </div>
+          <div>
+            All alerts and dashboard widgets created with its visualizations
+            will be deleted.
+          </div>
         </React.Fragment>
       ),
       okText: "Archive",

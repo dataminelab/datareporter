@@ -16,8 +16,8 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import * as React from "react";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import React from "react";
+import { DataCube, getMaxTime } from "../../../common/models/data-cube/data-cube";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -35,7 +35,7 @@ const AUTO_REFRESH_LABELS: Record<string, string> = {
   PT1M: "Every minute",
   PT5M: "Every 5 minutes",
   PT10M: "Every 10 minutes",
-  PT30M: "Every 30 minutes"
+  PT30M: "Every 30 minutes",
 };
 
 const REFRESH_DURATIONS: Duration[] = [
@@ -45,7 +45,7 @@ const REFRESH_DURATIONS: Duration[] = [
   Duration.fromJS("PT1M"),
   Duration.fromJS("PT5M"),
   Duration.fromJS("PT10M"),
-  Duration.fromJS("PT30M")
+  Duration.fromJS("PT30M"),
 ];
 
 export interface AutoRefreshMenuProps {
@@ -62,13 +62,15 @@ export interface AutoRefreshMenuProps {
 const STAGE = Stage.fromSize(240, 200);
 
 function renderRefreshIntervalDropdown(autoRefreshRate: Duration, setAutoRefreshRate: Unary<Duration, void>) {
-  return <Dropdown<Duration>
-    label={STRINGS.autoUpdate}
-    items={REFRESH_DURATIONS}
-    selectedItem={autoRefreshRate}
-    renderItem={d => AUTO_REFRESH_LABELS[String(d)] || `Custom ${d}`}
-    onSelect={setAutoRefreshRate}
-  />;
+  return (
+    <Dropdown<Duration>
+      label={STRINGS.autoUpdate}
+      items={REFRESH_DURATIONS}
+      selectedItem={autoRefreshRate}
+      renderItem={(d) => AUTO_REFRESH_LABELS[String(d)] || `Custom ${d}`}
+      onSelect={setAutoRefreshRate}
+    />
+  );
 }
 
 function updatedText(dataCube: DataCube, timekeeper: Timekeeper, timezone: Timezone): string {
@@ -77,22 +79,29 @@ function updatedText(dataCube: DataCube, timekeeper: Timekeeper, timezone: Timez
     return "Updated ~1 second ago";
   } else if (refreshRule.isFixed()) {
     return `Fixed to ${formatDateTime(refreshRule.time, timezone)}`;
-  } else { // refreshRule is query
-    const maxTime = dataCube.getMaxTime(timekeeper);
+  } else {
+    // refreshRule is query
+    const maxTime = getMaxTime(dataCube, timekeeper);
     if (!maxTime) return null;
     return `Updated ${formatTimeElapsed(maxTime, timezone)} ago`;
   }
 }
 
-export const AutoRefreshMenu: React.SFC<AutoRefreshMenuProps> = ({ autoRefreshRate, setAutoRefreshRate, openOn, onClose, dataCube, refreshMaxTime, timekeeper, timezone }) =>
-  <BubbleMenu
-    className="auto-refresh-menu"
-    direction="down"
-    stage={STAGE}
-    openOn={openOn}
-    onClose={onClose}
-  >
+export const AutoRefreshMenu: React.FunctionComponent<AutoRefreshMenuProps> = ({
+  autoRefreshRate,
+  setAutoRefreshRate,
+  openOn,
+  onClose,
+  dataCube,
+  refreshMaxTime,
+  timekeeper,
+  timezone,
+}) => (
+  <BubbleMenu className="auto-refresh-menu" direction="down" stage={STAGE} openOn={openOn} onClose={onClose}>
     {renderRefreshIntervalDropdown(autoRefreshRate, setAutoRefreshRate)}
-    <button className="update-now-button" onClick={refreshMaxTime}>Update now</button>
+    <button className="update-now-button" onClick={refreshMaxTime}>
+      Update now
+    </button>
     <div className="update-info">{updatedText(dataCube, timekeeper, timezone)}</div>
-  </BubbleMenu>;
+  </BubbleMenu>
+);

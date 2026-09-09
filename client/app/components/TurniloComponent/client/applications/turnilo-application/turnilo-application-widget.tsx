@@ -27,15 +27,20 @@ import { reportError } from "../../utils/error-reporter/error-reporter";
 import { CubeView } from "../../views/cube-view/cube-view-widget";
 import { ErrorView } from "../../views/error-view/error-view";
 import { NoDataView } from "../../views/no-data-view/no-data-view";
-import "./turnilo-application.scss";
+import { Fn } from "../../../common/utils/general/general";
+
+require("./turnilo-application.scss");
 
 export interface TurniloApplicationProps {
   version: string;
   hashWidget: string;
   maxFilters?: number;
+  setFilterParams: Fn;
+  getEssence: (id: number) => Essence;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;
   config?: any;
+  widget?: any;
 }
 
 export interface TurniloApplicationState {
@@ -67,55 +72,34 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     viewHash: null,
     showAboutModal: false,
     errorId: null,
-    config: null
+    config: null,
   };
 
-  componentDidCatch(error: Error) {
+  componentDidCatch(error: Error): void {
     const errorId = reportError(error);
     this.setState({
       viewType: ERROR,
-      errorId
+      errorId,
     });
   }
 
-  componentWillMount() {
-    const { appSettings, initTimekeeper, hashWidget, config } = this.props;
-    const { dataCubes } = appSettings;
-    
-    var hash;
+  UNSAFE_componentWillMount(): void {
+    const { initTimekeeper, hashWidget, config } = this.props;
+    let hash;
     if (config.hash && config.source_name) {
       hash = config.source_name + "/4/" + config.hash;
     } else {
       hash = hashWidget;
     }
-    
-    if (!dataCubes.length) {
-      this.setState({
-        viewType: NO_DATA,
-        viewHash: "",
-        appSettings
-      });
-      return;
-    }
+    this.hashToState(hash);
 
-    let viewType = this.getViewTypeFromHash(hash);
+    const viewType = this.getViewTypeFromHash(hash);
     const viewHash = this.getViewHashFromHash(hash);
-    
-    let selectedItem: DataCube;
-
-    if (this.viewTypeNeedsAnItem(viewType)) {
-      selectedItem = this.getSelectedDataCubeFromHash(dataCubes, hash);
-    }
-
-    viewType = CUBE;
-    selectedItem = dataCubes[0];
 
     this.setState({
       viewType,
       viewHash,
-      selectedItem,
-      appSettings,
-      timekeeper: initTimekeeper || Timekeeper.EMPTY
+      timekeeper: initTimekeeper || Timekeeper.EMPTY,
     });
   }
 
@@ -123,7 +107,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     return viewType === CUBE;
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     window.addEventListener("hashchange", this.globalHashChangeListener);
 
     Ajax.settingsVersionGetter = () => {
@@ -132,36 +116,51 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     };
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     window.removeEventListener("hashchange", this.globalHashChangeListener);
   }
 
-  globalHashChangeListener = () => {
+  globalHashChangeListener = (): void => {
     if (this.hashUpdating) return;
     this.hashToState(this.props.hashWidget);
   };
 
-  hashToState(hash: string) {
-    const { dataCubes } = this.state.appSettings;
+  hashToState(hash: string): void {
     const viewType = this.getViewTypeFromHash(hash);
     const viewHash = this.getViewHashFromHash(hash);
     const newState: TurniloApplicationState = {
       viewType,
       viewHash,
-      drawerOpen: false
+      drawerOpen: false,
     };
+    const { config } = this.props;
+    Ajax.version = config.version;
+    const getEssence: () => Essence | null = this.props.getEssence
+      ? this.props.getEssence.bind(config, this.props.widget?.id)
+      : () => null;
 
-    const appSettings = AppSettings.fromJS(this.props.config.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory.bind(this.props.config)
+    const appSettings = AppSettings.fromJS(config.appSettings, {
+      executorFactory: (dataCube, getEssence, statusCallback, getExecutionStatus) => {
+        Ajax.model_id = config.model_id;
+        Ajax.hash = config.hash;
+        Ajax.setInitialResults(config.results);
+        return Ajax.queryUrlExecutorFactory(dataCube, getEssence, statusCallback, getExecutionStatus);
+      },
+      getEssence,
+      statusCallback: (status) => {}, // eslint-disable-line @typescript-eslint/no-unused-vars
+      getExecutionStatus: () => {
+        return null;
+      },
     });
 
     if (this.viewTypeNeedsAnItem(viewType)) {
-      const item = this.getSelectedDataCubeFromHash(appSettings.dataCubes, hash);
+      const { dataCubes } = appSettings;
+      const item = this.getSelectedDataCubeFromHash(dataCubes, hash);
       newState.selectedItem = item ? item : dataCubes[0];
     } else {
       newState.selectedItem = null;
     }
-
+    newState.appSettings = appSettings;
     this.setState(newState);
   }
 
@@ -200,16 +199,16 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   changeHash(hash: string, force = false): void {
     this.hashUpdating = true;
 
-    setTimeout(() => this.hashUpdating = false, 5);
+    setTimeout(() => (this.hashUpdating = false), 5);
     if (force) this.hashToState(hash);
   }
 
-  updateEssenceInHash = (essence: Essence, force = false) => {
+  updateEssenceInHash = (essence: Essence, force = false): void => {
     const newHash = `${this.state.selectedItem.name}/${this.convertEssenceToHash(essence)}`;
     this.changeHash(newHash, force);
   };
 
-  changeDataCubeWithEssence = (dataCube: DataCube, essence: Essence | null) => {
+  changeDataCubeWithEssence = (dataCube: DataCube, essence: Essence | null): void => {
     const essenceHashPart = essence && this.convertEssenceToHash(essence);
     const hash = `${dataCube.name}/${essenceHashPart || ""}`;
     this.changeHash(hash, true);
@@ -229,36 +228,37 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     return `${origin}${pathname}#${dataCubeName}`;
   }
 
-  openAboutModal = () => this.setState({ showAboutModal: true });
+  openAboutModal = (): void => this.setState({ showAboutModal: true });
 
-  renderView() {
-    const { maxFilters } = this.props;
+  renderView(): React.ReactNode {
+    const { maxFilters, setFilterParams } = this.props;
     const { viewType, viewHash, selectedItem, appSettings, timekeeper, errorId } = this.state;
     const { customization } = appSettings;
+    const widgetId = this.props.widget.options.type === "TURNILO" ? this.props.widget.id : null;
 
     switch (viewType) {
       case NO_DATA:
-        return <NoDataView
-          onOpenAbout={this.openAboutModal}
-          customization={customization}
-          appSettings={appSettings}
-        />;
+        return <NoDataView onOpenAbout={this.openAboutModal} customization={customization} appSettings={appSettings} />;
 
       case CUBE:
-        return <CubeView
-          key={selectedItem.name}
-          dataCube={selectedItem}
-          appSettings={appSettings}
-          initTimekeeper={timekeeper}
-          hash={viewHash}
-          changeEssence={this.updateEssenceInHash}
-          changeDataCubeAndEssence={this.changeDataCubeWithEssence}
-          urlForEssence={this.urlForEssence}
-          getEssenceFromHash={this.urlHashConverter.essenceFromHash}
-          openAboutModal={this.openAboutModal}
-          maxFilters={maxFilters}
-          customization={customization}
-        />;
+        return (
+          <CubeView
+            key={selectedItem.name}
+            dataCube={selectedItem}
+            appSettings={appSettings}
+            initTimekeeper={timekeeper}
+            hash={viewHash}
+            changeEssence={this.updateEssenceInHash}
+            changeDataCubeAndEssence={this.changeDataCubeWithEssence}
+            urlForEssence={this.urlForEssence}
+            getEssenceFromHash={this.urlHashConverter.essenceFromHash}
+            openAboutModal={this.openAboutModal}
+            maxFilters={maxFilters}
+            customization={customization}
+            setFilterParams={setFilterParams}
+            widgetId={widgetId}
+          />
+        );
 
       case ERROR:
         return <ErrorView errorId={errorId} />;
@@ -268,13 +268,13 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     }
   }
 
-  render() {
+  render(): React.ReactNode {
     // React.StrictMode is giving us a lot of warnings about deprecated lifecycle methods
     // and the project is too old to change everything to hooks
-    return <>
-      <main className="turnilo-application">
-        {this.renderView()}
-      </main>
-    </>;
+    return (
+      <>
+        <main className="turnilo-application">{this.renderView()}</main>
+      </>
+    );
   }
 }

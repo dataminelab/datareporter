@@ -19,10 +19,7 @@ import useReport from "../reports/hooks/useReport";
 import "./PublicReportPage.less";
 
 function PublicReport({ currentReport }) {
-  console.log("currentReport", currentReport)
-  const { report, setReport, saveReport, saveAsReport, deleteReport, showShareReportDialog } = useReport(
-    currentReport
-  );
+  const { report } = useReport(currentReport);
   const isMobile = !useMedia({ minWidth: 768 });
   const [reportChanged, setReportChanged] = useState(false);
 
@@ -34,13 +31,13 @@ function PublicReport({ currentReport }) {
   useEffect(() => {
     document.title = report.name;
   }, [report.name]);
-  
+
   return (
     <div className="container p-t-10 p-b-20">
       <PageHeader title={report.name} />
       <div id="dashboard-container" className="dashboard-page">
-        <ReportEditor 
-          report={report} 
+        <ReportEditor
+          report={report}
           reportChanged={reportChanged}
           setReportChanged={setReportChanged}
         />
@@ -65,7 +62,7 @@ class PublicReportPage extends React.Component {
   };
 
   componentDidMount() {
-    Report.getByToken({ token: this.props.token })
+    Report.getByTokenPublic({ token: this.props.token })
       .then(report => this.setState({ report, loading: false }))
       .catch(error => this.props.onError(error));
   }
@@ -76,10 +73,14 @@ class PublicReportPage extends React.Component {
       <div className="public-dashboard-page">
         {loading ? (
           <div className="container loading-message">
-            <BigMessage className="" icon="fa-spinner fa-2x fa-pulse" message="Loading..." />
+            <BigMessage
+              className=""
+              icon="fa-spinner fa-2x fa-pulse"
+              message="Loading..."
+            />
           </div>
         ) : (
-          <PublicReport currentReport={report}/>
+          <PublicReport currentReport={report} />
         )}
         <div id="footer">
           <div className="text-center">
@@ -95,10 +96,10 @@ class PublicReportPage extends React.Component {
 }
 
 routes.register(
-  "Reports.ViewShared",
+  "Reports.ViewShared_v2",
   routeWithApiKeySession({
     path: "/public/reports/:token",
     render: pageProps => <PublicReportPage {...pageProps} />,
     getApiKey: currentRoute => currentRoute.routeParams.token,
-  })
+  }),
 );

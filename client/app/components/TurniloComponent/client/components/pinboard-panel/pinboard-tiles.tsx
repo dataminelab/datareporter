@@ -41,38 +41,46 @@ function pinnedSortOn(essence: Essence): SortOn | null {
 
 function pinnedDimensions(essence: Essence): Dimension[] {
   const { dataCube, pinnedDimensions } = essence;
-  return mapTruthy(pinnedDimensions.toArray(), dimensionName => dataCube.getDimension(dimensionName));
+  return mapTruthy(pinnedDimensions.toArray(), (dimensionName) => dataCube.getDimension(dimensionName));
 }
 
-export const PinboardTiles: React.SFC<PinboardTilesProps> = props => {
+export const PinboardTiles: React.SFC<PinboardTilesProps> = (props) => {
   const { essence, timekeeper, clicker, hidePlaceholder, refreshRequestTimestamp } = props;
   const tileDimensions = pinnedDimensions(essence);
   const sortOn = pinnedSortOn(essence);
 
   const showPlaceholder = !hidePlaceholder && !tileDimensions.length;
-  return <React.Fragment>
-    <PinboardMeasureTile
-      essence={essence}
-      title={STRINGS.pinboard}
-      sortOn={sortOn}
-      onSelect={sortOn => {
-        const series = essence.series.getSeriesWithKey(sortOn.key);
-        clicker.changePinnedSortSeries(series);
-      }}
-    />
+  return (
+    <React.Fragment>
+      <PinboardMeasureTile
+        essence={essence}
+        title={STRINGS.pinboard}
+        sortOn={sortOn}
+        onSelect={(sortOn) => {
+          const series = essence.series.getSeriesWithKey(sortOn.key);
+          clicker.changePinnedSortSeries(series);
+        }}
+      />
 
-    {sortOn && tileDimensions.map(dimension => <PinboardTile
-      key={dimension.name}
-      essence={essence}
-      clicker={clicker}
-      dimension={dimension}
-      timekeeper={timekeeper}
-      refreshRequestTimestamp={refreshRequestTimestamp}
-      sortOn={sortOn} />)}
+      {sortOn &&
+        tileDimensions.map((dimension) => (
+          <PinboardTile
+            key={dimension.name}
+            essence={essence}
+            clicker={clicker}
+            dimension={dimension}
+            timekeeper={timekeeper}
+            refreshRequestTimestamp={refreshRequestTimestamp}
+            sortOn={sortOn}
+          />
+        ))}
 
-    {showPlaceholder && <div className="placeholder">
-      <SvgIcon svg={require("../../icons/preview-pin.svg")} />
-      <div className="placeholder-message">{STRINGS.pinboardPlaceholder}</div>
-    </div>}
-  </React.Fragment>;
+      {showPlaceholder && (
+        <div className="placeholder">
+          <SvgIcon svg={require("../../icons/preview-pin.svg")} />
+          <div className="placeholder-message">{STRINGS.pinboardPlaceholder}</div>
+        </div>
+      )}
+    </React.Fragment>
+  );
 };

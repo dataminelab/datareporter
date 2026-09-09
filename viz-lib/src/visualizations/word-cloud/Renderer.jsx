@@ -1,4 +1,4 @@
-import d3 from "d3";
+import * as d3 from "d3";
 import cloud from "d3-cloud";
 import { each, filter, map, min, max, sortBy, toString } from "lodash";
 import React, { useMemo, useState, useEffect } from "react";
@@ -10,9 +10,9 @@ import "./renderer.less";
 function computeWordFrequencies(rows, column) {
   const result = {};
 
-  each(rows, row => {
+  each(rows, (row) => {
     const wordsList = toString(row[column]).split(/\s/g);
-    each(wordsList, d => {
+    each(wordsList, (d) => {
       result[d] = (result[d] || 0) + 1;
     });
   });
@@ -23,7 +23,7 @@ function computeWordFrequencies(rows, column) {
 function getWordsWithFrequencies(rows, wordColumn, frequencyColumn) {
   const result = {};
 
-  each(rows, row => {
+  each(rows, (row) => {
     const count = parseFloat(row[frequencyColumn]);
     if (Number.isFinite(count) && count > 0) {
       const word = toString(row[wordColumn]);
@@ -65,7 +65,7 @@ function prepareWords(rows, options) {
   }
 
   // Add additional attributes
-  const counts = map(result, item => item.count);
+  const counts = map(result, (item) => item.count);
   const wordSize = d3.scale
     .linear()
     .domain([min(counts), max(counts)])
@@ -105,8 +105,8 @@ function createLayout() {
       .size([5000, 5000])
       .padding(3)
       .font(fontFamily)
-      .rotate(d => d.angle)
-      .fontSize(d => d.size)
+      .rotate((d) => d.angle)
+      .fontSize((d) => d.size)
       .random(() => 0.5)
   ); // do not place words randomly - use compact layout
 }
@@ -121,12 +121,12 @@ function render(container, words) {
     .data(words)
     .enter()
     .append("text")
-    .style("font-size", d => `${d.size}px`)
-    .style("font-family", d => d.font)
-    .style("fill", d => d.color)
+    .style("font-size", (d) => `${d.size}px`)
+    .style("font-family", (d) => d.font)
+    .style("fill", (d) => d.color)
     .attr("text-anchor", "middle")
-    .attr("transform", d => `translate(${[d.x, d.y]}) rotate(${d.rotate})`)
-    .text(d => d.text);
+    .attr("transform", (d) => `translate(${[d.x, d.y]}) rotate(${d.rotate})`)
+    .text((d) => d.text);
 
   const svgBounds = svg.node().getBoundingClientRect();
   const gBounds = g.node().getBoundingClientRect();
@@ -145,7 +145,7 @@ export default function Renderer({ data, options }) {
   useEffect(() => {
     layout
       .words(prepareWords(data.rows, options))
-      .on("end", w => setWords(w))
+      .on("end", (w) => setWords(w))
       .start();
     return () => layout.on("end", null).stop();
   }, [layout, data, options, setWords]);

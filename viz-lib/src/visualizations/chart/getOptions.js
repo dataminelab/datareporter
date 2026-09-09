@@ -5,8 +5,9 @@ const DEFAULT_OPTIONS = {
   globalSeriesType: "column",
   sortX: true,
   legend: { enabled: true, placement: "auto", traceorder: "normal" },
-  yAxis: [{ type: "linear" }, { type: "linear", opposite: true }],
   xAxis: { type: "-", labels: { enabled: true } },
+  yAxis: [{ type: "linear" }, { type: "linear", opposite: true }],
+  alignYAxesAtZero: false,
   error_y: { type: "data", visible: true },
   series: { stacking: null, error_y: { type: "data", visible: true } },
   seriesOptions: {},
@@ -15,12 +16,18 @@ const DEFAULT_OPTIONS = {
   direction: { type: "counterclockwise" },
   sizemode: "diameter",
   coefficient: 1,
+  piesort: true,
+  color_scheme: "Datareporter",
 
   // showDataLabels: false, // depends on chart type
   numberFormat: "0,0[.]00000",
   percentFormat: "0[.]00%",
   // dateTimeFormat: 'DD/MM/YYYY HH:mm', // will be set from visualizationsSettings
   textFormat: "", // default: combination of {{ @@yPercent }} ({{ @@y }} ± {{ @@yError }})
+
+  enableLink: false,
+  linkOpenNewTab: true,
+  linkFormat: "", // template like a textFormat
 
   missingValuesAsZero: true,
 };

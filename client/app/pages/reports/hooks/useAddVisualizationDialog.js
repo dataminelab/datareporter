@@ -2,9 +2,18 @@ import { useState, useCallback, useEffect } from "react";
 import useReportFlags from "./useReportFlags";
 import useEditVisualizationDialog from "./useEditVisualizationDialog";
 
-export default function useAddVisualizationDialog(report, queryResult, saveReport, onChange) {
+export default function useAddVisualizationDialog(
+  report,
+  queryResult,
+  saveReport,
+  onChange,
+) {
   const queryFlags = useReportFlags(report);
-  const editVisualization = useEditVisualizationDialog(report, queryResult, onChange);
+  const editVisualization = useEditVisualizationDialog(
+    report,
+    queryResult,
+    onChange,
+  );
   const [shouldOpenDialog, setShouldOpenDialog] = useState(false);
 
   useEffect(() => {

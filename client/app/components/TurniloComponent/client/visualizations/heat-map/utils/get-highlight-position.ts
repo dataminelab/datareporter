@@ -16,7 +16,14 @@
 
 import { Datum } from "plywood";
 import { Essence } from "../../../../common/models/essence/essence";
-import { BooleanFilterClause, FilterClause, FilterTypes, FixedTimeFilterClause, NumberFilterClause, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import {
+  BooleanFilterClause,
+  FilterClause,
+  FilterTypes,
+  FixedTimeFilterClause,
+  NumberFilterClause,
+  StringFilterClause,
+} from "../../../../common/models/filter-clause/filter-clause";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { Highlight } from "../../base-visualization/highlight";
 import { nestedDataset } from "./nested-dataset";
@@ -24,13 +31,13 @@ import { nestedDataset } from "./nested-dataset";
 function clausePredicate(clause: FilterClause): Unary<Datum, boolean> {
   switch (clause.type) {
     case FilterTypes.BOOLEAN:
-      return datum => datum[clause.reference] === (clause as BooleanFilterClause).values.first();
+      return (datum) => datum[clause.reference] === (clause as BooleanFilterClause).values.first();
     case FilterTypes.NUMBER:
-      return datum => (clause as NumberFilterClause).values.first().equals(datum[clause.reference]);
+      return (datum) => (clause as NumberFilterClause).values.first().equals(datum[clause.reference]);
     case FilterTypes.STRING:
-      return datum => String(datum[clause.reference]) === (clause as StringFilterClause).values.first();
+      return (datum) => String(datum[clause.reference]) === (clause as StringFilterClause).values.first();
     case FilterTypes.FIXED_TIME:
-      return datum => (clause as FixedTimeFilterClause).values.first().equals(datum[clause.reference]);
+      return (datum) => (clause as FixedTimeFilterClause).values.first().equals(datum[clause.reference]);
     case FilterTypes.RELATIVE_TIME:
       throw new Error("Unsupported filter type for highlights");
   }
@@ -51,7 +58,9 @@ export default function getHighlightPosition(
   dataset: Datum[]
 ): HighlightPosition {
   if (!highlight) return null;
-  const { splits: { splits } } = essence;
+  const {
+    splits: { splits },
+  } = essence;
   const { clauses } = highlight;
 
   const firstSplit = splits.get(0);
@@ -65,6 +74,6 @@ export default function getHighlightPosition(
 
   return {
     row,
-    column
+    column,
   };
 }

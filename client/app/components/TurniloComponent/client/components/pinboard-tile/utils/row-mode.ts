@@ -17,15 +17,21 @@
 import { Unary } from "../../../../common/utils/functional/functional";
 import { PinnableClause } from "./pinnable-clause";
 
-export enum RowModeId { READONLY, EDITABLE }
+export enum RowModeId {
+  READONLY,
+  EDITABLE,
+}
 
 export interface ReadonlyMode {
   mode: RowModeId.READONLY;
 }
 
-export enum EditState { READY, IN_EDIT }
+export enum EditState {
+  READY,
+  IN_EDIT,
+}
 
-export interface InEditMode  {
+export interface InEditMode {
   mode: RowModeId.EDITABLE;
   state: EditState.IN_EDIT;
   toggleValue: Unary<string, void>;

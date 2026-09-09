@@ -28,12 +28,13 @@ import { VisMeasureLabel } from "./vis-measure-label";
 const measure = MeasureFixtures.wikiCount();
 const series = fromMeasure(measure);
 
-const datum: Datum = { [measure.name]: 10000, [series.plywoodKey(SeriesDerivation.PREVIOUS)]: 200 };
+const datum: Datum = {
+  [measure.name]: 10000,
+  [series.plywoodKey(SeriesDerivation.PREVIOUS)]: 200,
+};
 
-const renderLabel = (showPrevious = false) => shallow(<VisMeasureLabel
-  datum={datum}
-  series={series}
-  showPrevious={showPrevious} />);
+const renderLabel = (showPrevious = false) =>
+  shallow(<VisMeasureLabel datum={datum} series={series} showPrevious={showPrevious} />);
 
 describe("VisMeasureLabel", () => {
   it("renders measure data on label", () => {

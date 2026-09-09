@@ -41,15 +41,14 @@ export interface MeasureGroupForView {
 
 export enum MeasureForViewType {
   measure = "measure",
-  group = "group"
+  group = "group",
 }
 
 export class MeasuresConverter implements MeasureOrGroupVisitor<MeasureOrGroupForView> {
   constructor(
     private hasSearchTextPredicate: (measure: Measure) => boolean,
     private isSelectedMeasurePredicate: (measure: Measure) => boolean
-  ) {
-  }
+  ) {}
 
   visitMeasure(measure: Measure): MeasureOrGroupForView {
     const { hasSearchTextPredicate, isSelectedMeasurePredicate } = this;
@@ -61,22 +60,22 @@ export class MeasuresConverter implements MeasureOrGroupVisitor<MeasureOrGroupFo
       hasSelectedMeasures: isSelectedMeasurePredicate(measure),
       hasSearchText: hasSearchTextPredicate(measure),
       type: MeasureForViewType.measure,
-      approximate: measure.isApproximate()
+      approximate: measure.isApproximate(),
     };
   }
 
   visitMeasureGroup(measureGroup: MeasureGroup): MeasureOrGroupForView {
     const { name, title, description, measures } = measureGroup;
-    const measuresForView = measures.map(measureOrGroup => measureOrGroup.accept(this));
+    const measuresForView = measures.map((measureOrGroup) => measureOrGroup.accept(this));
 
     return {
       name,
       title,
       description,
-      hasSearchText: measuresForView.some(measureForView => measureForView.hasSearchText),
-      hasSelectedMeasures: measuresForView.some(measureForView => measureForView.hasSelectedMeasures),
+      hasSearchText: measuresForView.some((measureForView) => measureForView.hasSearchText),
+      hasSelectedMeasures: measuresForView.some((measureForView) => measureForView.hasSelectedMeasures),
       children: measuresForView,
-      type: MeasureForViewType.group
+      type: MeasureForViewType.group,
     };
   }
 }

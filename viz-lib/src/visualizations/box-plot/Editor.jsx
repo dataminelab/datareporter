@@ -3,12 +3,12 @@ import { Section, Input } from "@/components/visualizations/editor";
 import { EditorPropTypes } from "@/visualizations/prop-types";
 
 export default function Editor({ options, onOptionsChange }) {
-  const onXAxisLabelChanged = xAxisLabel => {
+  const onXAxisLabelChanged = (xAxisLabel) => {
     const newOptions = { ...options, xAxisLabel };
     onOptionsChange(newOptions);
   };
 
-  const onYAxisLabelChanged = yAxisLabel => {
+  const onYAxisLabelChanged = (yAxisLabel) => {
     const newOptions = { ...options, yAxisLabel };
     onOptionsChange(newOptions);
   };
@@ -20,7 +20,7 @@ export default function Editor({ options, onOptionsChange }) {
           label="X Axis Label"
           data-test="BoxPlot.XAxisLabel"
           value={options.xAxisLabel}
-          onChange={event => onXAxisLabelChanged(event.target.value)}
+          onChange={(event) => onXAxisLabelChanged(event.target.value)}
         />
       </Section>
 
@@ -29,7 +29,7 @@ export default function Editor({ options, onOptionsChange }) {
           label="Y Axis Label"
           data-test="BoxPlot.YAxisLabel"
           value={options.yAxisLabel}
-          onChange={event => onYAxisLabelChanged(event.target.value)}
+          onChange={(event) => onYAxisLabelChanged(event.target.value)}
         />
       </Section>
     </React.Fragment>

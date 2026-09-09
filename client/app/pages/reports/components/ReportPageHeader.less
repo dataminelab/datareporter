@@ -64,11 +64,11 @@
   }
 }
 
-#meta-button, #save-as-ul {
-  display: none
+#meta-button {
+  display: none;
 }
 
-#meta-modal, #save-as-ul {
+#meta-modal {
   display: block;
   z-index: -1;
   opacity: 0;
@@ -84,12 +84,6 @@
   padding: 12px;
 }
 
-#save-as-ul {
-  right: 50px;
-  width: auto;
-  height: 60px;
-}
-
 .new-name-label {
   cursor: default;
   position: absolute;
@@ -100,7 +94,8 @@
   height: 100%;
 }
 
-.modal-left, .modal-right {
+.modal-left,
+.modal-right {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -114,4 +109,3 @@
 .modal-right {
   align-items: baseline;
 }
-

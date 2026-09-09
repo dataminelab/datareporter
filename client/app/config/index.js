@@ -7,7 +7,7 @@ import "@/assets/images/avatar.svg";
 // Register visualizations
 import "@redash/viz/lib";
 
-// Register routes before registering extensions as they may want to override some
+// Register routes before registering extensions as they may want to override some of them.
 import "@/pages";
 
 import "./antd-spinner";
@@ -32,12 +32,20 @@ moment.updateLocale("en", {
 
 function requireImages() {
   // client/app/assets/images/<path> => /images/<path>
-  const ctx = require.context("@/assets/images/", true, /\.(png|jpe?g|gif|svg)$/);
+  const ctx = require.context(
+    "@/assets/images/",
+    true,
+    /\.(png|jpe?g|gif|svg)$/,
+  );
   ctx.keys().forEach(ctx);
 }
 
 function registerExtensions() {
-  const context = require.context("extensions", true, /^((?![\\/.]test[\\./]).)*\.jsx?$/);
+  const context = require.context(
+    "extensions",
+    true,
+    /^((?![\\/.]test[\\./]).)*\.jsx?$/,
+  );
   const modules = context
     .keys()
     .map(context)

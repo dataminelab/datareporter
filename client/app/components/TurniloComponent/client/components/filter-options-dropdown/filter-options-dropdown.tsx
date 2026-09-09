@@ -35,24 +35,24 @@ const FILTER_OPTIONS: FilterOption[] = [
     label: STRINGS.include,
     value: FilterMode.INCLUDE,
     svg: require("../../icons/filter-include.svg"),
-    checkType: "check"
+    checkType: "check",
   },
   {
     label: STRINGS.exclude,
     value: FilterMode.EXCLUDE,
     svg: require("../../icons/filter-exclude.svg"),
-    checkType: "cross"
+    checkType: "cross",
   },
   {
     label: STRINGS.contains,
     value: FilterMode.CONTAINS,
-    svg: require("../../icons/filter-contains.svg")
+    svg: require("../../icons/filter-contains.svg"),
   },
   {
     label: STRINGS.regex,
     value: FilterMode.REGEX,
-    svg: require("../../icons/filter-regex.svg")
-  }
+    svg: require("../../icons/filter-regex.svg"),
+  },
 ];
 
 export interface FilterOptionsDropdownProps {
@@ -63,7 +63,7 @@ export interface FilterOptionsDropdownProps {
 
 export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdownProps> {
   static getFilterOptions(...filterTypes: string[]) {
-    return FILTER_OPTIONS.filter(option => filterTypes.indexOf(option.value) !== -1);
+    return FILTER_OPTIONS.filter((option) => filterTypes.indexOf(option.value) !== -1);
   }
 
   onSelectOption = (option: FilterOption) => {
@@ -71,27 +71,31 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
   };
 
   renderFilterOption = (option: FilterOption) => {
-    return <span className="filter-option">
-      <SvgIcon className="icon" svg={option.svg} />
-      <span className="option-label">{option.label}</span>
-    </span>;
+    return (
+      <span className="filter-option">
+        <SvgIcon className="icon" svg={option.svg} />
+        <span className="option-label">{option.label}</span>
+      </span>
+    );
   };
 
   render() {
     const { selectedOption, filterOptions = FILTER_OPTIONS } = this.props;
     const selectedItem = filterOptions.find(({ value }) => value === selectedOption) || filterOptions[0];
 
-    return <div className="filter-options-dropdown">
-      <Dropdown<FilterOption>
-        menuClassName="filter-options"
-        items={filterOptions}
-        selectedItem={selectedItem}
-        equal={(a, b) => a.value === b.value}
-        keyItem={d => d.value}
-        renderItem={this.renderFilterOption}
-        renderSelectedItem={d => <SvgIcon className="icon" svg={d.svg} />}
-        onSelect={this.onSelectOption}
-      />
-    </div>;
+    return (
+      <div className="filter-options-dropdown">
+        <Dropdown<FilterOption>
+          menuClassName="filter-options"
+          items={filterOptions}
+          selectedItem={selectedItem}
+          equal={(a, b) => a.value === b.value}
+          keyItem={(d) => d.value}
+          renderItem={this.renderFilterOption}
+          renderSelectedItem={(d) => <SvgIcon className="icon" svg={d.svg} />}
+          onSelect={this.onSelectOption}
+        />
+      </div>
+    );
   }
 }

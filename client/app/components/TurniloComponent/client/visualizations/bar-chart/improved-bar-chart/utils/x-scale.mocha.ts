@@ -22,10 +22,11 @@ import { createXScale, xGetter } from "./x-scale";
 
 use(equivalent);
 
-const januaryDateAsRange = (date: number) => new TimeRange({
-  start: january(date),
-  end: january(date + 1)
-});
+const januaryDateAsRange = (date: number) =>
+  new TimeRange({
+    start: january(date),
+    end: january(date + 1),
+  });
 
 describe("x-scale", () => {
   describe("xGetter", () => {
@@ -37,11 +38,7 @@ describe("x-scale", () => {
 
   describe("createXScale", () => {
     describe("TimeRange", () => {
-      const domain = [
-        januaryDateAsRange(1),
-        januaryDateAsRange(2),
-        januaryDateAsRange(3)
-      ];
+      const domain = [januaryDateAsRange(1), januaryDateAsRange(2), januaryDateAsRange(3)];
       const width = 90;
 
       const scale = createXScale(domain, width);
@@ -51,7 +48,7 @@ describe("x-scale", () => {
       });
 
       it("should return range band", () => {
-        expect(scale.rangeBand()).to.be.equal(30);
+        expect(scale.bandwidth()).to.be.equal(30);
       });
 
       it("should apply scale function", () => {

@@ -17,7 +17,7 @@
 
 export function get(key: string): any {
   try {
-    return JSON.parse(localStorage[key]);
+    return JSON.parse(localStorage.getItem(key));
   } catch (e) {
     return undefined;
   }
@@ -25,7 +25,12 @@ export function get(key: string): any {
 
 export function set(key: string, value: any) {
   try {
-    localStorage[key] = JSON.stringify(value);
-  } catch (e) {
-  }
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {}
+}
+
+export function remove(key: string) {
+  try {
+    localStorage.removeItem(key);
+  } catch (e) {}
 }

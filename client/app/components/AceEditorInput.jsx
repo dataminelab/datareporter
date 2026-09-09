@@ -1,5 +1,6 @@
 import React, { forwardRef } from "react";
 import AceEditor from "react-ace";
+import PropTypes from "prop-types";
 
 import "./AceEditorInput.less";
 
@@ -19,4 +20,10 @@ function AceEditorInput(props, ref) {
   );
 }
 
-export default forwardRef(AceEditorInput);
+const ForwardedAceEditorInput = forwardRef(AceEditorInput);
+
+ForwardedAceEditorInput.propTypes = {
+  "data-test": PropTypes.string,
+};
+
+export default ForwardedAceEditorInput;

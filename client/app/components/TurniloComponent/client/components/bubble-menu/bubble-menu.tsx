@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { clamp, classNames, escapeKey, isInside, uniqueId } from "../../utils/dom/dom";
@@ -73,7 +73,7 @@ function defaultStage(): Stage {
     x: SCREEN_OFFSET,
     y: SCREEN_OFFSET,
     width: window.innerWidth - SCREEN_OFFSET * 2,
-    height: window.innerHeight - SCREEN_OFFSET * 2
+    height: window.innerHeight - SCREEN_OFFSET * 2,
   });
 }
 
@@ -83,7 +83,7 @@ function alignHorizontalInside(align: Align, { left, width }: ClientRect): numbe
       return left + width / 2;
     case "start":
       return left;
-    case"end":
+    case "end":
       return left + width;
   }
 }
@@ -101,11 +101,11 @@ function alignHorizontalOutside(align: Align, x: number, width: number): number 
 
 export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState> {
   static defaultProps: Partial<BubbleMenuProps> = {
-    align: "center"
+    align: "center",
   };
 
   state: BubbleMenuState = {
-    id: null
+    id: null,
   };
 
   componentDidMount() {
@@ -114,7 +114,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
     this.setState({
       id: id || uniqueId("bubble-menu-"),
-      ...this.calcBubbleCoordinates(rect)
+      ...this.calcBubbleCoordinates(rect),
     });
     window.addEventListener("mousedown", this.globalMouseDownListener);
     window.addEventListener("keydown", this.globalKeyDownListener);
@@ -149,19 +149,19 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
       case "right":
         return {
           x: rect.left + rect.width - OFFSET_H,
-          y: rect.top + rect.height / 2
+          y: rect.top + rect.height / 2,
         };
 
       case "down":
         return {
           x: alignHorizontalInside(align, rect),
-          y: rect.top + rect.height - OFFSET_V
+          y: rect.top + rect.height - OFFSET_V,
         };
 
       case "up":
         return {
           x: alignHorizontalInside(align, rect),
-          y: window.innerHeight - rect.top - OFFSET_V
+          y: window.innerHeight - rect.top - OFFSET_V,
         };
 
       default:
@@ -186,7 +186,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
           top: clampedTop,
           height: menuHeight,
           left: menuX,
-          maxWidth: container.width
+          maxWidth: container.width,
         };
       case "down": {
         const left = alignHorizontalOutside(align, menuX, menuWidth);
@@ -195,7 +195,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
           left: clampedLeft,
           width: menuWidth,
           top: menuY,
-          maxHeight: container.height
+          maxHeight: container.height,
         };
       }
       case "up": {
@@ -205,7 +205,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
           left: clampedLeft,
           width: menuWidth,
           bottom: menuY,
-          maxHeight: container.height
+          maxHeight: container.height,
         };
       }
 
@@ -223,19 +223,19 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
       case "right":
         return {
           top: y - top,
-          left: 0
+          left: 0,
         };
 
       case "down":
         return {
           left: x - left,
-          top: 0
+          top: 0,
         };
 
       case "up":
         return {
           left: x - left,
-          bottom: 0
+          bottom: 0,
         };
 
       default:
@@ -263,13 +263,17 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     const { maxHeight, maxWidth, left, top, bottom, height, width } = menuCoordinates;
     const menuSize = fixedSize ? { width: stage.width, height: stage.height } : { maxHeight, maxWidth, height, width };
 
-    const myClass = classNames("bubble-menu", direction, className, { mini: layout === "mini" });
+    const myClass = classNames("bubble-menu", direction, className, {
+      mini: layout === "mini",
+    });
 
-    return <BodyPortal left={left} top={top} bottom={bottom}>
-      <div className={myClass} id={id} data-parent={insideId} style={menuSize}>
-        {children}
-        {hasShpitz && <Shpitz style={shpitzCoordinates} direction={direction} />}
-      </div>
-    </BodyPortal>;
+    return (
+      <BodyPortal left={left} top={top} bottom={bottom}>
+        <div className={myClass} id={id} data-parent={insideId} style={menuSize}>
+          {children}
+          {hasShpitz && <Shpitz style={shpitzCoordinates} direction={direction} />}
+        </div>
+      </BodyPortal>
+    );
   }
 }

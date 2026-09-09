@@ -15,7 +15,10 @@
  */
 
 import * as React from "react";
-import { ArithmeticExpression, ArithmeticOperation } from "../../../common/models/expression/concreteArithmeticOperation";
+import {
+  ArithmeticExpression,
+  ArithmeticOperation,
+} from "../../../common/models/expression/concreteArithmeticOperation";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
 import { Measure } from "../../../common/models/measure/measure";
 import { Measures } from "../../../common/models/measure/measures";
@@ -44,27 +47,36 @@ interface Operation {
   label: string;
 }
 
-const OPERATIONS: Operation[] = [{
-  id: ExpressionSeriesOperation.ADD, label: "Add"
-}, {
-  id: ExpressionSeriesOperation.SUBTRACT, label: "Subtract"
-}, {
-  id: ExpressionSeriesOperation.MULTIPLY, label: "Multiply"
-}, {
-  id: ExpressionSeriesOperation.DIVIDE, label: "Divide"
-}];
+const OPERATIONS: Operation[] = [
+  {
+    id: ExpressionSeriesOperation.ADD,
+    label: "Add",
+  },
+  {
+    id: ExpressionSeriesOperation.SUBTRACT,
+    label: "Subtract",
+  },
+  {
+    id: ExpressionSeriesOperation.MULTIPLY,
+    label: "Multiply",
+  },
+  {
+    id: ExpressionSeriesOperation.DIVIDE,
+    label: "Divide",
+  },
+];
 
 const renderOperation = (op: Operation): string => op.label;
 
 const renderMeasure = (m: Measure): string => m.title;
-const renderSelectedMeasure = (m: Measure): string => m ? m.title : "Select measure";
+const renderSelectedMeasure = (m: Measure): string => (m ? m.title : "Select measure");
 
 function expressionSeriesTitle(series: ExpressionSeries, measure: Measure, measures: Measures): string {
   const concreteSeries = new ExpressionConcreteSeries(series, measure, measures);
   return concreteSeries.title();
 }
 
-export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps> = props => {
+export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps> = (props) => {
   const { measure, measures, initialSeries, series, seriesList, onChange } = props;
 
   function isSeriesValid({ expression }: ExpressionSeries): boolean {
@@ -90,37 +102,36 @@ export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps>
   const otherSeries = seriesList.removeSeries(initialSeries);
   const duplicate = otherSeries.getSeriesWithKey(series.key());
   const expression = series.expression as ArithmeticExpression;
-  const operation = OPERATIONS.find(op => op.id === expression.operation);
+  const operation = OPERATIONS.find((op) => op.id === expression.operation);
   const operand = measures.getMeasureByName(expression.reference);
 
-  return <React.Fragment>
-    <div className="operation-select__title">Select operation</div>
-    <Dropdown<Operation>
-      className="operation-select"
-      items={OPERATIONS}
-      renderItem={renderOperation}
-      equal={(a, b) => a.id === b.id}
-      selectedItem={operation}
-      onSelect={onOperationSelect}
-    />
-    <div className="operand-select__title">Select measure</div>
-    <Dropdown<Measure>
-      className="operand-select"
-      items={measures.filterMeasures(m => !m.equals(measure) && !m.isApproximate())}
-      renderItem={renderMeasure}
-      renderSelectedItem={renderSelectedMeasure}
-      equal={(a, b) => a.equals(b)}
-      selectedItem={operand}
-      onSelect={onOperandSelect}
-    />
-    {duplicate &&
-    <div className="arithmetic-operation-warning">
-      "{expressionSeriesTitle(duplicate as ExpressionSeries, measure, measures)}" is already defined
-    </div>}
-    <FormatPicker
-      measure={measure}
-      format={series.format}
-      formatChange={onFormatChange}
-    />
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <div className="operation-select__title">Select operation</div>
+      <Dropdown<Operation>
+        className="operation-select"
+        items={OPERATIONS}
+        renderItem={renderOperation}
+        equal={(a, b) => a.id === b.id}
+        selectedItem={operation}
+        onSelect={onOperationSelect}
+      />
+      <div className="operand-select__title">Select measure</div>
+      <Dropdown<Measure>
+        className="operand-select"
+        items={measures.filterMeasures((m) => !m.equals(measure) && !m.isApproximate())}
+        renderItem={renderMeasure}
+        renderSelectedItem={renderSelectedMeasure}
+        equal={(a, b) => a.equals(b)}
+        selectedItem={operand}
+        onSelect={onOperandSelect}
+      />
+      {duplicate && (
+        <div className="arithmetic-operation-warning">
+          "{expressionSeriesTitle(duplicate as ExpressionSeries, measure, measures)}" is already defined
+        </div>
+      )}
+      <FormatPicker measure={measure} format={series.format} formatChange={onFormatChange} />
+    </React.Fragment>
+  );
 };

@@ -24,13 +24,18 @@ interface RowHighlightProps {
   tileSize: number;
 }
 
-const RowHighlight: React.SFC<RowHighlightProps> = props => {
+const RowHighlight: React.SFC<RowHighlightProps> = (props) => {
   const { row, width, tileSize } = props;
   const top = row * tileSize;
-  return <div className="heatmap-highlighter heatmap-highlighter-row" style={{
-    top: `${top}px`,
-    width: `${width}px`
-  }} />;
+  return (
+    <div
+      className="heatmap-highlighter heatmap-highlighter-row"
+      style={{
+        top: `${top}px`,
+        width: `${width}px`,
+      }}
+    />
+  );
 };
 
 interface ColumnHighlightProps {
@@ -40,13 +45,18 @@ interface ColumnHighlightProps {
   tileGap: number;
 }
 
-const ColumnHighlight: React.SFC<ColumnHighlightProps> = props => {
+const ColumnHighlight: React.SFC<ColumnHighlightProps> = (props) => {
   const { column, tileSize, height, tileGap } = props;
   const left = column * tileSize + tileGap;
-  return <div className="heatmap-highlighter heatmap-highlighter-column" style={{
-    left: `${left}px`,
-    height: `${height}px`
-  }} />;
+  return (
+    <div
+      className="heatmap-highlighter heatmap-highlighter-column"
+      style={{
+        left: `${left}px`,
+        height: `${height}px`,
+      }}
+    />
+  );
 };
 
 interface HeatmapHighlightIndicatorProps {
@@ -57,18 +67,19 @@ interface HeatmapHighlightIndicatorProps {
   height: number;
 }
 
-export const HeatmapHighlightIndicator: React.SFC<HeatmapHighlightIndicatorProps> = props => {
-  const { position: { row, column }, width, height, tileGap, tileSize } = props;
+export const HeatmapHighlightIndicator: React.SFC<HeatmapHighlightIndicatorProps> = (props) => {
+  const {
+    position: { row, column },
+    width,
+    height,
+    tileGap,
+    tileSize,
+  } = props;
 
-  return <React.Fragment>
-    {row && <RowHighlight
-      row={row}
-      width={width}
-      tileSize={tileSize} />}
-    {column && <ColumnHighlight
-      column={column}
-      tileGap={tileGap}
-      height={height}
-      tileSize={tileSize} />}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      {row && <RowHighlight row={row} width={width} tileSize={tileSize} />}
+      {column && <ColumnHighlight column={column} tileGap={tileGap} height={height} tileSize={tileSize} />}
+    </React.Fragment>
+  );
 };

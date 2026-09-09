@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-@import '../../imports';
-@import './utils/sizes';
+@import "../../imports";
+@import "./utils/sizes";
 
 .heatmap-highlighter {
   position: absolute;
@@ -24,7 +24,7 @@
   &::after {
     @include unpin-full(-1px);
     @include border-css-variable(border, 1px, dashed, highlight-border);
-    content: '';
+    content: "";
   }
 
   &.heatmap-highlighter-column {

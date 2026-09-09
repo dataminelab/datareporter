@@ -30,11 +30,18 @@ interface HashEssenceCase {
 }
 
 describe("urlHashConverter", () => {
-
   describe("version 2", () => {
     const ver2: HashEssenceCase[] = [
-      { version: "2", hash: UrlHashConverterFixtures.tableHashVersion2(), essence: EssenceFixtures.wikiTable() },
-      { version: "2", hash: UrlHashConverterFixtures.lineChartVersion2(), essence: EssenceFixtures.wikiLineChart() }
+      {
+        version: "2",
+        hash: UrlHashConverterFixtures.tableHashVersion2(),
+        essence: EssenceFixtures.wikiTable(),
+      },
+      {
+        version: "2",
+        hash: UrlHashConverterFixtures.lineChartVersion2(),
+        essence: EssenceFixtures.wikiLineChart(),
+      },
     ];
 
     ver2.forEach(({ version, hash, essence }) => {
@@ -50,8 +57,16 @@ describe("urlHashConverter", () => {
 
   describe("version 3", () => {
     const ver3: HashEssenceCase[] = [
-      { version: "3", hash: UrlHashConverterFixtures.tableHashVersion3(), essence: EssenceFixtures.wikiTable() },
-      { version: "3", hash: UrlHashConverterFixtures.lineChartVersion3(), essence: EssenceFixtures.wikiLineChart() }
+      {
+        version: "3",
+        hash: UrlHashConverterFixtures.tableHashVersion3(),
+        essence: EssenceFixtures.wikiTable(),
+      },
+      {
+        version: "3",
+        hash: UrlHashConverterFixtures.lineChartVersion3(),
+        essence: EssenceFixtures.wikiLineChart(),
+      },
     ];
 
     ver3.forEach(({ version, hash, essence }) => {
@@ -67,8 +82,16 @@ describe("urlHashConverter", () => {
 
   describe("version 4", () => {
     const ver4: HashEssenceCase[] = [
-      { version: "4", hash: UrlHashConverterFixtures.tableHashVersion4(), essence: EssenceFixtures.wikiTable() },
-      { version: "4", hash: UrlHashConverterFixtures.lineChartVersion4(), essence: EssenceFixtures.wikiLineChart() }
+      {
+        version: "4",
+        hash: UrlHashConverterFixtures.tableHashVersion4(),
+        essence: EssenceFixtures.wikiTable(),
+      },
+      {
+        version: "4",
+        hash: UrlHashConverterFixtures.lineChartVersion4(),
+        essence: EssenceFixtures.wikiLineChart(),
+      },
     ];
 
     ver4.forEach(({ version, hash, essence }) => {
@@ -100,17 +123,26 @@ describe("urlHashConverter", () => {
           expect(encodedHash).to.equal(hash);
         } catch (e) {
           // rethrow assertion on decoded hashes for readability
-          // expect(decodeHash(encodedHash), "decoded hashes").to.deep.equal(decodeHash(hash));
+          expect(decodeHash(encodedHash), "decoded hashes").to.deep.equal(decodeHash(hash));
           // if test fails but expect on decoded succeeds (error in test definition) rethrow original assertion exception.
-          throw e;
+          // throw e;
         }
       });
     });
   });
 
-  const minimalNumberOfSegmentsTests: Array<{ version: ViewDefinitionVersion, hash: string }> = [
-    { version: "2", hash: UrlHashConverterFixtures.noSlashInEncodedDefinition2() },
-    { version: "3", hash: UrlHashConverterFixtures.noSlashInEncodedDefinition3() }
+  const minimalNumberOfSegmentsTests: Array<{
+    version: ViewDefinitionVersion;
+    hash: string;
+  }> = [
+    {
+      version: "2",
+      hash: UrlHashConverterFixtures.noSlashInEncodedDefinition2(),
+    },
+    {
+      version: "3",
+      hash: UrlHashConverterFixtures.noSlashInEncodedDefinition3(),
+    },
   ];
 
   minimalNumberOfSegmentsTests.forEach(({ version, hash }) => {
@@ -125,7 +157,7 @@ describe("urlHashConverter", () => {
     { hash: "table/2", errorMessage: "Unsupported url hash: table/2" },
     { hash: "xxyz", errorMessage: "Expected 2 hash segments, got 1." },
     { hash: "3", errorMessage: "Expected 2 hash segments, got 1." },
-    { hash: "3/AAAAA", errorMessage: "Unexpected end of JSON input" }
+    { hash: "3/AAAAA", errorMessage: "Unexpected end of JSON input" },
   ];
 
   wrongHashStructureTests.forEach(({ hash, errorMessage }) => {

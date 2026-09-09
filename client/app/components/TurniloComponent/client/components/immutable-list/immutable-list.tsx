@@ -38,7 +38,6 @@ export interface ImmutableListState<T> {
 }
 
 export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, ImmutableListState<T>> {
-
   constructor(props: ImmutableListProps<T>) {
     super(props);
     this.state = {};
@@ -70,15 +69,16 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
   };
 
   onReorder = (oldIndex: number, newIndex: number) => {
-    var tempItems: List<any> = this.state.tempItems;
+    const tempItems: List<any> = this.state.tempItems;
 
-    var item = tempItems.get(oldIndex);
+    const item = tempItems.get(oldIndex);
 
-    this.setState({
-      tempItems: tempItems
-        .delete(oldIndex)
-        .insert(newIndex > oldIndex ? newIndex - 1 : newIndex, item)
-    }, this.onChange);
+    this.setState(
+      {
+        tempItems: tempItems.delete(oldIndex).insert(newIndex > oldIndex ? newIndex - 1 : newIndex, item),
+      },
+      this.onChange
+    );
   };
 
   onChange() {
@@ -88,30 +88,27 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
   renderEditModal(itemIndex: number): JSX.Element {
     const { tempItems } = this.state;
 
-    var item = tempItems.get(itemIndex);
+    const item = tempItems.get(itemIndex);
 
-    var onSave = (newItem: T) => {
+    const onSave = (newItem: T) => {
       const newItems = tempItems.update(itemIndex, () => newItem);
       this.setState({ tempItems: newItems, editedIndex: undefined }, this.onChange);
     };
 
-    var onClose = () => this.setState({ editedIndex: undefined });
+    const onClose = () => this.setState({ editedIndex: undefined });
 
     return React.cloneElement(this.props.getModal(item), { onSave, onClose });
   }
 
   renderAddModal(item: T): JSX.Element {
-    var onSave = (newItem: T) => {
+    const onSave = (newItem: T) => {
       const { tempItems } = this.state;
       const newItems = tempItems.push(newItem);
 
-      this.setState(
-        { tempItems: newItems, pendingAddItem: null },
-        this.onChange
-      );
+      this.setState({ tempItems: newItems, pendingAddItem: null }, this.onChange);
     };
 
-    var onClose = () => this.setState({ pendingAddItem: null });
+    const onClose = () => this.setState({ pendingAddItem: null });
 
     return React.cloneElement(this.props.getModal(item), { onSave, onClose });
   }
@@ -121,22 +118,30 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
     const { editedIndex, pendingAddItem } = this.state;
 
     if (!items) return null;
-    return <div className="immutable-list">
-      <div className="list-title">
-        <div className="label">{label}</div>
-        <div className="actions">
-          {toggleSuggestions ? <button key="suggestions" onClick={toggleSuggestions}>Suggestions</button> : null}
-          <button key="add" onClick={this.addItem}>Add item</button>
+    return (
+      <div className="immutable-list">
+        <div className="list-title">
+          <div className="label">{label}</div>
+          <div className="actions">
+            {toggleSuggestions ? (
+              <button key="suggestions" onClick={toggleSuggestions}>
+                Suggestions
+              </button>
+            ) : null}
+            <button key="add" onClick={this.addItem}>
+              Add item
+            </button>
+          </div>
         </div>
+        <SimpleList
+          rows={getRows(items)}
+          onEdit={this.editItem}
+          onRemove={this.deleteItem}
+          onReorder={this.onReorder}
+        />
+        {editedIndex !== undefined ? this.renderEditModal(editedIndex) : null}
+        {pendingAddItem ? this.renderAddModal(pendingAddItem) : null}
       </div>
-      <SimpleList
-        rows={getRows(items)}
-        onEdit={this.editItem}
-        onRemove={this.deleteItem}
-        onReorder={this.onReorder}
-      />
-      {editedIndex !== undefined ? this.renderEditModal(editedIndex) : null}
-      {pendingAddItem ? this.renderAddModal(pendingAddItem) : null}
-    </div>;
+    );
   }
 }

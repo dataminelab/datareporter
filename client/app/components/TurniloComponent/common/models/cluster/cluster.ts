@@ -116,35 +116,53 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     { name: "title", defaultValue: "" },
     { name: "version", defaultValue: null },
     { name: "timeout", defaultValue: Cluster.DEFAULT_TIMEOUT },
-    { name: "healthCheckTimeout", defaultValue: Cluster.DEFAULT_HEALTH_CHECK_TIMEOUT },
-    { name: "sourceListScan", defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN, possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES },
-    { name: "sourceListRefreshOnLoad", defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD },
+    {
+      name: "healthCheckTimeout",
+      defaultValue: Cluster.DEFAULT_HEALTH_CHECK_TIMEOUT,
+    },
+    {
+      name: "sourceListScan",
+      defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN,
+      possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES,
+    },
+    {
+      name: "sourceListRefreshOnLoad",
+      defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
+    },
     {
       name: "sourceListRefreshInterval",
       defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
-      validate: [BaseImmutable.ensure.number, ensureNotTiny]
+      validate: [BaseImmutable.ensure.number, ensureNotTiny],
     },
-    { name: "sourceReintrospectOnLoad", defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD },
+    {
+      name: "sourceReintrospectOnLoad",
+      defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD,
+    },
     {
       name: "sourceReintrospectInterval",
       defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
-      validate: [BaseImmutable.ensure.number, ensureNotTiny]
+      validate: [BaseImmutable.ensure.number, ensureNotTiny],
     },
-    { name: "introspectionStrategy", defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
+    {
+      name: "introspectionStrategy",
+      defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY,
+    },
     { name: "requestDecorator", defaultValue: null },
     { name: "decoratorOptions", defaultValue: null },
-    { name: "guardDataCubes", defaultValue: Cluster.DEFAULT_GUARD_DATA_CUBES }
+    { name: "guardDataCubes", defaultValue: Cluster.DEFAULT_GUARD_DATA_CUBES },
   ];
 
   static HTTP_PROTOCOL_TEST = /^http(s?):/;
 
-  static BACKWARD_COMPATIBILITY: BackCompat[] = [{
-    condition: cluster => !isTruthy(cluster.url) && isTruthy(oldHostParameter(cluster)),
-    action: cluster => {
-      const oldHost = oldHostParameter(cluster);
-      cluster.url = Cluster.HTTP_PROTOCOL_TEST.test(oldHost) ? oldHost : `http://${oldHost}`;
-    }
-  }];
+  static BACKWARD_COMPATIBILITY: BackCompat[] = [
+    {
+      condition: (cluster) => !isTruthy(cluster.url) && isTruthy(oldHostParameter(cluster)),
+      action: (cluster) => {
+        const oldHost = oldHostParameter(cluster);
+        cluster.url = Cluster.HTTP_PROTOCOL_TEST.test(oldHost) ? oldHost : `http://${oldHost}`;
+      },
+    },
+  ];
 
   public type = "druid";
 
@@ -178,7 +196,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   public toClientCluster(): Cluster {
     return new Cluster({
       name: this.name,
-      timeout: this.timeout
+      timeout: this.timeout,
     });
   }
 
@@ -190,7 +208,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
       suppress: true,
 
       allowSelectQueries: true,
-      allowEternity: false
+      allowEternity: false,
     });
   }
 

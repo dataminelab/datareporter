@@ -46,7 +46,7 @@ const SMALL_WIKI_DATA = [
     delta: 36,
     added: 36,
     deleted: 0,
-    deltaByTen: 3.6
+    deltaByTen: 3.6,
   },
   {
     time: new Date("2015-09-12T00:47:00Z"),
@@ -72,7 +72,7 @@ const SMALL_WIKI_DATA = [
     delta: 17,
     added: 17,
     deleted: 0,
-    deltaByTen: 1.7
+    deltaByTen: 1.7,
   },
   {
     time: new Date("2015-09-12T00:47:05Z"),
@@ -98,7 +98,7 @@ const SMALL_WIKI_DATA = [
     delta: 0,
     added: 0,
     deleted: 0,
-    deltaByTen: 0
+    deltaByTen: 0,
   },
   {
     time: new Date("2015-09-12T00:47:08Z"),
@@ -124,7 +124,7 @@ const SMALL_WIKI_DATA = [
     delta: 18,
     added: 18,
     deleted: 0,
-    deltaByTen: 1.8
+    deltaByTen: 1.8,
   },
   {
     time: new Date("2015-09-12T00:47:11Z"),
@@ -150,7 +150,7 @@ const SMALL_WIKI_DATA = [
     delta: 18,
     added: 18,
     deleted: 0,
-    deltaByTen: 1.8
+    deltaByTen: 1.8,
   },
   {
     time: new Date("2015-09-12T00:47:13Z"),
@@ -176,7 +176,7 @@ const SMALL_WIKI_DATA = [
     delta: 18,
     added: 18,
     deleted: 0,
-    deltaByTen: 1.8
+    deltaByTen: 1.8,
   },
   {
     time: new Date("2015-09-12T00:47:17Z"),
@@ -202,7 +202,7 @@ const SMALL_WIKI_DATA = [
     delta: -20,
     added: 0,
     deleted: 20,
-    deltaByTen: -2
+    deltaByTen: -2,
   },
   {
     time: new Date("2015-09-12T00:47:19Z"),
@@ -228,7 +228,7 @@ const SMALL_WIKI_DATA = [
     delta: 345,
     added: 345,
     deleted: 0,
-    deltaByTen: 34.5
+    deltaByTen: 34.5,
   },
   {
     time: new Date("2015-09-12T00:47:21Z"),
@@ -254,7 +254,7 @@ const SMALL_WIKI_DATA = [
     delta: 121,
     added: 121,
     deleted: 0,
-    deltaByTen: 12.1
+    deltaByTen: 12.1,
   },
   {
     time: new Date("2015-09-12T00:47:25Z"),
@@ -280,8 +280,8 @@ const SMALL_WIKI_DATA = [
     delta: 18,
     added: 18,
     deleted: 0,
-    deltaByTen: 1.8
-  }
+    deltaByTen: 1.8,
+  },
 ];
 
 export class AppSettingsFixtures {
@@ -290,30 +290,20 @@ export class AppSettingsFixtures {
       customization: {
         title: "Hello World",
         headerBackground: "brown",
-        customLogoSvg: "ansvgstring"
+        customLogoSvg: "ansvgstring",
       },
-      clusters: [
-        ClusterFixtures.druidWikiClusterJS()
-      ],
-      dataCubes: [
-        DataCubeFixtures.WIKI_JS
-      ]
+      clusters: [ClusterFixtures.druidWikiClusterJS()],
+      dataCubes: [DataCubeFixtures.WIKI_JS],
     };
   }
 
   public static wikiTwitterJS(): AppSettingsJS {
     return {
       customization: {
-        title: "Hello World"
+        title: "Hello World",
       },
-      clusters: [
-        ClusterFixtures.druidWikiClusterJS(),
-        ClusterFixtures.druidTwitterClusterJS()
-      ],
-      dataCubes: [
-        DataCubeFixtures.WIKI_JS,
-        DataCubeFixtures.TWITTER_JS
-      ]
+      clusters: [ClusterFixtures.druidWikiClusterJS(), ClusterFixtures.druidTwitterClusterJS()],
+      dataCubes: [DataCubeFixtures.WIKI_JS, DataCubeFixtures.TWITTER_JS],
     };
   }
 
@@ -329,8 +319,8 @@ export class AppSettingsFixtures {
     return AppSettingsFixtures.wikiOnly().attachExecutors(() => {
       return basicExecutorFactory({
         datasets: {
-          main: Dataset.fromJS(SMALL_WIKI_DATA)
-        }
+          main: Dataset.fromJS(SMALL_WIKI_DATA),
+        },
       });
     });
   }

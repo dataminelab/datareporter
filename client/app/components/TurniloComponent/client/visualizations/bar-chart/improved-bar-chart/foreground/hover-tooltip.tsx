@@ -43,25 +43,25 @@ interface LabelProps {
   series: ConcreteSeries;
 }
 
-const Label: React.SFC<LabelProps> = props => {
+const Label: React.SFC<LabelProps> = (props) => {
   const { showPrevious, series, datum } = props;
   if (!showPrevious) {
-    return <React.Fragment>
-      {series.formatValue(datum)}
-    </React.Fragment>;
+    return <React.Fragment>{series.formatValue(datum)}</React.Fragment>;
   }
   const currentValue = series.selectValue(datum);
   const previousValue = series.selectValue(datum, SeriesDerivation.PREVIOUS);
   const formatter = series.formatter();
-  return <MeasureBubbleContent
-    lowerIsBetter={series.measure.lowerIsBetter}
-    formatter={formatter}
-    current={currentValue}
-    previous={previousValue}
-  />;
+  return (
+    <MeasureBubbleContent
+      lowerIsBetter={series.measure.lowerIsBetter}
+      formatter={formatter}
+      current={currentValue}
+      previous={previousValue}
+    />
+  );
 };
 
-export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
+export const HoverTooltip: React.SFC<HoverTooltipProps> = (props) => {
   const {
     essence,
     rect: { left, top },
@@ -69,17 +69,17 @@ export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
     getX,
     series,
     xScale,
-    yScale
+    yScale,
   } = props;
   const y = yScale(series.selectValue(datum));
   const xValue = getX(datum);
-  const x = xScale.calculate(xValue) + (xScale.rangeBand() / 2);
-  return <SegmentBubble
-    top={top + y}
-    left={left + x}
-    title={formatValue(xValue, essence.timezone)}
-    content={<Label
-      showPrevious={essence.hasComparison()}
-      datum={datum}
-      series={series} />} />;
+  const x = xScale.calculate(xValue) + xScale.bandwidth() / 2;
+  return (
+    <SegmentBubble
+      top={top + y}
+      left={left + x}
+      title={formatValue(xValue, essence.timezone)}
+      content={<Label showPrevious={essence.hasComparison()} datum={datum} series={series} />}
+    />
+  );
 };

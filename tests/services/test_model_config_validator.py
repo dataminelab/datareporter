@@ -7,7 +7,9 @@ from redash.services.model_config_validator import ModelConfigValidator
 
 class TestModelConfigValidator(unittest.TestCase):
     def test_validate_max_length(self):
-        attributes = "\n".join(["                    - key: {}\n                    value: {}".format(key, key) for key in range(680)])
+        attributes = "\n".join(
+            ["                    - key: {}\n                    value: {}".format(key, key) for key in range(680)]
+        )
         content = """dataCubes:
               - name: wikiticker
                 title: Wikiticker
@@ -26,7 +28,7 @@ class TestModelConfigValidator(unittest.TestCase):
         ex = cm.exception
 
         self.assertEqual(ex.code, 400)
-        self.assertEqual(ex.data, {'message': 'Maximum content length is 20000, actual 42275'})
+        self.assertEqual(ex.data, {"message": "Maximum content length is 20000, actual 42275"})
 
     def test_validate_wrong_yaml(self):
         content = "key: 12 \n  key1: 34\n key2: 56"
@@ -37,11 +39,10 @@ class TestModelConfigValidator(unittest.TestCase):
         ex = cm.exception
 
         self.assertEqual(ex.code, 400)
-        self.assertEqual(ex.data, {'message': 'Your config has an issue on line 1 at position 6'})
+        self.assertEqual(ex.data, {"message": "Your config has an issue on line 1 at position 6"})
 
     def test_validate_correct_config(self):
-        content = \
-            """dataCubes:
+        content = """dataCubes:
                   - name: wikiticker
                     title: Wikiticker
                     defaultSortMeasure: deltaByTen
@@ -50,6 +51,9 @@ class TestModelConfigValidator(unittest.TestCase):
                     defaultSelectedMeasures:
                       - deltaByTen
                     attributes:
+
+                      - name: time
+                        type: TIME
 
                       - name: deltaByTen
                         type: number
@@ -110,8 +114,7 @@ class TestModelConfigValidator(unittest.TestCase):
         self.assertIsNone(validator.validate())
 
     def test_validate_incorrect_config(self):
-        content = \
-            """dataCubes:
+        content = """dataCubes:
                   - name: wikiticker
                     title: Wikiticker
                     defaultSortMeasure: deltaByTen
@@ -120,6 +123,9 @@ class TestModelConfigValidator(unittest.TestCase):
                     clusterName: wiki
                     timeAttribute: time
                     attributes:
+
+                      - name: time
+                        type: TIME
 
                       - name: deltaByTen
                         type: number
@@ -180,5 +186,7 @@ class TestModelConfigValidator(unittest.TestCase):
         ex = cm.exception
 
         self.assertEqual(ex.code, 400)
-        self.assertEqual(ex.data, {
-            'message': "Config has the following issues: {'dataCubes': [{0: [{'measures': [{0: [{'formula': ['required field']}]}]}]}]}"})
+        self.assertEqual(
+            ex.data,
+            {"message": "Config has the following issues:\nAt 'dataCubes.[0].measures.[0].formula': required field"},
+        )

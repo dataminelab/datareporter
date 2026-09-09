@@ -28,12 +28,12 @@ import { SeriesType } from "./series-type";
 
 const quantileMeasure = Measure.fromJS({
   name: "quantile",
-  formula: "$main.quantile($histogram,0.95,'tuning')"
+  formula: "$main.quantile($histogram,0.95,'tuning')",
 });
 
 const quantileOperandMeasure = Measure.fromJS({
   name: "quantile_by_100",
-  formula: "$main.quantile($histogram,0.95,'tuning').divide(100)"
+  formula: "$main.quantile($histogram,0.95,'tuning').divide(100)",
 });
 
 describe("Series", () => {
@@ -42,14 +42,16 @@ describe("Series", () => {
       const params = {
         type: SeriesType.EXPRESSION,
         expression: { operation: ExpressionSeriesOperation.PERCENT_OF_PARENT },
-        reference: "count"
+        reference: "count",
       };
       const measure = MeasureFixtures.wikiCount();
       const expected = new ExpressionSeries({
-        expression: new PercentExpression({ operation: ExpressionSeriesOperation.PERCENT_OF_PARENT }),
+        expression: new PercentExpression({
+          operation: ExpressionSeriesOperation.PERCENT_OF_PARENT,
+        }),
         format: DEFAULT_FORMAT,
         type: SeriesType.EXPRESSION,
-        reference: "count"
+        reference: "count",
       });
       expect(fromJS(params, measure)).to.be.equivalent(expected);
     });
@@ -57,14 +59,14 @@ describe("Series", () => {
     it("should construct Quantile Series", () => {
       const params = {
         type: SeriesType.QUANTILE,
-        reference: "quantile"
+        reference: "quantile",
       };
       const measure = quantileMeasure;
       const expected = new QuantileSeries({
         format: DEFAULT_FORMAT,
         percentile: 95,
         type: SeriesType.QUANTILE,
-        reference: "quantile"
+        reference: "quantile",
       });
       expect(fromJS(params, measure)).to.be.equivalent(expected);
     });
@@ -72,13 +74,13 @@ describe("Series", () => {
     it("should construct Measure Series", () => {
       const params = {
         type: SeriesType.MEASURE,
-        reference: "count"
+        reference: "count",
       };
       const measure = MeasureFixtures.wikiCount();
       const expected = new MeasureSeries({
         format: DEFAULT_FORMAT,
         type: SeriesType.MEASURE,
-        reference: "count"
+        reference: "count",
       });
       expect(fromJS(params, measure)).to.be.equivalent(expected);
     });
@@ -86,41 +88,41 @@ describe("Series", () => {
     it("should construct Quantile Series for Measure definition when passed Measure with quantile expression", () => {
       const params = {
         type: SeriesType.MEASURE,
-        reference: "quantile"
+        reference: "quantile",
       };
       const measure = quantileMeasure;
       const expected = new QuantileSeries({
         format: DEFAULT_FORMAT,
         type: SeriesType.QUANTILE,
         percentile: 95,
-        reference: "quantile"
+        reference: "quantile",
       });
       expect(fromJS(params, measure)).to.be.equivalent(expected);
     });
 
     it("should construct Measure Series when no type provided", () => {
       const params = {
-        reference: "count"
+        reference: "count",
       };
       const measure = MeasureFixtures.wikiCount();
       const expected = new MeasureSeries({
         format: DEFAULT_FORMAT,
         type: SeriesType.MEASURE,
-        reference: "count"
+        reference: "count",
       });
       expect(fromJS(params, measure)).to.be.equivalent(expected);
     });
 
     it("should construct Quantile Series when no type provided but Measure has quantile expression", () => {
       const params = {
-        reference: "quantile"
+        reference: "quantile",
       };
       const measure = quantileMeasure;
       const expected = new QuantileSeries({
         format: DEFAULT_FORMAT,
         type: SeriesType.QUANTILE,
         percentile: 95,
-        reference: "quantile"
+        reference: "quantile",
       });
       expect(fromJS(params, measure)).to.be.equivalent(expected);
     });

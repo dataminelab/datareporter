@@ -29,7 +29,7 @@ describe("Dimension", () => {
         formula: "$country",
         kind: "string",
         granularities: [5, 50, 500, 800, 1000],
-        sortStrategy: "self"
+        sortStrategy: "self",
       },
       {
         name: "country",
@@ -38,7 +38,7 @@ describe("Dimension", () => {
         kind: "string",
         url: "https://www.country.com/%s",
         bucketedBy: 1,
-        bucketingStrategy: BucketingStrategy.defaultBucket
+        bucketingStrategy: BucketingStrategy.defaultBucket,
       },
       {
         name: "time",
@@ -46,7 +46,7 @@ describe("Dimension", () => {
         formula: "$time",
         kind: "time",
         url: "http://www.time.com/%s",
-        granularities: ["PT1M" , "P6M", "PT6H" , "P1D" , "P1W"]
+        granularities: ["PT1M", "P6M", "PT6H", "P1D", "P1W"],
       },
       {
         name: "time",
@@ -54,24 +54,26 @@ describe("Dimension", () => {
         formula: "$time",
         kind: "time",
         url: "http://www.time.com/%s",
-        granularities: ["PT1M" , "P6M", "PT6H" , "P1D" , "P1W"],
-        bucketedBy: "PT6H"
-      }
+        granularities: ["PT1M", "P6M", "PT6H", "P1D", "P1W"],
+        bucketedBy: "PT6H",
+      },
     ]);
   });
 
   describe("back compat", () => {
     it("upgrades expression to formula", () => {
-      expect(Dimension.fromJS({
-        name: "country",
-        title: "important countries",
-        expression: "$country",
-        kind: "string"
-      } as any).toJS()).to.deep.equal({
+      expect(
+        Dimension.fromJS({
+          name: "country",
+          title: "important countries",
+          expression: "$country",
+          kind: "string",
+        } as any).toJS()
+      ).to.deep.equal({
         name: "country",
         title: "important countries",
         formula: "$country",
-        kind: "string"
+        kind: "string",
       });
     });
     /* TODO: check the correctness of the test */
@@ -106,31 +108,31 @@ describe("Dimension", () => {
             bucketingStrategy: 'defaultBucket'
           });
         });*/
-
   });
 
   describe("errors", () => {
     it("throws on invalid type", () => {
-      var dimJS = {
+      const dimJS = {
         name: "mixed_granularities",
         title: "Mixed Granularities",
         kind: "string" as DimensionKind,
-        granularities: [5, 50, "P1W", 800, 1000]
+        granularities: [5, 50, "P1W", 800, 1000],
       };
 
-      expect(() => { Dimension.fromJS(dimJS); }).to.throw("granularities must have the same type of actions");
+      expect(() => {
+        Dimension.fromJS(dimJS);
+      }).to.throw("granularities must have the same type of actions");
 
-      var dimJS2 = {
+      const dimJS2 = {
         name: "bad type",
         title: "Bad Type",
         kind: "string",
-        granularities: [false, true, true, false, false]
+        granularities: [false, true, true, false, false],
       };
 
-      expect(() => { Dimension.fromJS(dimJS2 as any); }).to.throw("input should be number or Duration");
-
+      expect(() => {
+        Dimension.fromJS(dimJS2 as any);
+      }).to.throw("input should be number or Duration");
     });
-
   });
-
 });

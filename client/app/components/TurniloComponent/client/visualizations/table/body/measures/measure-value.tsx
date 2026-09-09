@@ -25,7 +25,7 @@ import { MeasureCell } from "./measure-cell";
 interface MeasureValueProps {
   series: ConcreteSeries;
   datum: Datum;
-  scale: d3.scale.Linear<number, number>;
+  scale: d3.ScaleLinear<number, number>;
   cellWidth: number;
   lastLevel: boolean;
   showPrevious: boolean;
@@ -33,20 +33,17 @@ interface MeasureValueProps {
   report: any;
 }
 
-export const MeasureValue: React.SFC<MeasureValueProps> = props => {
+export const MeasureValue: React.SFC<MeasureValueProps> = (props) => {
   const { series, datum, scale, highlight, showPrevious, cellWidth, lastLevel, report } = props;
-  const colorText = report ? report.colorText : null
-  const colorBody = report ? report.colorBody : null
+  const colorText = report ? report.colorText : null;
+  const colorBody = report ? report.colorBody : null;
   const currentValue = series.selectValue(datum);
 
-  const currentCell = <MeasureCell
-    color={colorText}
-    key={series.reactKey()}
-    width={cellWidth}
-    value={series.formatValue(datum)}
-  >
-    {lastLevel && <MeasureBackground backgroundColor={colorText}  highlight={highlight} width={scale(currentValue)} />}
-  </MeasureCell>;
+  const currentCell = (
+    <MeasureCell color={colorText} key={series.reactKey()} width={cellWidth} value={series.formatValue(datum)}>
+      {lastLevel && <MeasureBackground backgroundColor={colorText} highlight={highlight} width={scale(currentValue)} />}
+    </MeasureCell>
+  );
 
   if (!showPrevious) {
     return currentCell;
@@ -54,24 +51,31 @@ export const MeasureValue: React.SFC<MeasureValueProps> = props => {
 
   const previousValue = series.selectValue(datum, SeriesDerivation.PREVIOUS);
 
-  return <React.Fragment>
-    {currentCell}
-    <MeasureCell
-      color={colorText}
-      key={series.reactKey(SeriesDerivation.PREVIOUS)}
-      width={cellWidth}
-      value={series.formatValue(datum, SeriesDerivation.PREVIOUS)}>
-      {lastLevel && <MeasureBackground backgroundColor={colorBody}  highlight={highlight} width={scale(previousValue)} />}
-    </MeasureCell>
-    <MeasureCell
-      color={colorText}
-      width={cellWidth}
-      key={series.reactKey(SeriesDerivation.DELTA)}
-      value={<Delta
-        currentValue={currentValue}
-        previousValue={previousValue}
-        lowerIsBetter={series.measure.lowerIsBetter}
-        formatter={series.formatter()}
-      />} />
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      {currentCell}
+      <MeasureCell
+        color={colorText}
+        key={series.reactKey(SeriesDerivation.PREVIOUS)}
+        width={cellWidth}
+        value={series.formatValue(datum, SeriesDerivation.PREVIOUS)}>
+        {lastLevel && (
+          <MeasureBackground backgroundColor={colorBody} highlight={highlight} width={scale(previousValue)} />
+        )}
+      </MeasureCell>
+      <MeasureCell
+        color={colorText}
+        width={cellWidth}
+        key={series.reactKey(SeriesDerivation.DELTA)}
+        value={
+          <Delta
+            currentValue={currentValue}
+            previousValue={previousValue}
+            lowerIsBetter={series.measure.lowerIsBetter}
+            formatter={series.formatter()}
+          />
+        }
+      />
+    </React.Fragment>
+  );
 };

@@ -20,16 +20,19 @@ import { RequireOnly } from "../../utils/functional/functional";
 import { SeriesDerivation } from "../series/concrete-series";
 import { MeasureSeries } from "../series/measure-series";
 
-export enum SortType { SERIES = "series", DIMENSION = "dimension" }
+export enum SortType {
+  SERIES = "series",
+  DIMENSION = "dimension",
+}
 
 export enum SortDirection {
   ascending = "ascending",
-  descending = "descending"
+  descending = "descending",
 }
 
-export const sortDirectionMapper: { [sort in SortDirection]: Direction; } = {
+export const sortDirectionMapper: { [sort in SortDirection]: Direction } = {
   ascending: "ascending",
-  descending: "descending"
+  descending: "descending",
 };
 
 interface BaseSortDefinition {
@@ -53,10 +56,11 @@ const defaultSeriesSort: SeriesSortDefinition = {
   reference: null,
   type: SortType.SERIES,
   direction: SortDirection.descending,
-  period: SeriesDerivation.CURRENT
+  period: SeriesDerivation.CURRENT,
 };
 
 export class SeriesSort extends Record<SeriesSortDefinition>(defaultSeriesSort) implements SortBehaviour {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(params: RequireOnly<SeriesSortDefinition, "reference">) {
     super(params);
   }
@@ -65,7 +69,7 @@ export class SeriesSort extends Record<SeriesSortDefinition>(defaultSeriesSort) 
     const series = new MeasureSeries({ reference: this.reference });
     return new SortExpression({
       direction: sortDirectionMapper[this.direction],
-      expression: $(series.plywoodKey(this.period))
+      expression: $(series.plywoodKey(this.period)),
     });
   }
 }
@@ -77,19 +81,20 @@ interface DimensionSortDefinition extends BaseSortDefinition {
 const defaultDimensionSort: DimensionSortDefinition = {
   reference: null,
   type: SortType.DIMENSION,
-  direction: SortDirection.descending
+  direction: SortDirection.descending,
 };
 
 export class DimensionSort extends Record<DimensionSortDefinition>(defaultDimensionSort) implements SortBehaviour {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(params: RequireOnly<DimensionSortDefinition, "reference">) {
     super(params);
   }
 
   toExpression(): SortExpression {
-    return new SortExpression(({
+    return new SortExpression({
       direction: sortDirectionMapper[this.direction],
-      expression: $(this.reference)
-    }));
+      expression: $(this.reference),
+    });
   }
 }
 

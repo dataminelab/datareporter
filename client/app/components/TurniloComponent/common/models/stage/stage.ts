@@ -16,7 +16,7 @@
  */
 
 import { Class, Instance } from "immutable-class";
-import * as React from "react";
+import React from "react";
 
 export interface MarginParameters {
   left?: number;
@@ -39,7 +39,7 @@ export interface StageJS {
   height: number;
 }
 
-var check: Class<StageValue, StageJS>;
+let check: Class<StageValue, StageJS>;
 
 export class Stage implements Instance<StageValue, StageJS> {
   static isStage(candidate: any): candidate is Stage {
@@ -51,7 +51,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       x: parameters.x,
       y: parameters.y,
       width: parameters.width,
-      height: parameters.height
+      height: parameters.height,
     });
   }
 
@@ -60,7 +60,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       x: rect.left,
       y: rect.top,
       width: rect.width,
-      height: rect.height
+      height: rect.height,
     });
   }
 
@@ -69,7 +69,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       x: 0,
       y: 0,
       width,
-      height
+      height,
     });
   }
 
@@ -90,7 +90,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       x: this.x,
       y: this.y,
       width: this.width,
-      height: this.height
+      height: this.height,
     };
   }
 
@@ -99,7 +99,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       x: this.x,
       y: this.y,
       width: this.width,
-      height: this.height
+      height: this.height,
     };
   }
 
@@ -112,7 +112,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       x: 0,
       y: 0,
       width: this.width,
-      height: this.height
+      height: this.height,
     };
   }
 
@@ -121,11 +121,13 @@ export class Stage implements Instance<StageValue, StageJS> {
   }
 
   public equals(other: Stage): boolean {
-    return Stage.isStage(other) &&
+    return (
+      Stage.isStage(other) &&
       this.x === other.x &&
       this.y === other.y &&
       this.width === other.width &&
-      this.height === other.height;
+      this.height === other.height
+    );
   }
 
   public getTransform(): string {
@@ -139,14 +141,14 @@ export class Stage implements Instance<StageValue, StageJS> {
   public getLeftTop(): React.CSSProperties {
     return {
       left: this.x,
-      top: this.y
+      top: this.y,
     };
   }
 
   public getWidthHeight(widthOffset = 0, heightOffset = 0): React.CSSProperties {
     return {
       width: this.width + widthOffset,
-      height: this.height + this.y + heightOffset
+      height: this.height + this.y + heightOffset,
     };
   }
 
@@ -155,27 +157,27 @@ export class Stage implements Instance<StageValue, StageJS> {
       left: this.x,
       top: this.y,
       width: this.width,
-      height: this.height
+      height: this.height,
     };
   }
 
   public changeY(y: number): Stage {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.y = y;
 
     return Stage.fromJS(value);
   }
 
   public changeHeight(height: number): Stage {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.height = height;
 
     return Stage.fromJS(value);
   }
 
   public within(param: MarginParameters): Stage {
-    var value = this.sizeOnlyValue();
-    var { left, right, top, bottom } = param;
+    const value = this.sizeOnlyValue();
+    const { left, right, top, bottom } = param;
 
     if (left) {
       value.x = left;
@@ -199,4 +201,5 @@ export class Stage implements Instance<StageValue, StageJS> {
   }
 }
 
+// eslint-disable-next-line
 check = Stage;

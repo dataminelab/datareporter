@@ -26,7 +26,7 @@ describe("Filter", () => {
   it("works in empty case", () => {
     expect(EMPTY_FILTER.toExpression(DataCubeFixtures.wiki()).toJS()).to.deep.equal({
       op: "literal",
-      value: true
+      value: true,
     });
   });
 
@@ -35,13 +35,17 @@ describe("Filter", () => {
     const reference = "namespace";
     const $namespace = $(reference);
 
-    const clause = new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of("en") });
+    const clause = new StringFilterClause({
+      reference,
+      action: StringFilterAction.IN,
+      values: Set.of("en"),
+    });
     filter = filter.addClause(clause);
 
     const en = $namespace.overlap(["en"]);
     expect(filter.toExpression(DataCubeFixtures.wiki()).toJS(), "lang: en").to.deep.equal(en.toJS());
 
-    filter = filter.setClause(clause.update("values", values => values.add(null)));
+    filter = filter.setClause(clause.update("values", (values) => values.add(null)));
 
     const langNull = $namespace.overlap(["en", null]);
     expect(filter.toExpression(DataCubeFixtures.wiki()).toJS(), "lang: null").to.deep.equal(langNull.toJS());

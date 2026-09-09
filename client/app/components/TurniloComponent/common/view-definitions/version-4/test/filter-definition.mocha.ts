@@ -18,7 +18,13 @@ import { expect } from "chai";
 import { Duration } from "chronoshift";
 import { DataCubeFixtures } from "../../../models/data-cube/data-cube.fixtures";
 import { StringFilterAction, TimeFilterPeriod } from "../../../models/filter-clause/filter-clause";
-import { boolean, numberRange, stringWithAction, timePeriod, timeRange } from "../../../models/filter-clause/filter-clause.fixtures";
+import {
+  boolean,
+  numberRange,
+  stringWithAction,
+  timePeriod,
+  timeRange,
+} from "../../../models/filter-clause/filter-clause.fixtures";
 import { filterDefinitionConverter } from "../filter-definition";
 import {
   booleanFilterDefinition,
@@ -26,14 +32,14 @@ import {
   latestTimeFilterDefinition,
   numberRangeFilterDefinition,
   stringFilterDefinition,
-  timeRangeFilterDefinition
+  timeRangeFilterDefinition,
 } from "../filter-definition.fixtures";
 
 describe("FilterDefinition v3", () => {
   const booleanFilterTests = [
     { dimension: "isRobot", exclude: false, values: [true] },
     { dimension: "isRobot", exclude: true, values: [false] },
-    { dimension: "isRobot", exclude: false, values: [true, false] }
+    { dimension: "isRobot", exclude: false, values: [true, false] },
   ];
 
   describe.skip("boolean filter conversion to filter clause", () => {
@@ -61,10 +67,30 @@ describe("FilterDefinition v3", () => {
   });
 
   const stringFilterTests = [
-    { dimension: "channel", action: StringFilterAction.IN, exclude: false, values: ["en", "pl"] },
-    { dimension: "channel", action: StringFilterAction.IN, exclude: true, values: ["en", "pl"] },
-    { dimension: "channel", action: StringFilterAction.CONTAINS, exclude: false, values: ["en"] },
-    { dimension: "channel", action: StringFilterAction.MATCH, exclude: false, values: ["^en$"] }
+    {
+      dimension: "channel",
+      action: StringFilterAction.IN,
+      exclude: false,
+      values: ["en", "pl"],
+    },
+    {
+      dimension: "channel",
+      action: StringFilterAction.IN,
+      exclude: true,
+      values: ["en", "pl"],
+    },
+    {
+      dimension: "channel",
+      action: StringFilterAction.CONTAINS,
+      exclude: false,
+      values: ["en"],
+    },
+    {
+      dimension: "channel",
+      action: StringFilterAction.MATCH,
+      exclude: false,
+      values: ["^en$"],
+    },
   ];
 
   describe.skip("string filter conversion to filter clause", () => {
@@ -91,11 +117,41 @@ describe("FilterDefinition v3", () => {
     });
   });
 
-  const numberFilterTests: Array<{ dimension: string, exclude: boolean, start?: number, end?: number, bounds?: string }> = [
-    { dimension: "commentLength", exclude: false, start: 1, end: null, bounds: "[)" },
-    { dimension: "commentLength", exclude: true, start: null, end: 100, bounds: "()" },
-    { dimension: "commentLength", exclude: false, start: 1, end: 2, bounds: "[)" },
-    { dimension: "commentLength", exclude: false, start: 1, end: 1, bounds: "[]" }
+  const numberFilterTests: Array<{
+    dimension: string;
+    exclude: boolean;
+    start?: number;
+    end?: number;
+    bounds?: string;
+  }> = [
+    {
+      dimension: "commentLength",
+      exclude: false,
+      start: 1,
+      end: null,
+      bounds: "[)",
+    },
+    {
+      dimension: "commentLength",
+      exclude: true,
+      start: null,
+      end: 100,
+      bounds: "()",
+    },
+    {
+      dimension: "commentLength",
+      exclude: false,
+      start: 1,
+      end: 2,
+      bounds: "[)",
+    },
+    {
+      dimension: "commentLength",
+      exclude: false,
+      start: 1,
+      end: 1,
+      bounds: "[]",
+    },
   ];
 
   describe.skip("number filter conversion to filter clause", () => {
@@ -129,19 +185,18 @@ describe("FilterDefinition v3", () => {
       const filterClause = timeRange("time", startDate, endDate);
 
       const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause);
-      const expected =
-        timeRangeFilterDefinition("time", startDate.toISOString(), endDate.toISOString());
+      const expected = timeRangeFilterDefinition("time", startDate.toISOString(), endDate.toISOString());
 
       expect(filterClauseDefinition).to.deep.equal(expected);
     });
 
     describe("latest time periods", () => {
       const latestTimeTests = [
-        {  multiple: -1, duration: "PT1H" },
-        {  multiple: -6, duration: "PT1H" },
-        {  multiple: -1, duration: "P1D" },
-        {  multiple: -7, duration: "P1D" },
-        {  multiple: -30, duration: "P1D" }
+        { multiple: -1, duration: "PT1H" },
+        { multiple: -6, duration: "PT1H" },
+        { multiple: -1, duration: "P1D" },
+        { multiple: -7, duration: "P1D" },
+        { multiple: -30, duration: "P1D" },
       ];
 
       describe.skip("filter conversion to filter clause", () => {
@@ -150,7 +205,10 @@ describe("FilterDefinition v3", () => {
           it(`converts ${-multiple} of ${duration}`, () => {
             const filterClauseDefinition = latestTimeFilterDefinition("time", multiple, duration);
 
-            const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
+            const filterClause = filterDefinitionConverter.toFilterClause(
+              filterClauseDefinition,
+              DataCubeFixtures.wiki()
+            );
             const expected = timePeriod("time", multipliedDuration, TimeFilterPeriod.LATEST);
 
             expect(filterClause).to.deep.equal(expected);
@@ -180,12 +238,12 @@ describe("FilterDefinition v3", () => {
         { duration: "P1W" },
         { duration: "P1M" },
         { duration: "P3M" },
-        { duration: "P1Y" }
+        { duration: "P1Y" },
       ];
 
       const flooredTimeTests = [
         { periodName: "current", step: 1, period: TimeFilterPeriod.CURRENT },
-        { periodName: "previous", step: -1, period: TimeFilterPeriod.PREVIOUS }
+        { periodName: "previous", step: -1, period: TimeFilterPeriod.PREVIOUS },
       ];
 
       describe.skip("definition to filter clause conversion", () => {
@@ -194,7 +252,10 @@ describe("FilterDefinition v3", () => {
             it(`converts ${periodName} period ${duration}`, () => {
               const filterClauseDefinition = flooredTimeFilterDefinition("time", step, duration);
 
-              const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
+              const filterClause = filterDefinitionConverter.toFilterClause(
+                filterClauseDefinition,
+                DataCubeFixtures.wiki()
+              );
               const expected = timePeriod("time", duration, period);
 
               expect(filterClause).to.deep.equal(expected);

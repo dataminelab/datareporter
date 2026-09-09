@@ -23,9 +23,12 @@ import { HighlightPosition } from "./get-highlight-position";
 import { HoverPosition } from "./get-hover-position";
 
 export function modalTitle(position: HighlightPosition | HoverPosition, dataset: Datum[], essence: Essence): string {
-  const { timezone, splits: { splits } } = essence;
+  const {
+    timezone,
+    splits: { splits },
+  } = essence;
   const datums = datumByPosition(dataset, position);
-  const references = splits.toArray().map(split => split.reference);
+  const references = splits.toArray().map((split) => split.reference);
   const segments = zip(datums, references);
 
   return segments

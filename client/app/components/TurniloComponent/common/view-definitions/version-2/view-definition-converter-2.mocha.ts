@@ -25,42 +25,52 @@ const currentDay = {
   op: "timeBucket",
   operand: {
     op: "ref",
-    name: "n"
+    name: "n",
   },
-  duration: "P1D"
+  duration: "P1D",
 };
 
 const previousDay = {
   op: "timeRange",
   operand: {
     op: "timeFloor",
-    operand:
-      {
-        op: "ref",
-        name: "n"
-      },
-    duration: "P1D"
+    operand: {
+      op: "ref",
+      name: "n",
+    },
+    duration: "P1D",
   },
   duration: "P1D",
-  step: -1
+  step: -1,
 };
 
 const latestDay = {
   op: "timeRange",
   operand: {
     op: "ref",
-    name: "m"
+    name: "m",
   },
   duration: "P1D",
-  step: -1
+  step: -1,
 };
 
 describe("ViewDefinitionConverter2", () => {
-
   [
-    { label: "current day", expression: currentDay, period: TimeFilterPeriod.CURRENT },
-    { label: "previous day", expression: previousDay, period: TimeFilterPeriod.PREVIOUS },
-    { label: "latest day", expression: latestDay, period: TimeFilterPeriod.LATEST }
+    {
+      label: "current day",
+      expression: currentDay,
+      period: TimeFilterPeriod.CURRENT,
+    },
+    {
+      label: "previous day",
+      expression: previousDay,
+      period: TimeFilterPeriod.PREVIOUS,
+    },
+    {
+      label: "latest day",
+      expression: latestDay,
+      period: TimeFilterPeriod.LATEST,
+    },
   ].forEach(({ label, expression, period }) => {
     it(`converts ${label} bucket expression to time period`, () => {
       const viewDefinition = ViewDefinitionConverter2Fixtures.withFilterExpression(expression);
@@ -80,20 +90,20 @@ describe("ViewDefinitionConverter2", () => {
           op: "chain",
           expression: {
             op: "ref",
-            name: "n"
+            name: "n",
           },
           actions: [
             {
               action: "timeFloor",
-              duration: "P1W"
+              duration: "P1W",
             },
             {
               action: "timeRange",
               duration: "P1W",
-              step: -1
-            }
-          ]
-        }
+              step: -1,
+            },
+          ],
+        },
       },
       {
         action: "and",
@@ -101,12 +111,12 @@ describe("ViewDefinitionConverter2", () => {
           op: "chain",
           expression: {
             op: "ref",
-            name: "page"
+            name: "page",
           },
           actions: [
             {
               action: "lookup",
-              lookup: "page_last_author"
+              lookup: "page_last_author",
             },
             {
               action: "overlap",
@@ -114,18 +124,19 @@ describe("ViewDefinitionConverter2", () => {
                 op: "literal",
                 value: {
                   setType: "STRING",
-                  elements: [
-                    "TypeScript"
-                  ]
+                  elements: ["TypeScript"],
                 },
-                type: "SET"
-              }
-            }
-          ]
-        }
-      }
+                type: "SET",
+              },
+            },
+          ],
+        },
+      },
     ]);
-    const convertedFilter = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki()).filter;
+    const convertedFilter = new ViewDefinitionConverter2().fromViewDefinition(
+      viewDefinition,
+      DataCubeFixtures.wiki()
+    ).filter;
     const convertedClause = convertedFilter.clauses.get(1);
 
     const expectedClause = stringIn("page_last_author", ["TypeScript"]);
@@ -133,36 +144,40 @@ describe("ViewDefinitionConverter2", () => {
   });
 
   it("converts splits with lookup expressions", () => {
-    const viewDefinition = ViewDefinitionConverter2Fixtures.withSplits([{
-      expression: {
-        op: "chain",
+    const viewDefinition = ViewDefinitionConverter2Fixtures.withSplits([
+      {
         expression: {
-          op: "ref",
-          name: "page"
+          op: "chain",
+          expression: {
+            op: "ref",
+            name: "page",
+          },
+          actions: [
+            {
+              action: "lookup",
+              lookup: "page_last_author",
+            },
+          ],
         },
-        actions: [
-          {
-            action: "lookup",
-            lookup: "page_last_author"
-          }
-        ]
-      },
-      sortAction: {
-        action: "sort",
-        expression: {
-          op: "ref",
-          name: "count"
+        sortAction: {
+          action: "sort",
+          expression: {
+            op: "ref",
+            name: "count",
+          },
+          direction: "descending",
         },
-        direction: "descending"
+        limitAction: {
+          action: "limit",
+          limit: 10,
+        },
       },
-      limitAction: {
-        action: "limit",
-        limit: 10
-      }
-    }]);
-    const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki()).splits;
+    ]);
+    const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(
+      viewDefinition,
+      DataCubeFixtures.wiki()
+    ).splits;
 
     expect(convertedSplits.getSplit(0).reference).to.equal("page_last_author");
   });
-
 });

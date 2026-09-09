@@ -1,41 +1,65 @@
 import json
-from flask import request, make_response, url_for
+from datetime import datetime
+
+from flask import make_response, request, url_for
 from flask_restful import abort
 from funcy import project
 from sqlalchemy.orm.exc import NoResultFound
-from redash.security import csp_allows_embeding
-from redash.serializers.report_serializer import ReportSerializer
+
 from redash import models
 from redash.handlers.base import (
     BaseResource,
-    require_fields,
     get_object_or_404,
-    paginate
+    paginate,
+    require_fields,
 )
-
 from redash.handlers.queries import order_results
-from redash.models.models import Model, Report
+from redash.models import QueryResult, Report
+from redash.models.models import Model
 from redash.permissions import (
-    require_permission,
     require_admin_or_owner,
+    require_object_delete_permission,
     require_object_modify_permission,
-    require_object_delete_permission, require_object_view_permission
+    require_object_view_permission,
+    require_permission,
 )
-from redash.plywood.hash_manager import hash_report, hash_to_result, filter_expression_to_result
+from redash.plywood.hash_manager import (
+    filter_expression_to_result,
+    get_data_cube,
+    hash_report,
+    hash_to_result,
+)
 from redash.plywood.objects.expression import ExpressionNotSupported
+from redash.security import csp_allows_embeding
+from redash.serializers.report_result import (
+    serialize_query_result_to_xlsx_with_multiple_sheets,
+    serialize_report_result_to_dsv,
+)
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
-from redash.settings import REDASH_DEBUG
-from redash.plywood.hash_manager import get_data_cube
+from redash.settings import parse_boolean
+from redash.utils import json_dumps
+
 HASH = "hash"
 DATA_CUBE = "dataCube"
 EXPRESSION = "expression"
 CONTEXT = "context"
 NAME = "name"
 MODEL_ID = "model_id"
-COLOR_1 = 'color_1'
-COLOR_2 = 'color_2'
-TAGS = 'tags'
+COLOR_1 = "color_1"
+COLOR_2 = "color_2"
+TAGS = "tags"
+DATA_SOURCE_ID = "data_source_id"
+SCHEDULE = "schedule"
+IS_DRAFT = "is_draft"
+
+
+# Custom JSON encoder to handle datetime objects
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime):
+            return o.isoformat()  # Convert datetime to ISO 8601 string
+        return super().default(o)
 
 
 class ReportFilter(BaseResource):
@@ -50,28 +74,124 @@ class ReportFilter(BaseResource):
             filtered_result.meta = data_cube.get_meta(filtered_result.queries)
         return filtered_result.serialized()
 
+
+class ReportRecentResource(BaseResource):
+    @require_permission("view_report")
+    def get(self):
+        """
+        Retrieve up to 10 reports recently modified by the user.
+
+        Responds with a list of report objects.
+        """
+        recent_reports = Report.get_by_user(self.current_user).order_by(Report.updated_at.desc()).limit(10)
+        return ReportSerializer(recent_reports).serialize()
+
+
 class ReportGeneratePublicResource(BaseResource):
+    decorators = [csp_allows_embeding]
+
     def post(self, model_id):
-        if not isinstance(self.current_user, models.ApiUser):
+        if not self.current_user or (
+            not self.current_user.is_authenticated and not isinstance(self.current_user, models.ApiUser)
+        ):
             abort(405)
 
         req = request.get_json(True)
+
         require_fields(req, (HASH,))
         hash_string = req[HASH]
+        bypass_cache = False
         model = get_object_or_404(Model.get_by_id, model_id)
         try:
-            result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org, bypass_cache=False)
+            result = hash_to_result(hash_string, model, self.current_org, bypass_cache)
             return result.serialized()
         except ExpressionNotSupported as err:
-            if REDASH_DEBUG:
-                abort(400, message=err.message)
-            else:
-                abort(400, message="An error occurred while generating report.")
+            abort(400, message=err.message)
+
+
+class ReportApiKeyAccess(BaseResource):
+    decorators = []
+
+    def get(self, report_id: int, filetype: str = "json"):
+        api_key = request.args.get("api_key")
+        if not api_key:
+            abort(400, message="Missing api key")
+        report = get_object_or_404(Report.get_by_id, report_id)
+        if api_key != report.api_key:
+            abort(403, message="Invalid api key")
+        model = get_object_or_404(Model.get_by_id, report.model_id)
+
+        execute_plywood = hash_to_result(hash_string=report.hash, model=model, organisation=self.current_org)
+        serialized = execute_plywood.serialized()
+        response_builders = {
+            "json": self.make_json_response,
+            "xlsx": self.make_excel_response,
+            "csv": self.make_csv_response,
+            "tsv": self.make_tsv_response,
+        }
+        query_results = []
+        for query_result in serialized["queries"]:
+            if "query_result" not in query_result:
+                continue
+            query_result = QueryResult.get_by_id(query_result["query_result"]["id"])
+            query_results.append(query_result)
+        if not query_results:
+            abort(404, message="No query results found")
+        return response_builders[filetype](query_results)
+
+    @staticmethod
+    def make_json_response(query_results):
+        merged_rows = []
+        all_columns = []
+
+        # Merge results into a single list of rows, matching on common columns
+        for query in query_results:
+            query_data = query.data
+            # Track all columns seen across all queries
+            for col in query_data.get("columns", []):
+                if col not in all_columns:
+                    all_columns.append(col)
+
+            for row in query_data.get("rows", []):
+                found = False
+                for existing_row in merged_rows:
+                    common_keys = set(row.keys()) & set(existing_row.keys())
+                    if common_keys and all(row[k] == existing_row[k] for k in common_keys):
+                        existing_row.update(row)
+                        found = True
+                        break
+                if not found:
+                    merged_rows.append(dict(row))
+
+        data = json_dumps({"columns": all_columns, "rows": merged_rows})
+        headers = {"Content-Type": "application/json"}
+        return make_response(data, 200, headers)
+
+    @staticmethod
+    def make_csv_response(query_results):
+        results = []
+        for query in query_results:
+            results.append(query.to_dict())
+        headers = {"Content-Type": "text/csv; charset=UTF-8"}
+        return make_response(serialize_report_result_to_dsv(query_results, ","), 200, headers)
+
+    @staticmethod
+    def make_tsv_response(query_result):
+        headers = {"Content-Type": "text/tab-separated-values; charset=UTF-8"}
+        return make_response(serialize_report_result_to_dsv(query_result, "\t"), 200, headers)
+
+    @staticmethod
+    def make_excel_response(query_result):
+        headers = {"Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
+        return make_response(serialize_query_result_to_xlsx_with_multiple_sheets(query_result), 200, headers)
+
 
 # /api/reports/generate/<int:model_id>
 class ReportGenerateResource(BaseResource):
     def post(self, model_id):
-        if not self.current_user.is_authenticated and not isinstance(self.current_user, models.ApiUser):
+        if not self.current_user or (
+            not self.current_user.is_authenticated and not isinstance(self.current_user, models.ApiUser)
+        ):
             abort(405)
 
         req = request.get_json(True)
@@ -81,13 +201,11 @@ class ReportGenerateResource(BaseResource):
         bypass_cache = req.get("bypass_cache", False)
         model = get_object_or_404(Model.get_by_id, model_id)
         try:
-            result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org, bypass_cache=bypass_cache)
+            result = hash_to_result(hash_string, model, self.current_org, bypass_cache)
             return result.serialized()
         except ExpressionNotSupported as err:
-            if REDASH_DEBUG:
-                abort(400, message=err.message)
-            else:
-                abort(400, message="An error occurred while generating report.")
+            abort(400, message=err.message)
+
 
 # /api/reports/archive
 class ReportsArchiveResource(BaseResource):
@@ -112,8 +230,8 @@ class ReportsArchiveResource(BaseResource):
         return response
 
     def delete(self):
-        """ 
-            Archives the report. 
+        """
+        Archives the report.
         """
         report_id = request.args.get("id")
         if not report_id:
@@ -127,25 +245,39 @@ class ReportsArchiveResource(BaseResource):
         report.archive()
         models.db.session.commit()
 
-        self.record_event({
-            "action": "archive",
-            "object_id": report.id,
-            "object_type": "report",
-        })
+        self.record_event(
+            {
+                "action": "archive",
+                "object_id": report.id,
+                "object_type": "report",
+            }
+        )
 
         return make_response("", 204)
 
+
 # /api/reports
 class ReportsListResource(BaseResource):
+    """
+    List all reports or create a new report
+    """
+
     @require_permission("create_report")
     def post(self):
         req = request.get_json(True)
-        require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2))
+        require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, DATA_SOURCE_ID))
 
+        name, model_id, expression, color_1, color_2, data_source_id = (
+            req[NAME],
+            req[MODEL_ID],
+            req[EXPRESSION],
+            req[COLOR_1],
+            req[COLOR_2],
+            req[DATA_SOURCE_ID],
+        )
+        is_archived = req.get("is_archived", False)
+        is_draft = req.get(IS_DRAFT, True)
         formatting = request.args.get("format", "base64")
-        name, model_id, expression = req[NAME], req[MODEL_ID], req[EXPRESSION]
-        color_1, color_2 = req.get(COLOR_1, 'color'), req.get(COLOR_2, 'color')
-
         model = get_object_or_404(Model.get_by_id, model_id)
 
         expression_obj = ExpressionBase64Parser.parse_base64_to_dict(expression)
@@ -157,18 +289,24 @@ class ReportsListResource(BaseResource):
             expression=expression_obj,
             color_1=color_1,
             color_2=color_2,
+            data_source_id=data_source_id,
+            last_modified_by=self.current_user,
+            is_archived=is_archived,
+            is_draft=is_draft,
         )
 
         models.db.session.add(report)
         models.db.session.commit()
 
-        self.record_event({
-            "action": "create",
-            "object_id": report.id,
-            "object_type": "report",
-        })
+        self.record_event(
+            {
+                "action": "create",
+                "object_id": report.id,
+                "object_type": "report",
+            }
+        )
 
-        return ReportSerializer(report, formatting=formatting).serialize()
+        return ReportSerializer(report, formatting).serialize()
 
     @require_permission("view_report")
     def get(self):
@@ -176,11 +314,7 @@ class ReportsListResource(BaseResource):
         search_query = request.args.get("q", "", type=str)
         reports = []
         if _type == "my":
-            reports = Report.get_by_user(
-                self.current_user
-            ).filter(
-                Report.is_archived.is_(False)
-            )
+            reports = Report.get_by_user(self.current_user).filter(Report.is_archived.is_(False))
         elif _type == "all":
             reports = Report.get_by_group_ids(self.current_user)
         if search_query:
@@ -192,78 +326,90 @@ class ReportsListResource(BaseResource):
         page = request.args.get("page", 1, type=int)
         page_size = request.args.get("page_size", 25, type=int)
 
-        response = paginate(
-            ordered_results,
-            page=page,
-            page_size=page_size,
-            serializer=ReportSerializer,
-            formatting=formatting
-        )
+        response = paginate(ordered_results, page, page_size, ReportSerializer, formatting=formatting)
 
-        self.record_event({
-            "action": "list",
-            "object_type": "report"
-        })
+        self.record_event({"action": "list", "object_type": "report"})
         return response
 
     def delete(self, report_id):
-        """ 
-            Archives given report. 
+        """
+        Archives given report.
         """
         report = get_object_or_404(Report.get_by_id, report_id)
 
         require_object_delete_permission(report, self.current_user)
         report.archive()
 
-        self.record_event({
-            "action": "archive",
-            "object_id": report.id,
-            "object_type": "report",
-        })
+        self.record_event(
+            {
+                "action": "archive",
+                "object_id": report.id,
+                "object_type": "report",
+            }
+        )
 
         return make_response("", 204)
 
+
 # /api/reports/<int:report_id>
 class ReportResource(BaseResource):
-    ''' A resource for a single report creation, editing and deleting '''
+    """A resource for a single report viewing, creating, editing and deleting"""
 
     @require_permission("view_report")
     def get(self, report_id: int):
         report: Report = get_object_or_404(Report.get_by_id, report_id)
         require_object_view_permission(report, self.current_user)
 
-        self.record_event({
-            "action": "view",
-            "object_id": report.id,
-            "object_type": "report"
-        })
+        self.record_event({"action": "view", "object_id": report.id, "object_type": "report"})
         report_user_email = report.user.email if report.user else None
-        current_user = self.current_user.email
-        if report_user_email != current_user:
-            self.record_event({
-                "action": "view",
-                "object_id": report.id,
-                "object_type": "report",
-                "message": "Report viewed by another user"
-            })
+        is_api_user = isinstance(self.current_user, models.ApiUser)
+        viewer_identity = getattr(self.current_user, "email", None) or getattr(self.current_user, "name", None)
+
+        if report_user_email != viewer_identity:
+            self.record_event(
+                {
+                    "action": "view",
+                    "object_id": report.id,
+                    "object_type": "report",
+                    "message": f"Report viewed by {viewer_identity}",
+                }
+            )
+        if is_api_user or report_user_email != viewer_identity:
             can_edit = False
         else:
             can_edit = True
-        return hash_report(report, can_edit=can_edit)
+        get_results = parse_boolean(request.args.get("get_results", "False"))
+        return hash_report(report, can_edit, get_results)
 
     @require_permission("edit_report")
     def post(self, report_id: int):
+        """
+        Modify a report
+
+        - param `report_id (int)`: ID of report to update
+        - json `string` name:
+        - json `number` data_source_id: The ID of the data source this report will run on
+        - json `string` expression: hash of the report expression, encoded in base64
+        - json `string` color_1: Hex code of the first color used in the report visualizations
+        - json `string` color_2: Hex code of the second color used in the report visualizations
+        - json `array` tags: List of tags associated with the report
+        - json `string` schedule: Schedule interval, in seconds, for repeated execution of this report
+
+        Responds with the updated :ref:`report <report-response-label>` object.
+        """
         report_properties = request.get_json(force=True)
-        updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS))
+        updates = project(
+            report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS, SCHEDULE, DATA_SOURCE_ID, IS_DRAFT)
+        )
         report: Report = get_object_or_404(Report.get_by_id, report_id)
         require_object_modify_permission(report, self.current_user)
-        
+
         counter = 0
         for key, value in updates.items():
             if key == "expression" and isinstance(value, dict):
-                counter+=1
+                counter += 1
             elif value == report.__getattribute__(key):
-                counter+=1
+                counter += 1
         if counter == len(updates):
             return make_response(json.dumps({"message": "No changes made"}), 204)
 
@@ -279,18 +425,15 @@ class ReportResource(BaseResource):
             # decodes base64 that turnillo uses to plain json
             updates[EXPRESSION] = ExpressionBase64Parser.parse_base64_to_dict(updates[EXPRESSION])
 
+        report.last_modified_by = self.current_user
         self.update_model(report, updates)
 
         models.db.session.commit()
 
-        self.record_event({
-            "action": "edit",
-            "object_id": report.id,
-            "object_type": "report"
-        })
+        self.record_event({"action": "edit", "object_id": report.id, "object_type": "report"})
 
         formatting = request.args.get("format", "base64")
-        return ReportSerializer(report, formatting=formatting).serialize()
+        return ReportSerializer(report, formatting).serialize()
 
     @require_permission("edit_report")
     def delete(self, report_id):
@@ -298,14 +441,33 @@ class ReportResource(BaseResource):
 
         require_object_delete_permission(report, self.current_user)
         report.remove()
+        # also delete as a cascade the widgets
+        models.Widget.delete_by_report_id(report_id)
 
-        self.record_event({
-            "action": "delete",
-            "object_id": report.id,
-            "object_type": "report",
-        })
+        self.record_event(
+            {
+                "action": "delete",
+                "object_id": report.id,
+                "object_type": "report",
+            }
+        )
 
         return make_response("", 204)
+
+
+class ReportForkResource(BaseResource):
+    @require_permission("edit_report")
+    def post(self, report_id):
+        report = get_object_or_404(Report.get_by_id_and_org, report_id, self.current_org)
+        require_object_view_permission(report, self.current_user)
+
+        forked_report = report.fork(self.current_user)
+        models.db.session.commit()
+
+        self.record_event({"action": "fork", "object_id": report_id, "object_type": "report"})
+
+        return ReportSerializer(forked_report).serialize()
+
 
 class ReportTagsResource(BaseResource):
     def get(self):
@@ -314,6 +476,7 @@ class ReportTagsResource(BaseResource):
         """
         tags = Report.all_tags(self.current_user, include_drafts=True)
         return {"tags": [{"name": name, "count": count} for name, count in tags]}
+
 
 class ReportFavoriteListResource(BaseResource):
     def get(self):
@@ -326,9 +489,7 @@ class ReportFavoriteListResource(BaseResource):
                 self.current_user.id,
                 search_term,
             )
-            favorites = Report.favorites(
-                self.current_user, base_query=base_query
-            )
+            favorites = Report.favorites(self.current_user, base_query=base_query)
         else:
             favorites = Report.favorites(self.current_user)
 
@@ -356,8 +517,9 @@ class ReportFavoriteListResource(BaseResource):
 
         return response
 
+
 class PublicReportResource(BaseResource):
-    decorators = BaseResource.decorators + [csp_allows_embeding]
+    decorators = [csp_allows_embeding]
 
     def get(self, token):
         """
@@ -365,15 +527,18 @@ class PublicReportResource(BaseResource):
 
         :param token: An API key for a public dashboard.
         """
+        if self.current_org.get_setting("disable_public_urls"):
+            abort(400, message="Public URLs are disabled.")
+
         if not isinstance(self.current_user, models.ApiUser):
             api_key = get_object_or_404(models.ApiKey.get_by_api_key, token)
             report = api_key.object
         else:
-            report_id = request.args.get("report_id", None)
-            if not report_id or report_id == "null":
-                report_id = self.current_user.object
-            report = get_object_or_404(Report.get_by_id, report_id)
-        return hash_report(report, can_edit=False)
+            report = self.current_user.object
+        get_results = parse_boolean(request.args.get("get_results", "False"))
+        can_edit = False
+        return hash_report(report, can_edit, get_results)
+
 
 class ReportShareResource(BaseResource):
     def post(self, report_id):
@@ -392,10 +557,7 @@ class ReportShareResource(BaseResource):
         models.db.session.commit()
 
         public_url = url_for(
-            "redash.public_report",
-            token=api_key.api_key,
-            org_slug=self.current_org.slug,
-            _external=True
+            "redash.public_report", token=api_key.api_key, org_slug=self.current_org.slug, _external=True
         )
 
         self.record_event(
@@ -409,7 +571,6 @@ class ReportShareResource(BaseResource):
         return {"public_url": public_url, "api_key": api_key.api_key}
 
     def delete(self, report_id):
-        # XXX TODO IT'S A COPY OF DASHBOARD SHARE
         """
         Disable anonymous access to a report.
 

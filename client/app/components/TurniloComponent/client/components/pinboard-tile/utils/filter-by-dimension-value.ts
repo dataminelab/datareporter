@@ -20,5 +20,5 @@ import { Dimension } from "../../../../common/models/dimension/dimension";
 export default function filterByDimensionValue(data: Datum[], { name }: Dimension, searchText: string): Datum[] {
   if (!searchText) return data;
   const lowerSearchText = searchText.toLowerCase();
-  return data.filter(datum => String(datum[name]).toLowerCase().includes(lowerSearchText));
+  return data.filter((datum) => String(datum[name]).toLowerCase().includes(lowerSearchText));
 }

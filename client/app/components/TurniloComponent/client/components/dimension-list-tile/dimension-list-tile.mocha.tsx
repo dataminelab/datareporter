@@ -25,7 +25,7 @@ import { DimensionListTile } from "./dimension-list-tile";
 
 describe("DimensionListTile", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <DimensionListTile
         clicker={null}
         essence={EssenceFixtures.wikiTotals()}
@@ -35,7 +35,8 @@ describe("DimensionListTile", () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("dimension-list-tile");
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain(
+      "dimension-list-tile"
+    );
   });
-
 });

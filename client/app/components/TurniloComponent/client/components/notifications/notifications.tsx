@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { BodyPortal } from "../body-portal/body-portal";
 import { Button, ButtonType } from "../button/button";
 import { Modal } from "../modal/modal";
@@ -47,7 +47,7 @@ export interface Choice {
 
 export interface Question {
   title: string;
-  message: (string | string[]);
+  message: string | string[];
   choices: Choice[];
   onClose?: () => void;
 }
@@ -70,7 +70,7 @@ export class Notifier {
   }
 
   private static callListeners() {
-    Notifier.listeners.forEach(cb => cb(Notifier.notifications, Notifier.question));
+    Notifier.listeners.forEach((cb) => cb(Notifier.notifications, Notifier.question));
   }
 
   public static info(title: string, message?: string) {
@@ -95,8 +95,8 @@ export class Notifier {
   }
 
   public static removeSticker(id: number) {
-    var notification: Notification;
-    var index = -1;
+    let notification: Notification;
+    let index = -1;
 
     Notifier.notifications.forEach((n, i) => {
       if (n.id === id) {
@@ -134,7 +134,7 @@ export class Notifier {
   }
 
   public static clear() {
-    this.notifications.forEach(n => n.discarded = true);
+    this.notifications.forEach((n) => (n.discarded = true));
     Notifier.callListeners();
   }
 
@@ -146,7 +146,7 @@ export class Notifier {
     }
 
     Notifier.notifications.splice(index, 1);
-    Notifier.listeners.forEach(cb => cb(Notifier.notifications));
+    Notifier.listeners.forEach((cb) => cb(Notifier.notifications));
   }
 
   public static unsubscribe(callback: (notifications: Notification[], question: Question) => void) {
@@ -166,7 +166,7 @@ export interface NotificationsState {
 
 export class Notifications extends React.Component<React.Props<any>, NotificationsState> {
   state: NotificationsState = {
-    notifications: []
+    notifications: [],
   };
 
   componentDidMount() {
@@ -182,7 +182,7 @@ export class Notifications extends React.Component<React.Props<any>, Notificatio
   };
 
   renderCards(): JSX.Element[] {
-    var cumuledHeight = 13;
+    let cumuledHeight = 13;
 
     return this.state.notifications.map((n, i) => {
       const { title, message, action } = n;
@@ -195,9 +195,11 @@ export class Notifications extends React.Component<React.Props<any>, Notificatio
   }
 
   render() {
-    return <BodyPortal left={"50%"} top={"10px"} isAboveAll={true}>
-      <div className="notifications">{this.renderCards()}</div>
-    </BodyPortal>;
+    return (
+      <BodyPortal left={"50%"} top={"10px"} isAboveAll={true}>
+        <div className="notifications">{this.renderCards()}</div>
+      </BodyPortal>
+    );
   }
 }
 
@@ -225,22 +227,20 @@ export class Questions extends React.Component<React.Props<any>, QuestionsState>
 
     if (!question) return null;
 
-    return <Modal
-      className="remove-modal"
-      title={question.title}
-      onClose={question.onClose}
-    >
-      {Array.isArray(question.message)
-        ? question.message.map((line, i) => <p key={i}>{line}</p>)
-        : <p>{question.message}</p>
-      }
+    return (
+      <Modal className="remove-modal" title={question.title} onClose={question.onClose}>
+        {Array.isArray(question.message) ? (
+          question.message.map((line, i) => <p key={i}>{line}</p>)
+        ) : (
+          <p>{question.message}</p>
+        )}
 
-      <div className="button-bar">
-        {question.choices.map(({ label, callback, type, className }, i) => {
-          return <Button key={i} className={className} title={label} type={type} onClick={callback} />;
-        })}
-      </div>
-
-    </Modal>;
+        <div className="button-bar">
+          {question.choices.map(({ label, callback, type, className }, i) => {
+            return <Button key={i} className={className} title={label} type={type} onClick={callback} />;
+          })}
+        </div>
+      </Modal>
+    );
   }
 }

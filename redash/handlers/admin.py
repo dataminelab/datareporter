@@ -1,14 +1,14 @@
-from flask import request
-from flask_login import login_required, current_user
+from flask_login import current_user, login_required
 
 from redash import models, redis_connection
 from redash.authentication import current_org
 from redash.handlers import routes
 from redash.handlers.base import json_response, record_event
+from redash.monitor import rq_status
 from redash.permissions import require_super_admin
 from redash.serializers import QuerySerializer
+from redash.serializers.report_serializer import ReportSerializer
 from redash.utils import json_loads
-from redash.monitor import rq_status
 
 
 @routes.route("/api/admin/queries/outdated", methods=["GET"])
@@ -29,14 +29,45 @@ def outdated_queries():
     record_event(
         current_org,
         current_user._get_current_object(),
-        {"action": "list", "object_type": "outdated_queries",},
+        {
+            "action": "list",
+            "object_type": "outdated_queries",
+        },
+    )
+
+    # updated_at = manager_status.get("last_refresh_at", None)
+    response = {
+        "queries": QuerySerializer(outdated_queries, with_stats=True, with_last_modified_by=False).serialize(),
+        "updated_at": manager_status["last_refresh_at"],
+    }
+    return json_response(response)
+
+
+@routes.route("/api/admin/reports/outdated", methods=["GET"])
+@require_super_admin
+@login_required
+def outdated_reports():
+    manager_status = redis_connection.hgetall("redash:status")
+    report_ids = json_loads(manager_status.get("report_ids", "[]"))
+    if report_ids:
+        outdated_reports = models.Report.query.filter(models.Report.id.in_(report_ids)).order_by(
+            models.Report.created_at.desc()
+        )
+    else:
+        outdated_reports = []
+
+    record_event(
+        current_org,
+        current_user._get_current_object(),
+        {
+            "action": "list",
+            "object_type": "outdated_reports",
+        },
     )
 
     response = {
-        "queries": QuerySerializer(
-            outdated_queries, with_stats=True, with_last_modified_by=False
-        ).serialize(),
-        "updated_at": manager_status["last_refresh_at"],
+        "reports": ReportSerializer(outdated_reports).serialize(),
+        "updated_at": manager_status.get("last_report_refresh_at"),
     }
     return json_response(response)
 

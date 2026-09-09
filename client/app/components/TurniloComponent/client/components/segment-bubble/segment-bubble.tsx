@@ -31,12 +31,14 @@ export interface SegmentBubbleProps extends SegmentBubbleContentProps {
 
 export const SegmentBubble: React.SFC<SegmentBubbleProps> = (props: SegmentBubbleProps) => {
   const { left, top, title, content } = props;
-  return <BodyPortal left={left} top={top + OFFSET_V}>
-    <div className="segment-bubble">
-      <SegmentBubbleContent title={title} content={content} />
-      <Shpitz direction="up" />
-    </div>
-  </BodyPortal>;
+  return (
+    <BodyPortal left={left} top={top + OFFSET_V}>
+      <div className="segment-bubble">
+        <SegmentBubbleContent title={title} content={content} />
+        <Shpitz direction="up" />
+      </div>
+    </BodyPortal>
+  );
 };
 
 export interface SegmentBubbleContentProps {
@@ -44,7 +46,10 @@ export interface SegmentBubbleContentProps {
   content?: ReactNode;
 }
 
-export const SegmentBubbleContent: React.SFC<SegmentBubbleContentProps> = ({ title, content }: SegmentBubbleContentProps) => {
+export const SegmentBubbleContent: React.SFC<SegmentBubbleContentProps> = ({
+  title,
+  content,
+}: SegmentBubbleContentProps) => {
   return (
     <div className="segment-bubble-text">
       <BubbleTitle title={title} />

@@ -23,7 +23,7 @@ describe("Cluster", () => {
   it("is an immutable class", () => {
     testImmutableClass(Cluster, [
       {
-        name: "my-druid-cluster"
+        name: "my-druid-cluster",
       },
       {
         name: "my-druid-cluster",
@@ -36,13 +36,13 @@ describe("Cluster", () => {
         sourceListRefreshInterval: 10000,
         sourceReintrospectInterval: 10000,
 
-        introspectionStrategy: "segment-metadata-fallback"
+        introspectionStrategy: "segment-metadata-fallback",
       },
       {
         name: "my-mysql-cluster",
         url: "http://192.168.99.100",
         timeout: 30000,
-        sourceListScan: "auto"
+        sourceListScan: "auto",
       },
       {
         name: "my-mysql-cluster",
@@ -50,8 +50,8 @@ describe("Cluster", () => {
         timeout: 30000,
         sourceListScan: "auto",
         sourceListRefreshInterval: 0,
-        sourceReintrospectInterval: 0
-      }
+        sourceReintrospectInterval: 0,
+      },
     ]);
   });
 
@@ -59,11 +59,10 @@ describe("Cluster", () => {
     it("should read old host and assume http protocol", () => {
       const cluster = Cluster.fromJS({
         name: "old-host",
-        host: "broker-host.com"
+        host: "broker-host.com",
       } as ClusterJS);
 
       expect(cluster.url).to.be.eq("http://broker-host.com");
     });
   });
-
 });

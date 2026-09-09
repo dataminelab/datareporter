@@ -16,7 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import { NumberRange, TimeRange } from "plywood";
+import { Datum, NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
@@ -29,12 +29,19 @@ import {
   StringFilterAction,
   StringFilterClause,
   TimeFilterClause,
-  TimeFilterPeriod
+  TimeFilterPeriod,
 } from "../../models/filter-clause/filter-clause";
+import { isNil } from "../general/general";
 import { formatStartOfTimeRange, formatTimeRange } from "../time/time";
 
+function safeFormatNumber(value: number): string {
+  return isNil(value) ? "any" : value.toString(10);
+}
+
 export function formatNumberRange(value: NumberRange) {
-  return `${formatValue(value.start || "any")} to ${formatValue(value.end || "any")}`;
+  const start = safeFormatNumber(value.start);
+  const end = safeFormatNumber(value.end);
+  return `${start} to ${end}`;
 }
 
 export function formatValue(value: any, timezone?: Timezone): string {
@@ -47,7 +54,23 @@ export function formatValue(value: any, timezone?: Timezone): string {
   }
 }
 
-export function formatSegment(value: any, timezone: Timezone): string {
+/*
+   NOTE:
+   Datum is a Record of `PlywoodValue | Expression`, so DatumValue will be equivalent to `PlywoodValue | Expression`.
+   Don't know if there is a real possibility that Plywood query will ever return an Expression inside Datum, though.
+*/
+type DatumValue = Datum[string];
+
+export function formatShortSegment(value: DatumValue, timezone: Timezone): string {
+  if (TimeRange.isTimeRange(value)) {
+    return formatStartOfTimeRange(value, timezone);
+  } else if (NumberRange.isNumberRange(value)) {
+    return value.start.toString(10);
+  }
+  return String(value);
+}
+
+export function formatSegment(value: DatumValue, timezone: Timezone): string {
   if (TimeRange.isTimeRange(value)) {
     return formatStartOfTimeRange(value, timezone);
   } else if (NumberRange.isNumberRange(value)) {
@@ -68,7 +91,7 @@ function getFormattedStringClauseValues({ values, action }: StringFilterClause):
     case StringFilterAction.CONTAINS:
       return `"${values.first()}"`;
     case StringFilterAction.IN:
-      return values.count() > 1 ? `(${values.count()})` : values.first();
+      return values.count() > 1 ? `(${values.count()})` : String(values.first());
   }
 }
 
@@ -100,15 +123,26 @@ function getFilterClauseValues(clause: FilterClause, timezone: Timezone): string
 function getClauseLabel(clause: FilterClause, dimension: Dimension) {
   const dimensionTitle = dimension.title;
   if (isTimeFilter(clause)) return "";
-  const delimiter = clause instanceof StringFilterClause && [StringFilterAction.MATCH, StringFilterAction.CONTAINS].indexOf(clause.action) !== -1 ? " ~" : ":";
+  const delimiter =
+    clause instanceof StringFilterClause &&
+    [StringFilterAction.MATCH, StringFilterAction.CONTAINS].indexOf(clause.action) !== -1
+      ? " ~"
+      : ":";
 
   const clauseValues = clause.values;
   if (clauseValues && clauseValues.count() > 1) return `${dimensionTitle}`;
   return `${dimensionTitle}${delimiter}`;
 }
 
-export function getFormattedClause(dimension: Dimension, clause: FilterClause, timezone: Timezone): { title: string, values: string } {
-  return { title: getClauseLabel(clause, dimension), values: getFilterClauseValues(clause, timezone) };
+export function getFormattedClause(
+  dimension: Dimension,
+  clause: FilterClause,
+  timezone: Timezone
+): { title: string; values: string } {
+  return {
+    title: getClauseLabel(clause, dimension),
+    values: getFilterClauseValues(clause, timezone),
+  };
 }
 
 function getFormattedTimeClauseValues(clause: TimeFilterClause, timezone: Timezone): string {

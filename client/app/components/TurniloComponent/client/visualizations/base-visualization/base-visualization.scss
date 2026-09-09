@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .base-visualization {
   @include pin-full;
@@ -25,7 +25,6 @@
     @include pin-full;
     overflow: auto;
     overflow-y: clip;
-    padding: 25px 0px;
   }
 
   .loader,

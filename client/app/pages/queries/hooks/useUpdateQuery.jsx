@@ -1,9 +1,20 @@
-import { isNil, isObject, extend, keys, map, omit, pick, uniq, get } from "lodash";
+import {
+  isNil,
+  isObject,
+  extend,
+  keys,
+  map,
+  omit,
+  pick,
+  uniq,
+  get,
+} from "lodash";
 import React, { useCallback } from "react";
 import Modal from "antd/lib/modal";
 import { Query } from "@/services/query";
 import notification from "@/services/notification";
 import useImmutableCallback from "@/lib/hooks/useImmutableCallback";
+import { policy } from "@/services/policy";
 
 class SaveQueryError extends Error {
   constructor(message, detailedMessage = null) {
@@ -17,9 +28,11 @@ class SaveQueryConflictError extends SaveQueryError {
     super(
       "Changes not saved",
       <React.Fragment>
-        <div className="m-b-5">It seems like the query has been modified by another user.</div>
+        <div className="m-b-5">
+          It seems like the query has been modified by another user.
+        </div>
         <div>Please copy/backup your changes and reload this page.</div>
-      </React.Fragment>
+      </React.Fragment>,
     );
   }
 }
@@ -30,8 +43,12 @@ function confirmOverwrite() {
       title: "Overwrite Query",
       content: (
         <React.Fragment>
-          <div className="m-b-5">It seems like the query has been modified by another user.</div>
-          <div>Are you sure you want to overwrite the query with your version?</div>
+          <div className="m-b-5">
+            It seems like the query has been modified by another user.
+          </div>
+          <div>
+            Are you sure you want to overwrite the query with your version?
+          </div>
         </React.Fragment>
       ),
       okText: "Overwrite",
@@ -94,10 +111,11 @@ export default function useUpdateQuery(query, onChange) {
           "options",
           "latest_query_data_id",
           "is_draft",
+          "tags",
         ]);
       }
 
-      return doSaveQuery(data, { canOverwrite: query.can_edit })
+      return doSaveQuery(data, { canOverwrite: policy.canEdit(query) })
         .then(updatedQuery => {
           if (!isNil(successMessage)) {
             notification.success(successMessage);
@@ -107,8 +125,10 @@ export default function useUpdateQuery(query, onChange) {
               query.clone(),
               // if server returned completely new object (currently possible only when saving new query) -
               // update all fields; otherwise pick only changed fields
-              updatedQuery.id !== query.id ? updatedQuery : pick(updatedQuery, uniq(["id", "version", ...keys(data)]))
-            )
+              updatedQuery.id !== query.id
+                ? updatedQuery
+                : pick(updatedQuery, uniq(["id", "version", ...keys(data)])),
+            ),
           );
         })
         .catch(error => {
@@ -116,9 +136,13 @@ export default function useUpdateQuery(query, onChange) {
           if (error instanceof SaveQueryConflictError) {
             notificationOptions.duration = null;
           }
-          notification.error(error.message, error.detailedMessage, notificationOptions);
+          notification.error(
+            error.message,
+            error.detailedMessage,
+            notificationOptions,
+          );
         });
     },
-    [query, handleChange]
+    [query, handleChange],
   );
 }

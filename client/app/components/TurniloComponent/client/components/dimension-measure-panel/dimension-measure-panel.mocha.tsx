@@ -27,8 +27,7 @@ import { DimensionMeasurePanel, initialPosition, MIN_PANEL_SIZE } from "./dimens
 describe("DimensionMeasurePanel", () => {
   function renderPanel() {
     const clickyMcClickFace: Clicker = {
-      addSeries: () => {
-      }
+      addSeries: () => {},
     };
     return shallow(
       <DimensionMeasurePanel
@@ -54,7 +53,7 @@ describe("DimensionMeasurePanel", () => {
   });
 
   describe("initialPosition", () => {
-    [300, 500, 1000].forEach(height => {
+    [300, 500, 1000].forEach((height) => {
       it(`should calculate position according to ratio for height ${height}`, () => {
         const position = initialPosition(height, DataCubeFixtures.wiki());
 

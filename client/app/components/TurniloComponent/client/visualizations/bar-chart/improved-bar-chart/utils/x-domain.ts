@@ -27,5 +27,5 @@ export function getXDomain(essence: Essence, dataset: Dataset): XDomain {
   const ref = firstSplitRef(essence);
   const firstSplitDatums = selectFirstSplitDatums(dataset);
 
-  return firstSplitDatums.map(datum => datum[ref] as DomainValue);
+  return firstSplitDatums.map((datum) => datum[ref] as DomainValue);
 }

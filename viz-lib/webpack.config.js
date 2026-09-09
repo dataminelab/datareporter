@@ -1,6 +1,6 @@
 const LessPluginAutoPrefix = require("less-plugin-autoprefix");
 const path = require("path");
-
+const webpack = require("webpack");
 const isProduction = process.env.NODE_ENV === "production";
 
 module.exports = {
@@ -10,15 +10,27 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     filename: "redash-visualizations.js",
     libraryTarget: "umd",
+    assetModuleFilename: "images/[name][ext]",
   },
   resolve: {
     symlinks: false,
-    extensions: [".js", ".jsx"],
+    extensions: [".js", ".jsx", ".ts", ".tsx"],
+    fullySpecified: false, // Allow imports without extensions
+    alias: {
+      "./nonIterableSpread": "./nonIterableSpread.js",
+    },
+    fallback: {
+      fs: false,
+      buffer: require.resolve("buffer/"),
+      path: false,
+      stream: require.resolve("stream-browserify"),
+      assert: require.resolve("assert"),
+    },
   },
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: ["babel-loader"],
       },
@@ -28,15 +40,7 @@ module.exports = {
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-        use: [
-          {
-            loader: "file-loader",
-            options: {
-              outputPath: "images/",
-              name: "[name].[ext]",
-            },
-          },
-        ],
+        type: "asset/resource",
       },
       {
         test: /\.less$/,
@@ -46,11 +50,19 @@ module.exports = {
           {
             loader: "less-loader",
             options: {
-              plugins: [new LessPluginAutoPrefix({ browsers: ["last 3 versions"] })],
-              javascriptEnabled: true,
+              lessOptions: {
+                plugins: [new LessPluginAutoPrefix({ browsers: ["last 3 versions"] })],
+                javascriptEnabled: true,
+              },
             },
           },
         ],
+      },
+      {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false, // Disable the behavior for this rule
+        },
       },
     ],
   },
@@ -61,5 +73,10 @@ module.exports = {
       "react-dom": "react-dom",
     },
     /^antd/i,
+  ],
+  plugins: [
+    new webpack.ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
+    }),
   ],
 };

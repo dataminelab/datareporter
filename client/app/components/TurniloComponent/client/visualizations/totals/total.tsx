@@ -26,18 +26,21 @@ interface DifferenceProps {
 }
 
 const Difference: React.FunctionComponent<DifferenceProps> = ({ datum, series }) => {
-  return <React.Fragment>
-    <div className="measure-value measure-value--previous">
-      {series.formatValue(datum, SeriesDerivation.PREVIOUS)}
-    </div>
-    <div className="measure-delta-value">
-      <Delta
-        previousValue={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
-        currentValue={series.selectValue(datum, SeriesDerivation.CURRENT)}
-        lowerIsBetter={series.measure.lowerIsBetter}
-        formatter={series.formatter()} />
-    </div>
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <div className="measure-value measure-value--previous">
+        {series.formatValue(datum, SeriesDerivation.PREVIOUS)}
+      </div>
+      <div className="measure-delta-value">
+        <Delta
+          previousValue={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
+          currentValue={series.selectValue(datum, SeriesDerivation.CURRENT)}
+          lowerIsBetter={series.measure.lowerIsBetter}
+          formatter={series.formatter()}
+        />
+      </div>
+    </React.Fragment>
+  );
 };
 
 export interface TotalProps {
@@ -49,9 +52,15 @@ export interface TotalProps {
 
 export const Total: React.FunctionComponent<TotalProps> = ({ showPrevious, datum, series, color }) => {
   if (!datum) datum = {} as Datum;
-  return <div className="total">
-    <div className="measure-name" title={series.title()}>{series.title()}</div>
-    <div className="measure-value" style={{ color }}>{series.formatValue(datum, SeriesDerivation.CURRENT)}</div>
-    {showPrevious && <Difference series={series} datum={datum} />}
-  </div>;
+  return (
+    <div className="total">
+      <div className="measure-name" title={series.title()}>
+        {series.title()}
+      </div>
+      <div className="measure-value" style={{ color }}>
+        {series.formatValue(datum, SeriesDerivation.CURRENT)}
+      </div>
+      {showPrevious && <Difference series={series} datum={datum} />}
+    </div>
+  );
 };

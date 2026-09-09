@@ -1,8 +1,6 @@
-/* global cy, Cypress */
+/* global cy */
 
 import { getWidgetTestId } from "../../support/dashboard";
-
-const { get } = Cypress._;
 
 const SQL = `
   SELECT 'a' AS stage1, 'a1' AS stage2, 11 AS value UNION ALL
@@ -20,11 +18,10 @@ const SQL = `
 
 function createPivotThroughUI(visualizationName, options = {}) {
   cy.getByTestId("NewVisualization").click();
-  cy.getByTestId("VisualizationType").click();
-  cy.getByTestId("VisualizationType.PIVOT").click();
-  cy.getByTestId("VisualizationName")
-    .clear()
-    .type(visualizationName);
+  cy.getByTestId("VisualizationType").selectAntdOption(
+    "VisualizationType.PIVOT",
+  );
+  cy.getByTestId("VisualizationName").clear().type(visualizationName);
   if (options.hideControls) {
     cy.getByTestId("PivotEditor.HideControls").click();
     cy.getByTestId("VisualizationPreview")
@@ -32,12 +29,8 @@ function createPivotThroughUI(visualizationName, options = {}) {
       .find(".pvtAxisContainer, .pvtRenderer, .pvtVals")
       .should("be.not.visible");
   }
-  cy.getByTestId("VisualizationPreview")
-    .find("table")
-    .should("exist");
-  cy.getByTestId("EditVisualizationDialog")
-    .contains("button", "Save")
-    .click();
+  cy.getByTestId("VisualizationPreview").find("table").should("exist");
+  cy.getByTestId("EditVisualizationDialog").contains("button", "Save").click();
 }
 
 describe("Pivot", () => {
@@ -48,7 +41,7 @@ describe("Pivot", () => {
       .as("queryId");
   });
 
-  it("creates Pivot with controls", function() {
+  it("creates Pivot with controls", function () {
     cy.visit(`queries/${this.queryId}/source`);
     cy.getByTestId("ExecuteButton").click();
 
@@ -60,7 +53,7 @@ describe("Pivot", () => {
       .should("exist");
   });
 
-  it("creates Pivot without controls", function() {
+  it("creates Pivot without controls", function () {
     cy.visit(`queries/${this.queryId}/source`);
     cy.getByTestId("ExecuteButton").click();
 
@@ -71,17 +64,15 @@ describe("Pivot", () => {
 
     createPivotThroughUI(visualizationName, { hideControls: true });
 
-    cy.wait("@SaveVisualization").then(xhr => {
-      const visualizationId = get(xhr, "response.body.id");
-      // Added visualization should also have hidden controls
-      cy.getByTestId(`QueryPageVisualization${visualizationId}`)
-        .find("table")
-        .find(".pvtAxisContainer, .pvtRenderer, .pvtVals")
-        .should("be.not.visible");
-    });
+    cy.wait("@SaveVisualization");
+    // Added visualization should also have hidden controls
+    cy.getByTestId("PivotTableVisualization")
+      .find("table")
+      .find(".pvtAxisContainer, .pvtRenderer, .pvtVals")
+      .should("be.not.visible");
   });
 
-  it("updates the visualization when results change", function() {
+  it("updates the visualization when results change", function () {
     const options = {
       aggregatorName: "Count",
       data: [], // force it to have a data object, although it shouldn't
@@ -91,28 +82,42 @@ describe("Pivot", () => {
       vals: ["value"],
     };
 
-    cy.createVisualization(this.queryId, "PIVOT", "Pivot", options).then(visualization => {
-      cy.visit(`queries/${this.queryId}/source#${visualization.id}`);
-      cy.getByTestId("ExecuteButton").click();
+    cy.createVisualization(this.queryId, "PIVOT", "Pivot", options).then(
+      visualization => {
+        cy.visit(`queries/${this.queryId}/source#${visualization.id}`);
+        cy.getByTestId("ExecuteButton").click();
 
-      // assert number of rows is 11
-      cy.getByTestId(`QueryPageVisualization${visualization.id}`).contains(".pvtGrandTotal", "11");
+        // assert number of rows is 11
+        cy.getByTestId("PivotTableVisualization").contains(
+          ".pvtGrandTotal",
+          "11",
+        );
 
-      cy.getByTestId("QueryEditor")
-        .get(".ace_text-input")
-        .first()
-        .focus()
-        .type(" UNION ALL {enter}SELECT 'c' AS stage1, 'c5' AS stage2, 55 AS value");
+        cy.getByTestId("QueryEditor")
+          .get(".ace_text-input")
+          .first()
+          .focus()
+          .type(
+            " UNION ALL {enter}SELECT 'c' AS stage1, 'c5' AS stage2, 55 AS value",
+          );
 
-      cy.getByTestId("SaveButton").click();
-      cy.getByTestId("ExecuteButton").click();
+        // wait for the query text change to propagate (it's debounced in QuerySource.jsx)
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(200);
 
-      // assert number of rows is 12
-      cy.getByTestId(`QueryPageVisualization${visualization.id}`).contains(".pvtGrandTotal", "12");
-    });
+        cy.getByTestId("SaveButton").click();
+        cy.getByTestId("ExecuteButton").should("be.enabled").click();
+
+        // assert number of rows is 12
+        cy.getByTestId("PivotTableVisualization").contains(
+          ".pvtGrandTotal",
+          "12",
+        );
+      },
+    );
   });
 
-  it("takes a snapshot with different configured Pivots", function() {
+  it("takes a snapshot with different configured Pivots", function () {
     const options = {
       aggregatorName: "Sum",
       controls: { enabled: true },
@@ -122,15 +127,25 @@ describe("Pivot", () => {
     };
 
     const pivotTables = [
-      { name: "Pivot", options, position: { autoHeight: false, sizeY: 10, sizeX: 2 } },
+      {
+        name: "Pivot",
+        options,
+        position: { autoHeight: false, sizeY: 10, sizeX: 2 },
+      },
       {
         name: "Pivot without Row Totals",
-        options: { ...options, rendererOptions: { table: { rowTotals: false } } },
+        options: {
+          ...options,
+          rendererOptions: { table: { rowTotals: false } },
+        },
         position: { autoHeight: false, col: 2, sizeY: 10, sizeX: 2 },
       },
       {
         name: "Pivot without Col Totals",
-        options: { ...options, rendererOptions: { table: { colTotals: false } } },
+        options: {
+          ...options,
+          rendererOptions: { table: { colTotals: false } },
+        },
         position: { autoHeight: false, col: 4, sizeY: 10, sizeX: 2 },
       },
       {
@@ -144,18 +159,28 @@ describe("Pivot", () => {
       .then(dashboard => {
         this.dashboardUrl = `/dashboards/${dashboard.id}`;
         return cy.all(
-          pivotTables.map(pivot => () =>
-            cy
-              .createVisualization(this.queryId, "PIVOT", pivot.name, pivot.options)
-              .then(visualization => cy.addWidget(dashboard.id, visualization.id, { position: pivot.position }))
-          )
+          pivotTables.map(
+            pivot => () =>
+              cy
+                .createVisualization(
+                  this.queryId,
+                  "PIVOT",
+                  pivot.name,
+                  pivot.options,
+                )
+                .then(visualization =>
+                  cy.addWidget(dashboard.id, visualization.id, {
+                    position: pivot.position,
+                  }),
+                ),
+          ),
         );
       })
       .then(widgets => {
         cy.visit(this.dashboardUrl);
         widgets.forEach(widget => {
           cy.getByTestId(getWidgetTestId(widget)).within(() =>
-            cy.getByTestId("PivotTableVisualization").should("exist")
+            cy.getByTestId("PivotTableVisualization").should("exist"),
           );
         });
         cy.percySnapshot("Visualizations - Pivot Table");

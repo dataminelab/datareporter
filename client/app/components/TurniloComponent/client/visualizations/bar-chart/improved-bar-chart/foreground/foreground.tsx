@@ -41,37 +41,47 @@ interface ForegroundProps {
   stage: Stage;
 }
 
-export const Foreground: React.SFC<ForegroundProps> = props => {
-  const { stage, dropHighlight, acceptHighlight, container, essence, getX, series, xScale, yScale, interaction } = props;
+export const Foreground: React.SFC<ForegroundProps> = (props) => {
+  const { stage, dropHighlight, acceptHighlight, container, essence, getX, series, xScale, yScale, interaction } =
+    props;
   const rect = container.current.getBoundingClientRect();
-  return <React.Fragment>
-    {isHighlight(interaction) && <React.Fragment>
-      <HighlightModal
-        interaction={interaction}
-        dropHighlight={dropHighlight}
-        acceptHighlight={acceptHighlight}
-        timezone={essence.timezone}
-        xScale={xScale}
-        yScale={yScale}
-        getX={getX}
-        series={series}
-        rect={rect} />
-      <HighlightOverlay
-        interaction={interaction}
-        showPrevious={essence.hasComparison()}
-        stage={stage}
-        xScale={xScale}
-        yScale={yScale}
-        series={series}
-        getX={getX} />
-    </React.Fragment>}
-    {isHover(interaction) && <HoverTooltip
-      rect={rect}
-      interaction={interaction}
-      xScale={xScale}
-      yScale={yScale}
-      getX={getX}
-      series={series}
-      essence={essence} />}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      {isHighlight(interaction) && (
+        <React.Fragment>
+          <HighlightModal
+            interaction={interaction}
+            dropHighlight={dropHighlight}
+            acceptHighlight={acceptHighlight}
+            timezone={essence.timezone}
+            xScale={xScale}
+            yScale={yScale}
+            getX={getX}
+            series={series}
+            rect={rect}
+          />
+          <HighlightOverlay
+            interaction={interaction}
+            showPrevious={essence.hasComparison()}
+            stage={stage}
+            xScale={xScale}
+            yScale={yScale}
+            series={series}
+            getX={getX}
+          />
+        </React.Fragment>
+      )}
+      {isHover(interaction) && (
+        <HoverTooltip
+          rect={rect}
+          interaction={interaction}
+          xScale={xScale}
+          yScale={yScale}
+          getX={getX}
+          series={series}
+          essence={essence}
+        />
+      )}
+    </React.Fragment>
+  );
 };

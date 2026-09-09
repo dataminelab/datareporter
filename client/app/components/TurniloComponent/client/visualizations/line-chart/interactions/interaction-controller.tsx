@@ -29,7 +29,16 @@ import { ContinuousRange, ContinuousScale, ContinuousValue } from "../utils/cont
 import { getContinuousReference } from "../utils/splits";
 import { constructRange, shiftByOne } from "./continuous-range";
 import { findClosestDatum } from "./find-closest-datum";
-import { createDragging, createHighlight, createHover, Interaction, isDragging, isHighlight, isHover, MouseInteraction } from "./interaction";
+import {
+  createDragging,
+  createHighlight,
+  createHover,
+  Interaction,
+  isDragging,
+  isHighlight,
+  isHover,
+  MouseInteraction,
+} from "./interaction";
 import { snapRangeToGrid } from "./snap-range-to-grid";
 
 interface InteractionControllerProps {
@@ -59,7 +68,6 @@ export interface InteractionsProps {
 }
 
 export class InteractionController extends React.Component<InteractionControllerProps, InteractionsState> {
-
   state: InteractionsState = { interaction: null, scrollTop: 0 };
 
   handleHover = (chartId: string, offset: number) => {
@@ -91,7 +99,9 @@ export class InteractionController extends React.Component<InteractionController
   };
 
   handleDragStart = (chartId: string, offset: number) => {
-    const { essence: { timezone } } = this.props;
+    const {
+      essence: { timezone },
+    } = this.props;
     const start = this.findValueUnderOffset(offset);
     const end = shiftByOne(start, timezone);
     this.setState({ interaction: createDragging(chartId, start, end) });
@@ -146,7 +156,7 @@ export class InteractionController extends React.Component<InteractionController
 
     this.setState({
       interaction: null,
-      scrollTop
+      scrollTop,
     });
   };
 
@@ -165,14 +175,13 @@ export class InteractionController extends React.Component<InteractionController
       dropHighlight,
       dragStart: this.handleDragStart,
       handleHover: this.handleHover,
-      mouseLeave: this.onMouseLeave
+      mouseLeave: this.onMouseLeave,
     };
-    return <React.Fragment>
-      <GlobalEventListener
-        mouseUp={this.stopDragging}
-        mouseMove={this.dragging}
-        scroll={this.scrollCharts} />
-      {children(hocProps)}
-    </React.Fragment>;
+    return (
+      <React.Fragment>
+        <GlobalEventListener mouseUp={this.stopDragging} mouseMove={this.dragging} scroll={this.scrollCharts} />
+        {children(hocProps)}
+      </React.Fragment>
+    );
   }
 }

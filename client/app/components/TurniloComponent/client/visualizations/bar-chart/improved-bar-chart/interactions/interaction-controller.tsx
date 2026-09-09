@@ -60,14 +60,17 @@ interface InteractionControllerState {
 }
 
 export class InteractionController extends React.Component<InteractionControllerProps, InteractionControllerState> {
-
-  state: InteractionControllerState = { hover: null, scrollLeft: 0, scrollTop: 0 };
+  state: InteractionControllerState = {
+    hover: null,
+    scrollLeft: 0,
+    scrollTop: 0,
+  };
 
   saveScroll = (scrollTop: number, scrollLeft: number) => {
     this.setState({
       hover: null,
       scrollLeft,
-      scrollTop
+      scrollTop,
     });
   };
 
@@ -113,12 +116,17 @@ export class InteractionController extends React.Component<InteractionController
     const { essence, dataset } = this.props;
     const datums = selectFirstSplitDatums(dataset);
     const reference = firstSplitRef(essence);
-    return datums.find(datum => safeEquals(value, datum[reference]));
+    return datums.find((datum) => safeEquals(value, datum[reference]));
   }
 
   getSeriesFromEvent(y: number, part: ScrollerPart): ConcreteSeries | null {
     if (part !== "body") return null;
-    const { layout: { segment: { height: seriesHeight } }, essence } = this.props;
+    const {
+      layout: {
+        segment: { height: seriesHeight },
+      },
+      essence,
+    } = this.props;
     const index = Math.floor(y / seriesHeight);
     return essence.getConcreteSeries().get(index);
   }
@@ -143,7 +151,7 @@ export class InteractionController extends React.Component<InteractionController
       onScroll: this.saveScroll,
       onMouseLeave: this.resetHover,
       onMouseMove: this.saveHover,
-      onClick: this.handleClick
+      onClick: this.handleClick,
     });
   }
 }

@@ -1,11 +1,42 @@
 from flask import request
-from .authentication import current_org
 from flask_login import current_user, login_required
+
 from redash import models
 from redash.handlers import routes
-from redash.handlers.base import get_object_or_404, org_scoped_rule, record_event
+from redash.handlers.base import (
+    get_object_or_404,
+    org_scoped_rule,
+    record_event,
+)
 from redash.handlers.static import render_index
 from redash.security import csp_allows_embeding
+
+from .authentication import current_org
+
+
+@routes.route(
+    org_scoped_rule("/embed/report/<report_id>/visualization/<visualization_id>"),
+    methods=["GET"],
+)
+@routes.route(
+    org_scoped_rule("/embed/report/<report_id>"),
+    methods=["GET"],
+)
+@login_required
+@csp_allows_embeding
+def embed_report(report_id, visualization_id=None, org_slug=None):
+    record_event(
+        current_org,
+        current_user._get_current_object(),
+        {
+            "action": "view",
+            "object_id": report_id,
+            "object_type": "report",
+            "embed": True,
+            "referer": request.headers.get("Referer"),
+        },
+    )
+    return render_index()
 
 
 @routes.route(
@@ -78,4 +109,3 @@ def public_report(token, org_slug=None):
         },
     )
     return render_index()
-

@@ -17,7 +17,13 @@ import { expect } from "chai";
 import { Dataset, Datum } from "plywood";
 import { SPLIT } from "../../../config/constants";
 import { makeDataset } from "./dataset-fixtures";
-import { selectFirstSplitDataset, selectFirstSplitDatums, selectMainDatum, selectSplitDataset, selectSplitDatums } from "./selectors";
+import {
+  selectFirstSplitDataset,
+  selectFirstSplitDatums,
+  selectMainDatum,
+  selectSplitDataset,
+  selectSplitDatums,
+} from "./selectors";
 
 const datum = { foobar: 100 };
 const dataset = Dataset.fromJS([datum]);

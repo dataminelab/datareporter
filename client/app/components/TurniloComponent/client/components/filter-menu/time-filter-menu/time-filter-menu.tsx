@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
@@ -38,18 +38,27 @@ interface TabSelectorProps {
   onTabSelect: Unary<TimeFilterTab, void>;
 }
 
+enum TimeFilterTab {
+  RELATIVE = "relative",
+  FIXED = "fixed",
+}
+
+export interface TimeFilterMenuState {
+  tab: TimeFilterTab;
+}
+
 function tabTitle(tab: TimeFilterTab) {
   return tab === TimeFilterTab.RELATIVE ? STRINGS.relative : STRINGS.fixed;
 }
 
-const TabSelector: React.SFC<TabSelectorProps> = props => {
+const TabSelector: React.FunctionComponent<TabSelectorProps> = (props) => {
   const { selectedTab, onTabSelect } = props;
-  const tabs = [TimeFilterTab.RELATIVE, TimeFilterTab.FIXED].map(tab => {
+  const tabs = [TimeFilterTab.RELATIVE, TimeFilterTab.FIXED].map((tab) => {
     return {
       isSelected: selectedTab === tab,
       title: tabTitle(tab),
       key: tab,
-      onClick: () => onTabSelect(tab)
+      onClick: () => onTabSelect(tab),
     };
   });
   return <ButtonGroup groupMembers={tabs} />;
@@ -66,19 +75,12 @@ export interface TimeFilterMenuProps {
   inside?: Element;
 }
 
-enum TimeFilterTab { RELATIVE = "relative", FIXED = "fixed"}
-
-export interface TimeFilterMenuState {
-  tab: TimeFilterTab;
-}
-
 function initialTab(essence: Essence): TimeFilterTab {
   const isRelativeTimeFilter = essence.timeFilter() instanceof RelativeTimeFilterClause;
   return isRelativeTimeFilter ? TimeFilterTab.RELATIVE : TimeFilterTab.FIXED;
 }
 
 export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFilterMenuState> {
-
   state: TimeFilterMenuState = { tab: initialTab(this.props.essence) };
 
   selectTab = (tab: TimeFilterTab) => this.setState({ tab });
@@ -91,17 +93,18 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     const isRelativeTab = tab === TimeFilterTab.RELATIVE;
     const tabProps = { essence, dimension, timekeeper, onClose, clicker };
 
-    return <BubbleMenu
-      className="time-filter-menu"
-      direction="down"
-      containerStage={containerStage}
-      stage={menuSize}
-      openOn={openOn}
-      onClose={onClose}
-      inside={inside}
-    >
-      <TabSelector selectedTab={tab} onTabSelect={this.selectTab} />
-      {isRelativeTab ? <PresetTimeTab {...tabProps} /> : <FixedTimeTab {...tabProps} />}
-    </BubbleMenu>;
+    return (
+      <BubbleMenu
+        className="time-filter-menu"
+        direction="down"
+        containerStage={containerStage}
+        stage={menuSize}
+        openOn={openOn}
+        onClose={onClose}
+        inside={inside}>
+        <TabSelector selectedTab={tab} onTabSelect={this.selectTab} />
+        {isRelativeTab ? <PresetTimeTab {...tabProps} /> : <FixedTimeTab {...tabProps} />}
+      </BubbleMenu>
+    );
   }
 }

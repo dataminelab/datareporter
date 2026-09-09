@@ -1,4 +1,4 @@
-# Setup script for Redash with Docker on Ubuntu 18.04.
+# Setup script for DataReporter(Redash fork) with Docker on Ubuntu 18.04.
 
 The setup script moved to its own repository:
 

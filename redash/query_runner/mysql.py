@@ -3,18 +3,17 @@ import os
 import threading
 
 from redash.query_runner import (
+    TYPE_DATE,
+    TYPE_DATETIME,
     TYPE_FLOAT,
     TYPE_INTEGER,
-    TYPE_DATETIME,
     TYPE_STRING,
-    TYPE_DATE,
     BaseSQLQueryRunner,
     InterruptException,
     JobTimeoutException,
     register,
 )
 from redash.settings import parse_boolean
-from redash.utils import json_dumps, json_loads
 
 try:
     import MySQLdb
@@ -44,7 +43,7 @@ types_map = {
 }
 
 
-class Result(object):
+class Result:
     def __init__(self):
         pass
 
@@ -54,9 +53,7 @@ class Mysql(BaseSQLQueryRunner):
 
     @classmethod
     def configuration_schema(cls):
-        show_ssl_settings = parse_boolean(
-            os.environ.get("MYSQL_SHOW_SSL_SETTINGS", "true")
-        )
+        show_ssl_settings = parse_boolean(os.environ.get("MYSQL_SHOW_SSL_SETTINGS", "true"))
 
         schema = {
             "type": "object",
@@ -136,8 +133,6 @@ class Mysql(BaseSQLQueryRunner):
         if error is not None:
             raise Exception("Failed getting schema.")
 
-        results = json_loads(results)
-
         for row in results["rows"]:
             if row["table_schema"] != self.configuration["db"]:
                 table_name = "{}.{}".format(row["table_schema"], row["table_name"])
@@ -151,7 +146,6 @@ class Mysql(BaseSQLQueryRunner):
 
         return list(schema.values())
 
-
     def run_query(self, query, user):
         ev = threading.Event()
         thread_id = ""
@@ -161,9 +155,7 @@ class Mysql(BaseSQLQueryRunner):
         try:
             connection = self._connection()
             thread_id = connection.thread_id()
-            t = threading.Thread(
-                target=self._run_query, args=(query, user, connection, r, ev)
-            )
+            t = threading.Thread(target=self._run_query, args=(query, user, connection, r, ev))
             t.start()
             while not ev.wait(1):
                 pass
@@ -172,7 +164,7 @@ class Mysql(BaseSQLQueryRunner):
             t.join()
             raise
 
-        return r.json_data, r.error
+        return r.data, r.error
 
     def _run_query(self, query, user, connection, r, ev):
         try:
@@ -190,26 +182,21 @@ class Mysql(BaseSQLQueryRunner):
 
             # TODO - very similar to pg.py
             if desc is not None:
-                columns = self.fetch_columns(
-                    [(i[0], types_map.get(i[1], None)) for i in desc]
-                )
-                rows = [
-                    dict(zip((column["name"] for column in columns), row))
-                    for row in data
-                ]
+                columns = self.fetch_columns([(i[0], types_map.get(i[1], None)) for i in desc])
+                rows = [dict(zip((column["name"] for column in columns), row)) for row in data]
 
                 data = {"columns": columns, "rows": rows}
-                r.json_data = json_dumps(data)
+                r.data = data
                 r.error = None
             else:
-                r.json_data = None
+                r.data = None
                 r.error = "No data was returned."
 
             cursor.close()
         except MySQLdb.Error as e:
             if cursor:
                 cursor.close()
-            r.json_data = None
+            r.data = None
             r.error = e.args[1]
         finally:
             ev.set()
@@ -252,6 +239,33 @@ class Mysql(BaseSQLQueryRunner):
 
         return error
 
+    def get_schema(self, get_stats=False):
+        if self.configuration.get("glue", False):
+            catalog_ids = [id.strip() for id in self.configuration.get("catalog_ids", "").split(",")]
+            return sum([self.__get_schema_from_glue(catalog_id) for catalog_id in catalog_ids], [])
+
+        schema = {}
+        query = """
+        SELECT LOWER(table_schema) AS table_schema,
+            LOWER(table_name) AS table_name,
+            LOWER(column_name) AS column_name,
+            LOWER(data_type) AS data_type
+        FROM information_schema.columns
+        WHERE table_schema NOT IN ('information_schema')
+        """
+
+        results, error = self.run_query(query, None)
+        if error is not None:
+            self._handle_run_query_error(error)
+
+        for row in results["rows"]:
+            table_name = "{0}.{1}".format(row["table_schema"], row["table_name"])
+            if table_name not in schema:
+                schema[table_name] = {"name": table_name, "columns": []}
+            schema[table_name]["columns"].append({"name": row["column_name"], "type": row["data_type"]})
+
+        return list(schema.values())
+
 
 class RDSMySQL(Mysql):
     @classmethod
@@ -281,9 +295,7 @@ class RDSMySQL(Mysql):
 
     def _get_ssl_parameters(self):
         if self.configuration.get("use_ssl"):
-            ca_path = os.path.join(
-                os.path.dirname(__file__), "./files/rds-combined-ca-bundle.pem"
-            )
+            ca_path = os.path.join(os.path.dirname(__file__), "./files/rds-combined-ca-bundle.pem")
             return {"ca": ca_path}
 
         return None

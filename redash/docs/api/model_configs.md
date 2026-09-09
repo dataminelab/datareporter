@@ -1,6 +1,7 @@
 ## API for Models
 
 - Create or update `model config` endpoint
+
 ```bash
 POST http://{host}/api/models/{model id}/config
 

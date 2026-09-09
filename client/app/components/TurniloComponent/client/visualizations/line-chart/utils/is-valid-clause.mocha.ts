@@ -16,7 +16,13 @@
 
 import { expect } from "chai";
 import { TimeFilterPeriod } from "../../../../common/models/filter-clause/filter-clause";
-import { boolean, numberRange, stringIn, timePeriod, timeRange } from "../../../../common/models/filter-clause/filter-clause.fixtures";
+import {
+  boolean,
+  numberRange,
+  stringIn,
+  timePeriod,
+  timeRange,
+} from "../../../../common/models/filter-clause/filter-clause.fixtures";
 import { isValidClause } from "./is-valid-clause";
 
 describe("isValidClause", () => {

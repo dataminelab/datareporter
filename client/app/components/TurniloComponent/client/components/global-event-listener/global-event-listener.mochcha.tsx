@@ -23,11 +23,6 @@ import { GlobalEventListener } from "./global-event-listener";
 
 describe("GlobalEventListener", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
-      <GlobalEventListener
-
-      />
-    );
+    const renderedComponent = renderIntoDocument(<GlobalEventListener />);
   });
-
 });

@@ -1,13 +1,15 @@
 /* global cy */
 
-import { getWidgetTestId, editDashboard, resizeBy } from "../../support/dashboard";
-
-const menuWidth = 80;
+import {
+  getWidgetTestId,
+  editDashboard,
+  resizeBy,
+} from "../../support/dashboard";
 
 describe("Grid compliant widgets", () => {
-  beforeEach(function() {
+  beforeEach(function () {
     cy.login();
-    cy.viewport(1215 + menuWidth, 800);
+    cy.viewport(1215, 800);
     cy.createDashboard("Foo Bar")
       .then(({ id }) => {
         this.dashboardUrl = `/dashboards/${id}`;
@@ -29,21 +31,21 @@ describe("Grid compliant widgets", () => {
         cy.get("@textboxEl")
           .dragBy(90)
           .invoke("offset")
-          .should("have.property", "left", 15 + menuWidth); // no change, 15 -> 15
+          .should("have.property", "left", 15); // no change, 15 -> 15
       });
 
       it("moves one column when dragged over snap threshold", () => {
         cy.get("@textboxEl")
           .dragBy(110)
           .invoke("offset")
-          .should("have.property", "left", 215 + menuWidth); //  moved by 200, 15 -> 215
+          .should("have.property", "left", 215); //  moved by 200, 15 -> 215
       });
 
       it("moves two columns when dragged over snap threshold", () => {
         cy.get("@textboxEl")
           .dragBy(330)
           .invoke("offset")
-          .should("have.property", "left", 415 + menuWidth); //  moved by 400, 15 -> 415
+          .should("have.property", "left", 415); //  moved by 400, 15 -> 415
       });
     });
 
@@ -106,7 +108,9 @@ describe("Grid compliant widgets", () => {
 
       it("shrinks to minimum", () => {
         cy.get("@textboxEl")
-          .then($el => resizeBy(cy.get("@textboxEl"), -$el.width(), -$el.height())) // resize to 0,0
+          .then($el =>
+            resizeBy(cy.get("@textboxEl"), -$el.width(), -$el.height()),
+          ) // resize to 0,0
           .then(() => cy.get("@textboxEl"))
           .should($el => {
             expect($el.width()).to.eq(185); // min textbox width

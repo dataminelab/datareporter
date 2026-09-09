@@ -5,10 +5,13 @@ import Group from "@/services/group";
 export default function useUserGroups(user) {
   const [allGroups, setAllGroups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const groups = useMemo(() => filter(allGroups, group => includes(user.groupIds, group.id)), [allGroups, user]);
+  const groups = useMemo(
+    () => filter(allGroups, group => includes(user.groupIds, group.id)),
+    [allGroups, user],
+  );
 
   useEffect(() => {
-    let isCancelled = false;
+    const isCancelled = false;
 
     Group.query().then(groups => {
       if (!isCancelled) {
@@ -18,5 +21,8 @@ export default function useUserGroups(user) {
     });
   }, []);
 
-  return useMemo(() => ({ groups, allGroups, isLoading }), [groups, allGroups, isLoading]);
+  return useMemo(
+    () => ({ groups, allGroups, isLoading }),
+    [groups, allGroups, isLoading],
+  );
 }

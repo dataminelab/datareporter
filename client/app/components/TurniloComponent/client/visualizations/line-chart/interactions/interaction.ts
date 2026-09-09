@@ -18,7 +18,11 @@ import { FilterClause } from "../../../../common/models/filter-clause/filter-cla
 import { Highlight as VizHighlight } from "../../base-visualization/highlight";
 import { ContinuousRange, ContinuousValue } from "../utils/continuous-types";
 
-enum InteractionKind { HOVER, DRAGGING, HIGHLIGHT }
+enum InteractionKind {
+  HOVER,
+  DRAGGING,
+  HIGHLIGHT,
+}
 
 interface InteractionBase {
   kind: InteractionKind;
@@ -33,10 +37,11 @@ export interface Hover extends InteractionBase {
 export const createHover = (key: string, range: ContinuousRange): Hover => ({
   kind: InteractionKind.HOVER,
   range,
-  key
+  key,
 });
 
-export const isHover = (interaction?: Interaction): interaction is Hover => interaction && interaction.kind === InteractionKind.HOVER;
+export const isHover = (interaction?: Interaction): interaction is Hover =>
+  interaction && interaction.kind === InteractionKind.HOVER;
 
 export interface Dragging extends InteractionBase {
   kind: InteractionKind.DRAGGING;
@@ -48,10 +53,11 @@ export const createDragging = (key: string, start: ContinuousValue, end: Continu
   kind: InteractionKind.DRAGGING,
   start,
   end,
-  key
+  key,
 });
 
-export const isDragging = (interaction?: Interaction): interaction is Dragging => interaction && interaction.kind === InteractionKind.DRAGGING;
+export const isDragging = (interaction?: Interaction): interaction is Dragging =>
+  interaction && interaction.kind === InteractionKind.DRAGGING;
 
 export interface Highlight extends InteractionBase {
   kind: InteractionKind.HIGHLIGHT;
@@ -61,10 +67,11 @@ export interface Highlight extends InteractionBase {
 export const createHighlight = (highlight: VizHighlight): Highlight => ({
   kind: InteractionKind.HIGHLIGHT,
   clause: highlight.clauses.first(),
-  key: highlight.key
+  key: highlight.key,
 });
 
-export const isHighlight = (interaction?: Interaction): interaction is Highlight => interaction && interaction.kind === InteractionKind.HIGHLIGHT;
+export const isHighlight = (interaction?: Interaction): interaction is Highlight =>
+  interaction && interaction.kind === InteractionKind.HIGHLIGHT;
 
 export type MouseInteraction = Hover | Dragging;
 

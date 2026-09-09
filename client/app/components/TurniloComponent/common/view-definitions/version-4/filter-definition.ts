@@ -23,19 +23,20 @@ import {
   BooleanFilterClause,
   FilterClause,
   FixedTimeFilterClause,
-  NumberFilterClause, NumberRange,
+  NumberFilterClause,
+  NumberRange,
   RelativeTimeFilterClause,
   StringFilterAction,
   StringFilterClause,
   TimeFilterClause,
-  TimeFilterPeriod
+  TimeFilterPeriod,
 } from "../../models/filter-clause/filter-clause";
 
 export enum FilterType {
   boolean = "boolean",
   number = "number",
   string = "string",
-  time = "time"
+  time = "time",
 }
 
 export interface BaseFilterClauseDefinition {
@@ -46,7 +47,7 @@ export interface BaseFilterClauseDefinition {
 export interface NumberFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.number;
   not: boolean;
-  ranges: Array<{ start: number, end: number, bounds?: string }>;
+  ranges: Array<{ start: number; end: number; bounds?: string }>;
 }
 
 export interface StringFilterClauseDefinition extends BaseFilterClauseDefinition {
@@ -64,7 +65,7 @@ export interface BooleanFilterClauseDefinition extends BaseFilterClauseDefinitio
 
 export interface TimeFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.time;
-  timeRanges?: Array<{ start: string, end: string }>;
+  timeRanges?: Array<{ start: string; end: string }>;
   timePeriods?: TimePeriodDefinition[];
 }
 
@@ -77,7 +78,10 @@ export interface TimePeriodDefinition {
 }
 
 export type FilterClauseDefinition =
-  BooleanFilterClauseDefinition | NumberFilterClauseDefinition | StringFilterClauseDefinition | TimeFilterClauseDefinition;
+  | BooleanFilterClauseDefinition
+  | NumberFilterClauseDefinition
+  | StringFilterClauseDefinition
+  | TimeFilterClauseDefinition;
 
 export interface FilterDefinitionConversion<In extends FilterClauseDefinition, Out> {
   toFilterClause(filter: In, dimension: Dimension): Out;
@@ -87,7 +91,11 @@ export interface FilterDefinitionConversion<In extends FilterClauseDefinition, O
 
 const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClauseDefinition, BooleanFilterClause> = {
   toFilterClause({ not, values }: BooleanFilterClauseDefinition, { name }: Dimension): BooleanFilterClause {
-    return new BooleanFilterClause({ reference: name, not, values: Set(values) });
+    return new BooleanFilterClause({
+      reference: name,
+      not,
+      values: Set(values),
+    });
   },
 
   fromFilterClause({ values, not, reference }: BooleanFilterClause): BooleanFilterClauseDefinition {
@@ -95,9 +103,9 @@ const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClau
       type: FilterType.boolean,
       ref: reference,
       values: values.toArray(),
-      not
+      not,
     };
-  }
+  },
 };
 
 const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClauseDefinition, StringFilterClause> = {
@@ -105,7 +113,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
     if (action === null) {
       throw Error(`String filter action cannot be empty. Dimension: ${dimension}`);
     }
-    if (!(<any> Object).values(StringFilterAction).includes(action)) {
+    if (!(Object as any).values(StringFilterAction).includes(action)) {
       throw Error(`Unknown string filter action. Dimension: ${dimension}`);
     }
     if (action in [StringFilterAction.CONTAINS, StringFilterAction.MATCH] && values.length !== 1) {
@@ -117,7 +125,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
       reference: name,
       action,
       not,
-      values: Set(values)
+      values: Set(values),
     });
   },
 
@@ -127,14 +135,18 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
       ref: reference,
       action,
       values: values.toArray(),
-      not
+      not,
     };
-  }
+  },
 };
 
 const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClauseDefinition, NumberFilterClause> = {
   toFilterClause({ not, ranges }: NumberFilterClauseDefinition, { name }: Dimension): NumberFilterClause {
-    return new NumberFilterClause({ not, values: List(ranges.map(range => new NumberRange(range))), reference: name });
+    return new NumberFilterClause({
+      not,
+      values: List(ranges.map((range) => new NumberRange(range))),
+      reference: name,
+    });
   },
 
   fromFilterClause({ not, reference, values }: NumberFilterClause): NumberFilterClauseDefinition {
@@ -142,9 +154,9 @@ const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClause
       type: FilterType.number,
       ref: reference,
       not,
-      ranges: values.toJS()
+      ranges: values.toJS(),
     };
-  }
+  },
 };
 
 const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefinition, TimeFilterClause> = {
@@ -165,14 +177,22 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
     if (timeRanges !== undefined) {
       return new FixedTimeFilterClause({
         reference: name,
-        values: List(timeRanges.map(range => new DateRange({ start: new Date(range.start), end: new Date(range.end) })))
+        values: List(
+          timeRanges.map(
+            (range) =>
+              new DateRange({
+                start: new Date(range.start),
+                end: new Date(range.end),
+              })
+          )
+        ),
       });
     }
     const { duration, step, type } = timePeriods[0];
     return new RelativeTimeFilterClause({
       reference: name,
       duration: Duration.fromJS(duration).multiply(Math.abs(step)),
-      period: timeFilterPeriod(step, type)
+      period: timeFilterPeriod(step, type),
     });
   },
 
@@ -186,17 +206,21 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
       return {
         type: FilterType.time,
         ref: reference,
-        timePeriods: [{ duration: duration.toString(), step, type }]
+        timePeriods: [{ duration: duration.toString(), step, type }],
       };
     }
     const { values } = filterClause;
     return {
       type: FilterType.time,
       ref: reference,
-      //@ts-ignore
-      timeRanges: values.map(value => ({ start: value.start.toISOString(), end: value.end.toISOString() })).toArray()
+      timeRanges: values
+        .map((value) => ({
+          start: value.start.toISOString(),
+          end: value.end.toISOString(),
+        }))
+        .toArray(),
     };
-  }
+  },
 };
 
 function timeFilterPeriod(step: number, type: TimePeriodType): TimeFilterPeriod {
@@ -209,11 +233,13 @@ function timeFilterPeriod(step: number, type: TimePeriodType): TimeFilterPeriod 
   return TimeFilterPeriod.PREVIOUS;
 }
 
-const filterClauseConverters: { [type in FilterType]: FilterDefinitionConversion<FilterClauseDefinition, FilterClause> } = {
+const filterClauseConverters: {
+  [type in FilterType]: FilterDefinitionConversion<FilterClauseDefinition, FilterClause>;
+} = {
   boolean: booleanFilterClauseConverter,
   number: numberFilterClauseConverter,
   string: stringFilterClauseConverter,
-  time: timeFilterClauseConverter
+  time: timeFilterClauseConverter,
 };
 
 export interface FilterDefinitionConverter {
@@ -252,5 +278,5 @@ export const filterDefinitionConverter: FilterDefinitionConverter = {
       return stringFilterClauseConverter.fromFilterClause(filterClause);
     }
     throw Error(`Unrecognized filter clause type ${filterClause}`);
-  }
+  },
 };

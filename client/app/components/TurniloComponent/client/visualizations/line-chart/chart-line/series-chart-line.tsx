@@ -27,37 +27,46 @@ interface OwnProps {
   series: ConcreteSeries;
 }
 
-export type SeriesChartLineProps = Pick<ChartLineProps, "showArea" | "getX" | "xScale" | "yScale" | "dataset" | "color" | "stage"> & OwnProps;
+export type SeriesChartLineProps = Pick<
+  ChartLineProps,
+  "showArea" | "getX" | "xScale" | "yScale" | "dataset" | "color" | "stage"
+> &
+  OwnProps;
 
-export const SeriesChartLine: React.SFC<SeriesChartLineProps> = props => {
+export const SeriesChartLine: React.SFC<SeriesChartLineProps> = (props) => {
   const { showArea, essence, series, getX, stage, dataset, xScale, yScale, color } = props;
 
   const getY: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d));
   const getYP: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS));
   const hasComparison = essence.hasComparison();
-  return <React.Fragment key={series.reactKey()}>
-    <ChartLine
-      key="current"
-      xScale={xScale}
-      yScale={yScale}
-      getX={getX}
-      getY={getY}
-      showArea={showArea}
-      color={color}
-      dashed={false}
-      dataset={dataset}
-      stage={stage} />
-    {hasComparison && <ChartLine
-      key="previous"
-      xScale={xScale}
-      yScale={yScale}
-      getX={getX}
-      getY={getYP}
-      showArea={showArea}
-      color={color}
-      dashed={true}
-      dataset={dataset}
-      stage={stage} />}
-  </React.Fragment>;
-
+  return (
+    <React.Fragment key={series.reactKey()}>
+      <ChartLine
+        key="current"
+        xScale={xScale}
+        yScale={yScale}
+        getX={getX}
+        getY={getY}
+        showArea={showArea}
+        color={color}
+        dashed={false}
+        dataset={dataset}
+        stage={stage}
+      />
+      {hasComparison && (
+        <ChartLine
+          key="previous"
+          xScale={xScale}
+          yScale={yScale}
+          getX={getX}
+          getY={getYP}
+          showArea={showArea}
+          color={color}
+          dashed={true}
+          dataset={dataset}
+          stage={stage}
+        />
+      )}
+    </React.Fragment>
+  );
 };

@@ -20,7 +20,12 @@ import { Unary } from "../../utils/functional/functional";
 import { isFiniteNumber, isNumber } from "../../utils/general/general";
 import { Measure } from "../measure/measure";
 
-export enum SeriesFormatType { DEFAULT = "default", EXACT = "exact", PERCENT = "percent", CUSTOM = "custom" }
+export enum SeriesFormatType {
+  DEFAULT = "default",
+  EXACT = "exact",
+  PERCENT = "percent",
+  CUSTOM = "custom",
+}
 
 type FormatString = string;
 
@@ -29,7 +34,10 @@ interface SeriesFormatValue {
   value: FormatString;
 }
 
-const defaultFormat: SeriesFormatValue = { type: SeriesFormatType.DEFAULT, value: "" };
+const defaultFormat: SeriesFormatValue = {
+  type: SeriesFormatType.DEFAULT,
+  value: "",
+};
 
 export class SeriesFormat extends Record<SeriesFormatValue>(defaultFormat) {
   static fromJS(params: any): SeriesFormat {
@@ -39,7 +47,9 @@ export class SeriesFormat extends Record<SeriesFormatValue>(defaultFormat) {
 
 export const DEFAULT_FORMAT = new SeriesFormat(defaultFormat);
 export const EXACT_FORMAT = new SeriesFormat({ type: SeriesFormatType.EXACT });
-export const PERCENT_FORMAT = new SeriesFormat({ type: SeriesFormatType.PERCENT });
+export const PERCENT_FORMAT = new SeriesFormat({
+  type: SeriesFormatType.PERCENT,
+});
 
 export const customFormat = (value: string) => new SeriesFormat({ type: SeriesFormatType.CUSTOM, value });
 

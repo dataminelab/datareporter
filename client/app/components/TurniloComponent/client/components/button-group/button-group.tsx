@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import "./button-group.scss";
@@ -34,30 +34,34 @@ export interface ButtonGroupProps {
   className?: string;
 }
 
-export interface ButtonGroupState {
-}
+// eslint-disable-next-line
+export interface ButtonGroupState {}
 
 export class ButtonGroup extends React.Component<ButtonGroupProps, ButtonGroupState> {
-
   renderMembers() {
     const { groupMembers } = this.props;
-    return groupMembers.map(button => {
-      return <li
-        className={classNames("group-member", button.className, { selected: button.isSelected })}
-        key={button.key}
-        onClick={button.onClick}
-      >
-        {button.title}
-      </li>;
+    return groupMembers.map((button) => {
+      return (
+        <li
+          className={classNames("group-member", button.className, {
+            selected: button.isSelected,
+          })}
+          key={button.key}
+          onClick={button.onClick}>
+          {button.title}
+        </li>
+      );
     });
   }
 
   render() {
     const { title, className } = this.props;
 
-    return <div className={classNames("button-group", className)}>
-      {title ? <div className="button-group-title">{title}</div> : null}
-      <ul className="group-container">{this.renderMembers()}</ul>
-    </div>;
+    return (
+      <div className={classNames("button-group", className)}>
+        {title ? <div className="button-group-title">{title}</div> : null}
+        <ul className="group-container">{this.renderMembers()}</ul>
+      </div>
+    );
   }
 }

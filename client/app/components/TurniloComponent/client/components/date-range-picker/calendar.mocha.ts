@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { expect, use } from "chai";
-import * as chaiDatetime from "chai-datetime";
+import chaiDatetime from "chai-datetime";
 import { Timezone } from "chronoshift";
 import { tz as getMomentWithTimezone } from "moment-timezone";
 import { getLocale } from "../../config/constants";
@@ -44,7 +44,7 @@ const warsawTZ = Timezone.fromJS("Europe/Warsaw");
 const getDateInTimezone = (day: string, timezone: Timezone) => getMomentWithTimezone(day, timezone.toString()).toDate();
 
 const convertDatesToTimezone = (dates: string[][], timezone: Timezone) =>
-  dates.map(week => week.map(day => getDateInTimezone(day, timezone)));
+  dates.map((week) => week.map((day) => getDateInTimezone(day, timezone)));
 
 describe("monthToWeeks", () => {
   describe("March 2010 (summer time change forward)", () => {
@@ -53,7 +53,7 @@ describe("monthToWeeks", () => {
       ["2010-03-07", "2010-03-08", "2010-03-09", "2010-03-10", "2010-03-11", "2010-03-12", "2010-03-13"],
       ["2010-03-14", "2010-03-15", "2010-03-16", "2010-03-17", "2010-03-18", "2010-03-19", "2010-03-20"],
       ["2010-03-21", "2010-03-22", "2010-03-23", "2010-03-24", "2010-03-25", "2010-03-26", "2010-03-27"],
-      ["2010-03-28", "2010-03-29", "2010-03-30", "2010-03-31"]
+      ["2010-03-28", "2010-03-29", "2010-03-30", "2010-03-31"],
     ];
 
     it("should calculate for UTC (no DST)", () => {
@@ -75,7 +75,7 @@ describe("monthToWeeks", () => {
       ["2019-10-06", "2019-10-07", "2019-10-08", "2019-10-09", "2019-10-10", "2019-10-11", "2019-10-12"],
       ["2019-10-13", "2019-10-14", "2019-10-15", "2019-10-16", "2019-10-17", "2019-10-18", "2019-10-19"],
       ["2019-10-20", "2019-10-21", "2019-10-22", "2019-10-23", "2019-10-24", "2019-10-25", "2019-10-26"],
-      ["2019-10-27", "2019-10-28", "2019-10-29", "2019-10-30", "2019-10-31"]
+      ["2019-10-27", "2019-10-28", "2019-10-29", "2019-10-30", "2019-10-31"],
     ];
 
     it("should calculate for UTC october (no DST)", () => {
@@ -100,7 +100,7 @@ describe("calendarDays", () => {
       ["2010-03-07", "2010-03-08", "2010-03-09", "2010-03-10", "2010-03-11", "2010-03-12", "2010-03-13"],
       ["2010-03-14", "2010-03-15", "2010-03-16", "2010-03-17", "2010-03-18", "2010-03-19", "2010-03-20"],
       ["2010-03-21", "2010-03-22", "2010-03-23", "2010-03-24", "2010-03-25", "2010-03-26", "2010-03-27"],
-      ["2010-03-28", "2010-03-29", "2010-03-30", "2010-03-31", "2010-04-01", "2010-04-02", "2010-04-03"]
+      ["2010-03-28", "2010-03-29", "2010-03-30", "2010-03-31", "2010-04-01", "2010-04-02", "2010-04-03"],
     ];
     const utcMarch2010CalendarPage = convertDatesToTimezone(march2010, utc);
     assertEqualCalendarMatrix(calendarDays(firstMarch2010, utc, getLocale()), utcMarch2010CalendarPage);
@@ -114,7 +114,7 @@ it("previous N dates", () => {
     new Date("1995-02-25T00:00:00.000Z"),
     new Date("1995-02-26T00:00:00.000Z"),
     new Date("1995-02-27T00:00:00.000Z"),
-    new Date("1995-02-28T00:00:00.000Z")
+    new Date("1995-02-28T00:00:00.000Z"),
   ]);
 });
 
@@ -125,6 +125,6 @@ it("next N dates", () => {
     new Date("1995-04-02T00:00:00.000Z"),
     new Date("1995-04-03T00:00:00.000Z"),
     new Date("1995-04-04T00:00:00.000Z"),
-    new Date("1995-04-05T00:00:00.000Z")
+    new Date("1995-04-05T00:00:00.000Z"),
   ]);
 });

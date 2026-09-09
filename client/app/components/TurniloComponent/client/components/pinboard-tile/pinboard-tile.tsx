@@ -20,12 +20,23 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { BooleanFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import {
+  BooleanFilterClause,
+  StringFilterAction,
+  StringFilterClause,
+} from "../../../common/models/filter-clause/filter-clause";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/visualization-props/visualization-props";
+import {
+  DatasetLoad,
+  error,
+  isError,
+  isLoaded,
+  isLoading,
+  loaded,
+  loading,
+} from "../../../common/models/visualization-props/visualization-props";
 import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
-import { Fn } from "../../../common/utils/general/general";
 import { MAX_SEARCH_LENGTH } from "../../config/constants";
 import { setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
@@ -44,6 +55,7 @@ import { equalParams, QueryParams } from "./utils/query-params";
 import { EditState, RowMode, RowModeId } from "./utils/row-mode";
 import { shouldFetchData } from "./utils/should-fetch";
 import { tileStyles } from "./utils/tile-styles";
+import { PlywoodValue } from "plywood";
 
 export class PinboardTileProps {
   essence: Essence;
@@ -63,22 +75,20 @@ export interface PinboardTileState {
 const noMeasureError = new Error("No measure selected");
 
 export class PinboardTile extends React.Component<PinboardTileProps, PinboardTileState> {
-
   state: PinboardTileState = {
     searchText: "",
     showSearch: false,
-    datasetLoad: loading
+    datasetLoad: loading,
   };
 
   private loadData(params: QueryParams) {
     this.setState({ datasetLoad: loading });
-    this.fetchData(params)
-      .then(loadedDataset => {
-        // TODO: encode it better
-        // null is here when we get out of order request, so we just ignore it
-        if (!loadedDataset) return;
-        this.setState({ datasetLoad: loadedDataset });
-      });
+    this.fetchData(params).then((loadedDataset) => {
+      // TODO: encode it better
+      // null is here when we get out of order request, so we just ignore it
+      if (!loadedDataset) return;
+      this.setState({ datasetLoad: loadedDataset });
+    });
   }
 
   private fetchData(params: QueryParams): Promise<DatasetLoad | null> {
@@ -89,19 +99,24 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
   private lastQueryParams: Partial<QueryParams> = {};
 
   private callExecutor = (params: QueryParams): Promise<DatasetLoad | null> => {
-    const { essence: { timezone, dataCube } } = params;
-    return dataCube.executor(makeQuery(params), { timezone })
-      .then((dataset: Dataset) => {
-          // signal out of order requests with null
-          if (!equalParams(params, this.lastQueryParams)) return null;
-          return loaded(dataset);
-        },
-        err => {
-          // signal out of order requests with null
-          if (!equalParams(params, this.lastQueryParams)) return null;
-          reportError(err);
-          return error(err);
-        });
+    const {
+      essence: { timezone, dataCube },
+    } = params;
+    return dataCube.executor(makeQuery(params), { timezone }).then(
+      (value: PlywoodValue) => {
+        if (!equalParams(params, this.lastQueryParams)) return null;
+        if (Dataset.isDataset(value)) {
+          return loaded(value);
+        }
+        throw new Error("Expected a Dataset but received a different PlywoodValue.");
+      },
+      (err) => {
+        // signal out of order requests with null
+        if (!equalParams(params, this.lastQueryParams)) return null;
+        reportError(err);
+        return error(err);
+      }
+    );
   };
 
   private debouncedCallExecutor = debounceWithPromise(this.callExecutor, 500);
@@ -147,7 +162,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
   private getFormatter(): Unary<Datum, string> {
     const { sortOn, essence } = this.props;
     const series = essence.findConcreteSeries(sortOn.key);
-    return d => series.formatValue(d);
+    return (d) => series.formatValue(d);
   }
 
   private isEditable(): boolean {
@@ -161,24 +176,36 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
   }
 
   private pinnedClause(): PinnableClause | null {
-    const { essence: { filter }, dimension } = this.props;
+    const {
+      essence: { filter },
+      dimension,
+    } = this.props;
     const clause = filter.getClauseForDimension(dimension);
     if (isPinnableClause(clause)) return clause;
     return null;
   }
 
   private addClause(clause: PinnableClause) {
-    const { clicker, essence: { filter } } = this.props;
+    const {
+      clicker,
+      essence: { filter },
+    } = this.props;
     clicker.changeFilter(filter.addClause(clause));
   }
 
   private removeClause(clause: PinnableClause) {
-    const { clicker, essence: { filter } } = this.props;
+    const {
+      clicker,
+      essence: { filter },
+    } = this.props;
     clicker.changeFilter(filter.removeClause(clause.reference));
   }
 
   private updateClause(clause: PinnableClause) {
-    const { clicker, essence: { filter } } = this.props;
+    const {
+      clicker,
+      essence: { filter },
+    } = this.props;
     clicker.changeFilter(filter.setClause(clause));
   }
 
@@ -190,9 +217,12 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
   private toggleFilterValue = (value: string) => {
     const clause = this.pinnedClause();
     if (!isPinnableClause(clause)) throw Error(`Expected Boolean or String filter clause, got ${clause}`);
-    const updater = (values: Set<string>) => values.has(value) ? values.remove(value) : values.add(value);
+    const updater = (values: Set<string>) => (values.has(value) ? values.remove(value) : values.add(value));
     // TODO: call looks the same but typescript distinguish them and otherwise can't find common call signature
-    const newClause = clause instanceof StringFilterClause ? clause.update("values", updater) : clause.update("values", updater);
+    const newClause =
+      clause instanceof StringFilterClause
+        ? clause.update("values", (values: Set<string | boolean>) => updater(values as Set<string>))
+        : clause.update("values", (values: Set<string | boolean>) => updater(values as Set<string>));
     if (newClause.values.isEmpty()) {
       this.removeClause(newClause);
     } else {
@@ -204,9 +234,14 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     const { dimension } = this.props;
     const reference = dimension.name;
     const values = Set.of(value);
-    const clause = dimension.kind === "string"
-      ? new StringFilterClause({ reference, action: StringFilterAction.IN, values })
-      : new BooleanFilterClause({ reference, values });
+    const clause =
+      dimension.kind === "string"
+        ? new StringFilterClause({
+            reference,
+            action: StringFilterAction.IN,
+            values,
+          })
+        : new BooleanFilterClause({ reference, values });
     this.addClause(clause);
   };
 
@@ -216,14 +251,14 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
         mode: RowModeId.EDITABLE,
         state: EditState.IN_EDIT,
         toggleValue: this.toggleFilterValue,
-        clause: this.pinnedClause()
+        clause: this.pinnedClause(),
       };
     }
     if (this.isEditable()) {
       return {
         mode: RowModeId.EDITABLE,
         state: EditState.READY,
-        createClause: this.createFilterClause
+        createClause: this.createFilterClause,
       };
     }
     return { mode: RowModeId.READONLY };
@@ -233,24 +268,33 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     const { dimension } = this.props;
     const { datasetLoad, showSearch, searchText } = this.state;
 
-    return <SearchableTile
-      style={tileStyles(datasetLoad)}
-      title={dimension.title}
-      toggleChangeFn={this.toggleSearch}
-      onDragStart={this.onDragStart}
-      onSearchChange={this.setSearchText}
-      searchText={searchText}
-      showSearch={showSearch}
-      icons={pinboardIcons({ showSearch, onClose: this.unpin, onSearchClick: this.toggleSearch })}
-      className="pinboard-tile">
-      {isLoaded(datasetLoad) && <PinboardDataset
-        rowMode={this.getRowMode()}
-        data={datasetLoad.dataset.data}
+    return (
+      <SearchableTile
+        style={tileStyles(datasetLoad)}
+        title={dimension.title}
+        toggleChangeFn={this.toggleSearch}
+        onDragStart={this.onDragStart}
+        onSearchChange={this.setSearchText}
         searchText={searchText}
-        dimension={dimension}
-        formatter={this.getFormatter()}/>}
-      {isError(datasetLoad) && <QueryError error={datasetLoad.error} />}
-      {isLoading(datasetLoad) && <Loader />}
-    </SearchableTile>;
+        showSearch={showSearch}
+        icons={pinboardIcons({
+          showSearch,
+          onClose: this.unpin,
+          onSearchClick: this.toggleSearch,
+        })}
+        className="pinboard-tile">
+        {isLoaded(datasetLoad) && (
+          <PinboardDataset
+            rowMode={this.getRowMode()}
+            data={datasetLoad.dataset.data}
+            searchText={searchText}
+            dimension={dimension}
+            formatter={this.getFormatter()}
+          />
+        )}
+        {isError(datasetLoad) && <QueryError error={datasetLoad.error} />}
+        {isLoading(datasetLoad) && <Loader />}
+      </SearchableTile>
+    );
   }
 }

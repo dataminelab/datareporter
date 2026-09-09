@@ -20,24 +20,47 @@ import { range } from "../../../../common/utils/functional/functional";
 import { SPLIT } from "../../../config/constants";
 import { ContinuousScale } from "../../../visualizations/line-chart/utils/continuous-types";
 
-export const makeDataset = (datums: any[]) =>
-  Dataset.fromJS([{ [SPLIT]: datums }]);
+export const makeDataset = (datums: any[]) => Dataset.fromJS([{ [SPLIT]: datums }]);
 
 export const january = (n: number) => new Date(`2000-01-${n}`);
 
 const nonNominalDatums = [
-  { time: { type: "TIME_RANGE", start: january(1), end: january(2) }, measure: 12 },
-  { time: { type: "TIME_RANGE", start: january(2), end: january(3) }, measure: 654 },
-  { time: { type: "TIME_RANGE", start: january(3), end: january(4) }, measure: 11000 },
-  { time: { type: "TIME_RANGE", start: january(4), end: january(5) }, measure: 987 },
-  { time: { type: "TIME_RANGE", start: january(5), end: january(6) }, measure: 21321321 },
-  { time: { type: "TIME_RANGE", start: january(6), end: january(7) }, measure: 765765 }
+  {
+    time: { type: "TIME_RANGE", start: january(1), end: january(2) },
+    measure: 12,
+  },
+  {
+    time: { type: "TIME_RANGE", start: january(2), end: january(3) },
+    measure: 654,
+  },
+  {
+    time: { type: "TIME_RANGE", start: january(3), end: january(4) },
+    measure: 11000,
+  },
+  {
+    time: { type: "TIME_RANGE", start: january(4), end: january(5) },
+    measure: 987,
+  },
+  {
+    time: { type: "TIME_RANGE", start: january(5), end: january(6) },
+    measure: 21321321,
+  },
+  {
+    time: { type: "TIME_RANGE", start: january(6), end: january(7) },
+    measure: 765765,
+  },
 ];
 export const nonNominalDataset = makeDataset(nonNominalDatums);
 
 const sparseNonNominalDatums = [
-  { time: { type: "TIME_RANGE", start: january(1), end: january(2) }, measure: 12 },
-  { time: { type: "TIME_RANGE", start: january(6), end: january(7) }, measure: 11000 }
+  {
+    time: { type: "TIME_RANGE", start: january(1), end: january(2) },
+    measure: 12,
+  },
+  {
+    time: { type: "TIME_RANGE", start: january(6), end: january(7) },
+    measure: 11000,
+  },
 ];
 export const sparseNonNominalDataset = makeDataset(sparseNonNominalDatums);
 
@@ -45,10 +68,13 @@ export const nominalDataset = makeDataset([{ channel: "foobar", [SPLIT]: nonNomi
 
 export const sparseNominalDataset = makeDataset([{ channel: "foobar", [SPLIT]: sparseNonNominalDatums }]);
 
-export const scale = d3.time.scale().domain([january(1), january(7)]).range([0, 1000]) as unknown as ContinuousScale;
+export const scale = d3
+  .scaleTime()
+  .domain([january(1), january(7)])
+  .range([0, 1000]) as unknown as ContinuousScale;
 
 export function createDailyNominalDatasetInJanuary(startDay: number, endDay: number): Dataset {
-  const datums = range(startDay, endDay).map(i => {
+  const datums = range(startDay, endDay).map((i) => {
     const start = january(i);
     const end = january(i + 1);
     return { time: { type: "TIME_RANGE", start, end } };

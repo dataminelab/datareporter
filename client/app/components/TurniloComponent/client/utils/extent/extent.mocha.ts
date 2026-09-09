@@ -27,11 +27,16 @@ describe("extent", () => {
     const reference = "count";
     const seriesFixture = new MeasureConcreteSeries(
       new MeasureSeries({ reference }),
-      Measure.fromJS({ title: "Count", name: reference, formula: "$main.count()" }));
+      Measure.fromJS({
+        title: "Count",
+        name: reference,
+        formula: "$main.count()",
+      })
+    );
 
     const datumFixture = {
       [seriesFixture.plywoodKey()]: 42,
-      [seriesFixture.plywoodKey(SeriesDerivation.PREVIOUS)]: 101
+      [seriesFixture.plywoodKey(SeriesDerivation.PREVIOUS)]: 101,
     } as Datum;
 
     describe("hasComparison is false", () => {
@@ -65,13 +70,13 @@ describe("extent", () => {
   });
 
   describe("datumsExtent", () => {
-    const fooSelector: Selector = d => d.foo as number;
-    const barSelector: Selector = d => d.bar as number;
+    const fooSelector: Selector = (d) => d.foo as number;
+    const barSelector: Selector = (d) => d.bar as number;
 
     const datumsFixture = [
       { foo: 0, bar: 100 },
       { foo: 1, bar: -200 },
-      { foo: 3, bar: 4 }
+      { foo: 3, bar: 4 },
     ];
 
     it("should pick extent by one selector", () => {

@@ -1,5 +1,16 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { isEmpty, includes, compact, map, has, pick, keys, extend, every, get } from "lodash";
+import {
+  isEmpty,
+  includes,
+  compact,
+  map,
+  has,
+  pick,
+  keys,
+  extend,
+  every,
+  get,
+} from "lodash";
 import notification from "@/services/notification";
 import location from "@/services/location";
 import url from "@/services/url";
@@ -10,7 +21,10 @@ import { QueryResultError } from "@/services/query";
 import AddWidgetDialog from "@/components/dashboards/AddWidgetDialog";
 import TextboxDialog from "@/components/dashboards/TextboxDialog";
 import PermissionsEditorDialog from "@/components/PermissionsEditorDialog";
-import { editableMappingsToParameterMappings, synchronizeWidgetTitles } from "@/components/ParameterMappingInput";
+import {
+  editableMappingsToParameterMappings,
+  synchronizeWidgetTitles,
+} from "@/components/ParameterMappingInput";
 import ShareDashboardDialog from "../components/ShareDashboardDialog";
 import useFullscreenHandler from "../../../lib/hooks/useFullscreenHandler";
 import useRefreshRateHandler from "./useRefreshRateHandler";
@@ -27,9 +41,9 @@ function getAffectedWidgets(widgets, updatedParameters = []) {
           .some(({ mapTo }) =>
             includes(
               updatedParameters.map(p => p.name),
-              mapTo
-            )
-          )
+              mapTo,
+            ),
+          ),
       )
     : widgets;
 }
@@ -39,18 +53,25 @@ function useDashboard(dashboardData) {
   const [filters, setFilters] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [gridDisabled, setGridDisabled] = useState(false);
-  const globalParameters = useMemo(() => dashboard.getParametersDefs(), [dashboard]);
+  const globalParameters = useMemo(
+    () => dashboard.getParametersDefs(),
+    [dashboard],
+  );
   const canEditDashboard = !dashboard.is_archived && dashboard.can_edit;
   const isDashboardOwnerOrAdmin = useMemo(
     () =>
       !dashboard.is_archived &&
       has(dashboard, "user.id") &&
-      (currentUser.id === dashboard.user.id || currentUser.hasPermission("admin")),
-    [dashboard]
+      (currentUser.id === dashboard.user.id ||
+        currentUser.hasPermission("admin")),
+    [dashboard],
   );
   const hasOnlySafeQueries = useMemo(
-    () => every(dashboard.widgets, w => (w.getQuery() ? w.getQuery().is_safe : true)),
-    [dashboard]
+    () =>
+      every(dashboard.widgets, w =>
+        w.getQuery() ? w.getQuery().is_safe : true,
+      ),
+    [dashboard],
   );
 
   const managePermissions = useCallback(() => {
@@ -71,7 +92,9 @@ function useDashboard(dashboardData) {
       }
       return Dashboard.save(data)
         .then(updatedDashboard => {
-          setDashboard(currentDashboard => extend({}, currentDashboard, pick(updatedDashboard, keys(data))));
+          setDashboard(currentDashboard =>
+            extend({}, currentDashboard, pick(updatedDashboard, keys(data))),
+          );
           if (has(data, "name")) {
             location.setPath(url.parse(updatedDashboard.url).pathname, true);
           }
@@ -84,12 +107,12 @@ function useDashboard(dashboardData) {
             notification.error(
               "It seems like the dashboard has been modified by another user. ",
               "Please copy/backup your changes and reload this page.",
-              { duration: null }
+              { duration: null },
             );
           }
         });
     },
-    [dashboard]
+    [dashboard],
   );
 
   const togglePublished = useCallback(() => {
@@ -109,16 +132,23 @@ function useDashboard(dashboardData) {
         }
         return Promise.reject(error);
       })
-      .finally(() => setDashboard(currentDashboard => extend({}, currentDashboard)));
+      .finally(() =>
+        setDashboard(currentDashboard => extend({}, currentDashboard)),
+      );
   }, []);
 
-  const refreshWidget = useCallback(widget => loadWidget(widget, true), [loadWidget]);
+  const refreshWidget = useCallback(
+    widget => loadWidget(widget, true),
+    [loadWidget],
+  );
 
   const removeWidget = useCallback(widgetId => {
     setDashboard(currentDashboard =>
       extend({}, currentDashboard, {
-        widgets: currentDashboard.widgets.filter(widget => widget.id !== undefined && widget.id !== widgetId),
-      })
+        widgets: currentDashboard.widgets.filter(
+          widget => widget.id !== undefined && widget.id !== widgetId,
+        ),
+      }),
     );
   }, []);
 
@@ -126,40 +156,55 @@ function useDashboard(dashboardData) {
   dashboardRef.current = dashboard;
 
   const loadDashboard = useCallback(
-    (forceRefresh = false, updatedParameters = []) => {
-      const affectedWidgets = getAffectedWidgets(dashboardRef.current.widgets, updatedParameters);
+    async (forceRefresh = false, updatedParameters = []) => {
+      const affectedWidgets = getAffectedWidgets(
+        dashboardRef.current.widgets,
+        updatedParameters,
+      );
       const loadWidgetPromises = compact(
-        affectedWidgets.map(widget => loadWidget(widget, forceRefresh).catch(error => error))
+        affectedWidgets.map(widget =>
+          loadWidget(widget, forceRefresh).catch(error => error),
+        ),
       );
 
-      return Promise.all(loadWidgetPromises).then(() => {
-        const queryResults = compact(map(dashboardRef.current.widgets, widget => widget.getQueryResult()));
-        const updatedFilters = collectDashboardFilters(dashboardRef.current, queryResults, location.search);
-        setFilters(updatedFilters);
-      });
+      await Promise.all(loadWidgetPromises);
+      const queryResults = compact(
+        map(dashboardRef.current.widgets, widget_2 =>
+          widget_2.getQueryResult(),
+        ),
+      );
+      const updatedFilters = collectDashboardFilters(
+        dashboardRef.current,
+        queryResults,
+        location.search,
+      );
+      setFilters(updatedFilters);
     },
-    [loadWidget]
+    [loadWidget],
   );
 
-  const refreshDashboard = useCallback(
-    updatedParameters => {
-      if (!refreshing) {
-        setRefreshing(true);
-        setTimeout(() => document.querySelector("a[data-test='Refresh']").click(), 333);
-      }
-    },
-    [refreshing, loadDashboard]
-  );
+  const refreshDashboard = useCallback(() => {
+    if (!refreshing) {
+      setRefreshing(true);
+      setTimeout(
+        () => document.querySelector("a[data-test='Refresh']").click(),
+        333,
+      );
+    }
+  }, [refreshing]);
 
   const archiveDashboard = useCallback(() => {
     recordEvent("archive", "dashboard", dashboard.id);
     Dashboard.delete(dashboard).then(updatedDashboard =>
-      setDashboard(currentDashboard => extend({}, currentDashboard, pick(updatedDashboard, ["is_archived"])))
+      setDashboard(currentDashboard =>
+        extend({}, currentDashboard, pick(updatedDashboard, ["is_archived"])),
+      ),
     );
   }, [dashboard]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const showShareDashboardDialog = useCallback(() => {
-    const handleDialogClose = () => setDashboard(currentDashboard => extend({}, currentDashboard));
+    const handleDialogClose = () =>
+      setDashboard(currentDashboard => extend({}, currentDashboard));
 
     ShareDashboardDialog.showModal({
       dashboard,
@@ -173,7 +218,11 @@ function useDashboard(dashboardData) {
     TextboxDialog.showModal({
       isNew: true,
     }).onClose(text =>
-      dashboard.addWidget(text).then(() => setDashboard(currentDashboard => extend({}, currentDashboard)))
+      dashboard
+        .addWidget(text)
+        .then(() =>
+          setDashboard(currentDashboard => extend({}, currentDashboard)),
+        ),
     );
   }, [dashboard]);
 
@@ -183,32 +232,53 @@ function useDashboard(dashboardData) {
     }).onClose(({ visualization, parameterMappings }) =>
       dashboard
         .addWidget(visualization, {
-          parameterMappings: editableMappingsToParameterMappings(parameterMappings),
+          parameterMappings:
+            editableMappingsToParameterMappings(parameterMappings),
         })
-        .then(widget => {
+        .then(async widget => {
           const widgetsToSave = [
             widget,
-            ...synchronizeWidgetTitles(widget.options.parameterMappings, dashboard.widgets),
+            ...synchronizeWidgetTitles(
+              widget.options.parameterMappings,
+              dashboard.widgets,
+            ),
           ];
-          return Promise.all(widgetsToSave.map(w => w.save())).then(() =>
-            setDashboard(currentDashboard => extend({}, currentDashboard))
-          );
-        })
+          await Promise.all(widgetsToSave.map(w => w.save()));
+          return setDashboard(currentDashboard => extend({}, currentDashboard));
+        }),
     );
   }, [dashboard]);
 
-  const showReportDialog = useCallback(() => {
-    AddReportDialog.showModal({
-      dashboard,
-    }).onClose((text) =>
-      dashboard.addWidget(text).then(() => {
-        setDashboard(currentDashboard => extend({}, currentDashboard))
-      }, [dashboard]));
+  const showAddReportDialog = useCallback(() => {
+    AddReportDialog.showModal().onClose(({ text, options }) =>
+      dashboard
+        .addWidget(text, options)
+        .then(() => {
+          setDashboard(currentDashboard => extend({}, currentDashboard));
+        })
+        .catch(error => {
+          if (error instanceof QueryResultError) {
+            notification.error(
+              "Report Widget could not be added",
+              error.message,
+            );
+          } else {
+            notification.error(
+              "Report Widget could not be added",
+              "An unexpected error occurred.",
+            );
+          }
+        }),
+    );
   }, [dashboard]);
 
-  const [refreshRate, setRefreshRate, disableRefreshRate] = useRefreshRateHandler(refreshDashboard);
+  const [refreshRate, setRefreshRate, disableRefreshRate] =
+    useRefreshRateHandler(refreshDashboard);
   const [fullscreen, toggleFullscreen] = useFullscreenHandler();
-  const editModeHandler = useEditModeHandler(!gridDisabled && canEditDashboard, dashboard.widgets);
+  const editModeHandler = useEditModeHandler(
+    !gridDisabled && canEditDashboard,
+    dashboard.widgets,
+  );
 
   useEffect(() => {
     setDashboard(dashboardData);
@@ -251,7 +321,7 @@ function useDashboard(dashboardData) {
     showShareDashboardDialog,
     showAddTextboxDialog,
     showAddWidgetDialog,
-    showReportDialog,
+    showAddReportDialog,
     managePermissions,
   };
 }

@@ -25,7 +25,6 @@ import { QueryParams } from "./query-params";
 const TOP_N = 100;
 
 function filterExpression({ essence, searchText, timekeeper, dimension }: QueryParams): Expression {
-
   const expression = essence
     .getEffectiveFilter(timekeeper, { unfilterDimension: dimension })
     .toExpression(essence.dataCube);
@@ -55,9 +54,7 @@ export function makeQuery(params: QueryParams): Expression {
   const { dimension, sortOn } = params;
 
   return thread(
-    $("main")
-      .filter(filterExpression(params))
-      .split(dimension.expression, dimension.name),
+    $("main").filter(filterExpression(params)).split(dimension.expression, dimension.name),
     insertSortReferenceExpression(params),
     applySort(sortOn),
     limit

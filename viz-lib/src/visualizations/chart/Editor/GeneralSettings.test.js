@@ -19,7 +19,7 @@ function mount(options, done) {
       visualizationName="Test"
       data={{ columns: [], rows: [] }}
       options={options}
-      onOptionsChange={changedOptions => {
+      onOptionsChange={(changedOptions) => {
         expect(changedOptions).toMatchSnapshot();
         done();
       }}
@@ -28,7 +28,7 @@ function mount(options, done) {
 }
 
 describe("Visualizations -> Chart -> Editor -> General Settings", () => {
-  test("Changes global series type", done => {
+  test("Changes global series type", (done) => {
     const el = mount(
       {
         globalSeriesType: "column",
@@ -41,15 +41,11 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
       done
     );
 
-    findByTestID(el, "Chart.GlobalSeriesType")
-      .last()
-      .simulate("click");
-    findByTestID(el, "Chart.ChartType.pie")
-      .last()
-      .simulate("click");
+    findByTestID(el, "Chart.GlobalSeriesType").last().simulate("mouseDown");
+    findByTestID(el, "Chart.ChartType.pie").last().simulate("click");
   });
 
-  test("Pie: changes direction", done => {
+  test("Pie: changes direction", (done) => {
     const el = mount(
       {
         globalSeriesType: "pie",
@@ -58,15 +54,11 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
       done
     );
 
-    findByTestID(el, "Chart.PieDirection")
-      .last()
-      .simulate("click");
-    findByTestID(el, "Chart.PieDirection.Clockwise")
-      .last()
-      .simulate("click");
+    findByTestID(el, "Chart.PieDirection").last().simulate("mouseDown");
+    findByTestID(el, "Chart.PieDirection.Clockwise").last().simulate("click");
   });
 
-  test("Toggles legend", done => {
+  test("Toggles legend", (done) => {
     const el = mount(
       {
         globalSeriesType: "column",
@@ -75,15 +67,11 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
       done
     );
 
-    findByTestID(el, "Chart.LegendPlacement")
-      .last()
-      .simulate("click");
-    findByTestID(el, "Chart.LegendPlacement.HideLegend")
-      .last()
-      .simulate("click");
+    findByTestID(el, "Chart.LegendPlacement").last().simulate("mouseDown");
+    findByTestID(el, "Chart.LegendPlacement.HideLegend").last().simulate("click");
   });
 
-  test("Box: toggles show points", done => {
+  test("Box: toggles show points", (done) => {
     const el = mount(
       {
         globalSeriesType: "box",
@@ -98,7 +86,7 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
       .simulate("change", { target: { checked: true } });
   });
 
-  test("Enables stacking", done => {
+  test("Enables stacking", (done) => {
     const el = mount(
       {
         globalSeriesType: "column",
@@ -107,15 +95,11 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
       done
     );
 
-    findByTestID(el, "Chart.Stacking")
-      .last()
-      .simulate("click");
-    findByTestID(el, "Chart.Stacking.Stack")
-      .last()
-      .simulate("click");
+    findByTestID(el, "Chart.Stacking").last().simulate("mouseDown");
+    findByTestID(el, "Chart.Stacking.Stack").last().simulate("click");
   });
 
-  test("Toggles normalize values to percentage", done => {
+  test("Toggles normalize values to percentage", (done) => {
     const el = mount(
       {
         globalSeriesType: "column",
@@ -130,7 +114,7 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
       .simulate("change", { target: { checked: true } });
   });
 
-  test("Keep missing/null values", done => {
+  test("Keep missing/null values", (done) => {
     const el = mount(
       {
         globalSeriesType: "column",
@@ -139,12 +123,8 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
       done
     );
 
-    findByTestID(el, "Chart.MissingValues")
-      .last()
-      .simulate("click");
-    findByTestID(el, "Chart.MissingValues.Keep")
-      .last()
-      .simulate("click");
+    findByTestID(el, "Chart.MissingValues").last().simulate("mouseDown");
+    findByTestID(el, "Chart.MissingValues.Keep").last().simulate("click");
   });
 
   describe("Column mappings should be available", () => {
@@ -193,5 +173,35 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
       expect(elementExists(el, "Chart.ColumnMapping.series")).toBeTruthy();
       expect(elementExists(el, "Chart.ColumnMapping.yError")).toBeTruthy();
     });
+  });
+
+  test("Toggles horizontal bar chart", (done) => {
+    const el = mount(
+      {
+        globalSeriesType: "column",
+        series: {},
+      },
+      done
+    );
+
+    findByTestID(el, "Chart.SwappedAxes")
+      .last()
+      .find("input")
+      .simulate("change", { target: { checked: true } });
+  });
+
+  test("Toggles Enable click events", (done) => {
+    const el = mount(
+      {
+        globalSeriesType: "column",
+        series: {},
+      },
+      done
+    );
+
+    findByTestID(el, "Chart.EnableClickEvents")
+      .last()
+      .find("input")
+      .simulate("change", { target: { checked: true } });
   });
 });

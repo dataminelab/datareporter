@@ -28,20 +28,19 @@ import { noop } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { AddArithmeticOperationButton } from "./add-arithmetic-operation";
 
-const renderButton = (measure: Measure) => shallow(<AddArithmeticOperationButton
-  measure={measure}
-  addExpressionPlaceholder={null}
-  onClose={noop}
-/>);
+const renderButton = (measure: Measure) =>
+  shallow(<AddArithmeticOperationButton measure={measure} addExpressionPlaceholder={null} onClose={noop} />);
 
-const mountButton = (measure: Measure, addExpressionPlaceholder: Fn, onClose: Fn) => mount(<AddArithmeticOperationButton
-  measure={measure}
-  onClose={onClose}
-  addExpressionPlaceholder={addExpressionPlaceholder} />)
-  .find(".new-arithmetic-expression");
+const mountButton = (measure: Measure, addExpressionPlaceholder: Fn, onClose: Fn) =>
+  mount(
+    <AddArithmeticOperationButton
+      measure={measure}
+      onClose={onClose}
+      addExpressionPlaceholder={addExpressionPlaceholder}
+    />
+  ).find(".new-arithmetic-expression");
 
 describe("Add Arithmetic Operation Button", () => {
-
   it("renders enabled add arithmetic operation", () => {
     const actions = renderButton(MeasureFixtures.wikiUniqueUsers());
 
@@ -68,8 +67,8 @@ describe("Add Arithmetic Operation Button", () => {
         reference: measure.name,
         expression: new ArithmeticExpression({
           operation: ExpressionSeriesOperation.ADD,
-          reference: null
-        })
+          reference: null,
+        }),
       });
       expect(argument.equals(expectedExpression)).to.be.true;
     });

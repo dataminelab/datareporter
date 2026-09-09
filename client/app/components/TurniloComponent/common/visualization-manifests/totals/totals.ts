@@ -27,9 +27,4 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .otherwise(() => Resolve.automatic(3, { splits: EMPTY_SPLITS }))
   .build();
 
-export const TOTALS_MANIFEST = new VisualizationManifest(
-  "totals",
-  "Totals",
-  rulesEvaluator,
-  emptySettingsConfig
-);
+export const TOTALS_MANIFEST = new VisualizationManifest("totals", "Totals", rulesEvaluator, emptySettingsConfig);

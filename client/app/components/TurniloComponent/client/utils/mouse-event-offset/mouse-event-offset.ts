@@ -16,7 +16,10 @@
 
 import * as React from "react";
 
-function getBoundingClientOffset(element: HTMLElement | Window): { left: number, top: number } {
+function getBoundingClientOffset(element: HTMLElement | Window): {
+  left: number;
+  top: number;
+} {
   if (element === window) {
     return { top: 0, left: 0 };
   }

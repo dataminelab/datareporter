@@ -30,7 +30,7 @@ export const HeatmapHoverIndicator: React.SFC<HeatmapHoverIndicator> = ({ tileGa
   const left = column * tileSize + tileGap;
   const position: React.CSSProperties = {
     top: `${top}px`,
-    left: `${left}px`
+    left: `${left}px`,
   };
   return <div className="heatmap-hover-indicator" style={position} />;
 };

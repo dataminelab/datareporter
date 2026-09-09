@@ -27,9 +27,15 @@ export interface HighlightStringProps {
 
 function highlightByIndex(text: string, start: number, end: number) {
   return [
-    <span className="pre" key="pre">{text.substring(0, start)}</span>,
-    <span className="bold" key="bold">{text.substring(start, end)}</span>,
-    <span className="post" key="post">{text.substring(end)}</span>
+    <span className="pre" key="pre">
+      {text.substring(0, start)}
+    </span>,
+    <span className="bold" key="bold">
+      {text.substring(start, end)}
+    </span>,
+    <span className="post" key="post">
+      {text.substring(end)}
+    </span>,
   ];
 }
 

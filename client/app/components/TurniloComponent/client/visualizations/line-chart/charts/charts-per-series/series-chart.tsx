@@ -15,13 +15,17 @@
  */
 
 import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
-import * as React from "react";
-import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { VisMeasureLabel } from "../../../../components/vis-measure-label/vis-measure-label";
-import { selectFirstSplitDataset, selectMainDatum, selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
+import {
+  selectFirstSplitDataset,
+  selectMainDatum,
+  selectSplitDatums,
+} from "../../../../utils/dataset/selectors/selectors";
+import { SettingsContext } from "../../../../views/cube-view/settings-context";
 import { BaseChart } from "../../base-chart/base-chart";
 import { ColoredSeriesChartLine } from "../../chart-line/colored-series-chart-line";
 import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-chart-line";
@@ -45,79 +49,116 @@ interface SeriesChartProps {
   visualisationStage: Stage;
 }
 
-export const SeriesChart: React.SFC<SeriesChartProps> = props => {
-  const { chartId, interactions, visualisationStage, chartStage, essence, series, xScale, xTicks, dataset } = props;
-  const hasComparison = essence.hasComparison();
-  const continuousSplitDataset = selectFirstSplitDataset(dataset);
-  const { interaction } = interactions;
+export const SeriesChart: React.FunctionComponent<SeriesChartProps> = (props) => {
+  return (
+    <SettingsContext.Consumer>
+      {(settingsContext) => {
+        // If no context is provided, use a default
+        const visualizationColors = (settingsContext &&
+          settingsContext.customization &&
+          settingsContext.customization.visualizationColors) || {
+          series: [
+            "#1f77b4",
+            "#ff7f0e",
+            "#2ca02c",
+            "#d62728",
+            "#9467bd",
+            "#8c564b",
+            "#e377c2",
+            "#7f7f7f",
+            "#bcbd22",
+            "#17becf",
+          ],
+        };
 
-  const hoverContent = isHover(interaction) && <SeriesHoverContent
-    essence={essence}
-    dataset={continuousSplitDataset}
-    range={interaction.range}
-    series={series}/>;
+        const { chartId, interactions, visualisationStage, chartStage, essence, series, xScale, xTicks, dataset } =
+          props;
+        const hasComparison = essence.hasComparison();
+        const continuousSplitDataset = selectFirstSplitDataset(dataset);
+        const { interaction } = interactions;
 
-  const label = <VisMeasureLabel
-    series={series}
-    datum={selectMainDatum(dataset)}
-    showPrevious={hasComparison} />;
-
-  const continuousSplit = getContinuousSplit(essence);
-  const getX = (d: Datum) => d[continuousSplit.reference] as (TimeRange | NumberRange);
-
-  const domain = extentAcrossSplits(continuousSplitDataset, essence, series);
-
-  if (hasNominalSplit(essence)) {
-    const nominalSplit = getNominalSplit(essence);
-    return <BaseChart
-      visualisationStage={visualisationStage}
-      chartId={chartId}
-      interactions={interactions}
-      hoverContent={hoverContent}
-      timezone={essence.timezone}
-      label={label}
-      xScale={xScale}
-      xTicks={xTicks}
-      chartStage={chartStage}
-      formatter={series.formatter()}
-      yDomain={domain}>
-      {({ yScale, lineStage }) => <React.Fragment>
-        {continuousSplitDataset.data.map((datum, index) => {
-          const splitKey = datum[nominalSplit.reference];
-          const color = NORMAL_COLORS[index];
-          return <ColoredSeriesChartLine
-            key={String(splitKey)}
-            xScale={xScale}
-            yScale={yScale}
-            getX={getX}
-            color={color}
-            dataset={selectSplitDatums(datum)}
-            stage={lineStage}
+        const hoverContent = isHover(interaction) ? (
+          <SeriesHoverContent
             essence={essence}
-            series={series} />;
-        })}
-      </React.Fragment>}
-    </BaseChart>;
-  }
-  return <BaseChart
-    chartId={series.plywoodKey()}
-    visualisationStage={visualisationStage}
-    interactions={interactions}
-    hoverContent={hoverContent}
-    timezone={essence.timezone}
-    label={label}
-    chartStage={chartStage}
-    yDomain={domain}
-    formatter={series.formatter()}
-    xScale={xScale}
-    xTicks={xTicks}>
-    {({ yScale, lineStage }) => <SingletonSeriesChartLine
-      xScale={xScale}
-      yScale={yScale}
-      getX={getX}
-      dataset={continuousSplitDataset.data}
-      stage={lineStage}
-      essence={essence}
-      series={series} />}
-  </BaseChart>;
+            dataset={continuousSplitDataset}
+            range={interaction.range}
+            series={series}
+          />
+        ) : null;
+
+        const label = <VisMeasureLabel series={series} datum={selectMainDatum(dataset)} showPrevious={hasComparison} />;
+
+        const continuousSplit = getContinuousSplit(essence);
+        const getX = (d: Datum) => continuousSplit.selectValue<TimeRange | NumberRange>(d);
+
+        const domain = extentAcrossSplits(continuousSplitDataset, essence, series);
+
+        if (hasNominalSplit(essence)) {
+          const nominalSplit = getNominalSplit(essence);
+          return (
+            <BaseChart
+              visualisationStage={visualisationStage}
+              chartId={chartId}
+              interactions={interactions}
+              hoverContent={hoverContent}
+              timezone={essence.timezone}
+              label={label}
+              xScale={xScale}
+              xTicks={xTicks}
+              chartStage={chartStage}
+              formatter={series.formatter()}
+              yDomain={domain}>
+              {({ yScale, lineStage }) => (
+                <React.Fragment>
+                  {continuousSplitDataset.data.map((datum, index) => {
+                    const splitKey = nominalSplit.selectValue(datum);
+                    const color = visualizationColors.series[index];
+                    return (
+                      <ColoredSeriesChartLine
+                        key={String(splitKey)}
+                        xScale={xScale}
+                        yScale={yScale}
+                        getX={getX}
+                        color={color}
+                        dataset={selectSplitDatums(datum)}
+                        stage={lineStage}
+                        essence={essence}
+                        series={series}
+                      />
+                    );
+                  })}
+                </React.Fragment>
+              )}
+            </BaseChart>
+          );
+        }
+        return (
+          <BaseChart
+            chartId={series.plywoodKey()}
+            visualisationStage={visualisationStage}
+            interactions={interactions}
+            hoverContent={hoverContent}
+            timezone={essence.timezone}
+            label={label}
+            chartStage={chartStage}
+            yDomain={domain}
+            formatter={series.formatter()}
+            xScale={xScale}
+            xTicks={xTicks}>
+            {({ yScale, lineStage }) => (
+              <SingletonSeriesChartLine
+                xScale={xScale}
+                yScale={yScale}
+                getX={getX}
+                dataset={continuousSplitDataset.data}
+                stage={lineStage}
+                essence={essence}
+                series={series}
+              />
+            )}
+          </BaseChart>
+        );
+      }}
+    </SettingsContext.Consumer>
+  );
 };

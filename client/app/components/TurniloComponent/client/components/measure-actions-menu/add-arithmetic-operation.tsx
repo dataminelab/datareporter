@@ -31,22 +31,26 @@ interface AddPercentSeriesButtonProps {
   onClose: Fn;
 }
 
-export const AddArithmeticOperationButton: React.SFC<AddPercentSeriesButtonProps> = props => {
+export const AddArithmeticOperationButton: React.SFC<AddPercentSeriesButtonProps> = (props) => {
   const { measure, addExpressionPlaceholder, onClose } = props;
 
   function onNewOperation() {
-    addExpressionPlaceholder(new ExpressionSeries({
-      reference: measure.name,
-      expression: new ArithmeticExpression({
-        operation: ExpressionSeriesOperation.ADD,
-        reference: null
+    addExpressionPlaceholder(
+      new ExpressionSeries({
+        reference: measure.name,
+        expression: new ArithmeticExpression({
+          operation: ExpressionSeriesOperation.ADD,
+          reference: null,
+        }),
       })
-    }));
+    );
     onClose();
   }
 
-  return <div className={classNames("new-arithmetic-expression", "action")} onClick={onNewOperation}>
-    <SvgIcon svg={require("../../icons/full-arithmetic.svg")} />
-    <div className="action-label">Calculate</div>
-  </div>;
+  return (
+    <div className={classNames("new-arithmetic-expression", "action")} onClick={onNewOperation}>
+      <SvgIcon svg={require("../../icons/full-arithmetic.svg")} />
+      <div className="action-label">Calculate</div>
+    </div>
+  );
 };

@@ -30,7 +30,8 @@ import { SvgIcon } from "../svg-icon/svg-icon";
 
 const percentOperations = Set.of<PercentOperation>(
   ExpressionSeriesOperation.PERCENT_OF_PARENT,
-  ExpressionSeriesOperation.PERCENT_OF_TOTAL);
+  ExpressionSeriesOperation.PERCENT_OF_TOTAL
+);
 
 interface AddPercentSeriesButtonProps {
   addSeries: Unary<Series, void>;
@@ -39,12 +40,12 @@ interface AddPercentSeriesButtonProps {
   onClose: Fn;
 }
 
-export const AddPercentSeriesButton: React.SFC<AddPercentSeriesButtonProps> = props => {
+export const AddPercentSeriesButton: React.SFC<AddPercentSeriesButtonProps> = (props) => {
   const { series, measure, addSeries, onClose } = props;
 
   const percentSeries: Set<PercentOperation> = series
     .getExpressionSeriesFor(measure.name)
-    .filter(s => s.expression instanceof PercentExpression)
+    .filter((s) => s.expression instanceof PercentExpression)
     .map((s: ExpressionSeries) => s.expression.operation as PercentOperation)
     .toSet();
 
@@ -53,17 +54,25 @@ export const AddPercentSeriesButton: React.SFC<AddPercentSeriesButtonProps> = pr
   function onNewPercentExpression() {
     if (!percentsDisabled) {
       const operation = percentOperations.subtract(percentSeries).first();
-      addSeries(new ExpressionSeries({
-        reference: measure.name,
-        format: PERCENT_FORMAT,
-        expression: new PercentExpression({ operation })
-      }));
+      addSeries(
+        new ExpressionSeries({
+          reference: measure.name,
+          format: PERCENT_FORMAT,
+          expression: new PercentExpression({ operation }),
+        })
+      );
     }
     onClose();
   }
 
-  return <div className={classNames("new-percent-expression", "action", { disabled: percentsDisabled })} onClick={onNewPercentExpression}>
-    <SvgIcon svg={require("../../icons/full-percent.svg")} />
-    <div className="action-label">Percent</div>
-  </div>;
+  return (
+    <div
+      className={classNames("new-percent-expression", "action", {
+        disabled: percentsDisabled,
+      })}
+      onClick={onNewPercentExpression}>
+      <SvgIcon svg={require("../../icons/full-percent.svg")} />
+      <div className="action-label">Percent</div>
+    </div>
+  );
 };

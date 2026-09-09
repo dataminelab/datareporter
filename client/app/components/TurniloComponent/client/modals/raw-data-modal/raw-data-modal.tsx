@@ -74,14 +74,14 @@ function getColumnWidth(attribute: AttributeInfo): number {
 }
 
 function classFromAttribute(attribute: AttributeInfo): string {
-  return classNames(
-    String(attribute.type).toLowerCase().replace(/\//g, "-"),
-    { unsplitable: attribute.unsplitable }
-  );
+  return classNames(String(attribute.type).toLowerCase().replace(/\//g, "-"), {
+    unsplitable: attribute.unsplitable,
+  });
 }
 
 export class RawDataModal extends React.Component<RawDataModalProps, RawDataModalState> {
   public mounted: boolean;
+  public tableRef: React.RefObject<any>;
 
   constructor(props: RawDataModalProps) {
     super(props);
@@ -91,18 +91,18 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       scrollLeft: 0,
       scrollTop: 0,
       error: null,
-      stage: null
+      stage: null,
     };
-
+    this.tableRef = React.createRef();
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.mounted = true;
     const { essence, timekeeper } = this.props;
     this.fetchData(essence, timekeeper);
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     this.mounted = false;
   }
 
@@ -111,34 +111,34 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const $main = $("main");
     const query = $main.filter(essence.getEffectiveFilter(timekeeper).toExpression(dataCube)).limit(LIMIT);
     this.setState({ loading: true });
-    dataCube.executor(query, { timezone: essence.timezone })
-      .then(
-        (dataset: Dataset) => {
-          if (!this.mounted) return;
-          this.setState({
-            dataset,
-            loading: false
-          });
-        },
-        (error: Error) => {
-          if (!this.mounted) return;
-          this.setState({
-            error,
-            loading: false
-          });
-        }
-      );
+    dataCube.executor(query, { timezone: essence.timezone }).then(
+      // @ts-ignore
+      (dataset: Dataset) => {
+        if (!this.mounted) return;
+        this.setState({
+          dataset,
+          loading: false,
+        });
+      },
+      (error: Error) => {
+        if (!this.mounted) return;
+        this.setState({
+          error,
+          loading: false,
+        });
+      }
+    );
   }
 
-  onScrollerViewportUpdate = (viewPortStage: Stage) => {
+  onScrollerViewportUpdate = (viewPortStage: Stage): void => {
     if (!viewPortStage.equals(this.state.stage)) {
       this.setState({
-        stage: viewPortStage
+        stage: viewPortStage,
       });
     }
   };
 
-  onScroll = (scrollTop: number, scrollLeft: number) => {
+  onScroll = (scrollTop: number, scrollLeft: number): void => {
     this.setState({ scrollLeft, scrollTop });
   };
 
@@ -146,11 +146,14 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { essence, timekeeper } = this.props;
     const { dataCube } = essence;
 
-    return essence.getEffectiveFilter(timekeeper).clauses.map(clause => {
-      const dimension = dataCube.getDimension(clause.reference);
-      if (!dimension) return null;
-      return formatFilterClause(dimension, clause, essence.timezone);
-    }).toList();
+    return essence
+      .getEffectiveFilter(timekeeper)
+      .clauses.map((clause) => {
+        const dimension = dataCube.getDimension(clause.reference);
+        if (!dimension) return null;
+        return formatFilterClause(dimension, clause, essence.timezone);
+      })
+      .toList();
   }
 
   getSortedAttributes(dataCube: DataCube): AttributeInfo[] {
@@ -175,14 +178,23 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       }
       return score1 - score2;
     });
-
   }
 
   renderFilters(): List<JSX.Element> {
-    const filters = this.getStringifiedFilters().map((filter: string, i: number) => {
-      return <li className="filter" key={i}>{filter}</li>;
-    }).toList();
-    const limit = <li className="limit" key="limit">First {LIMIT} events matching </li>;
+    const filters = this.getStringifiedFilters()
+      .map((filter: string, i: number) => {
+        return (
+          <li className="filter" key={i}>
+            {filter}
+          </li>
+        );
+      })
+      .toList();
+    const limit = (
+      <li className="limit" key="limit">
+        First {LIMIT} events matching{" "}
+      </li>
+    );
     return filters.unshift(limit);
   }
 
@@ -198,11 +210,11 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       const name = attribute.name;
       const width = getColumnWidth(attribute);
       const style = { width };
-      return (<div className={classNames("header-cell", classFromAttribute(attribute))} style={style} key={i}>
-        <div className="title-wrap">
-          {makeTitle(name)}
+      return (
+        <div className={classNames("header-cell", classFromAttribute(attribute))} style={style} key={i}>
+          <div className="title-wrap">{makeTitle(name)}</div>
         </div>
-      </div>);
+      );
     });
   }
 
@@ -211,7 +223,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
     return [
       Math.max(0, Math.floor(scrollTop / ROW_HEIGHT)),
-      Math.min(rowCount, Math.ceil((scrollTop + height) / ROW_HEIGHT))
+      Math.min(rowCount, Math.ceil((scrollTop + height) / ROW_HEIGHT)),
     ];
   }
 
@@ -240,25 +252,31 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       attributes.forEach((attribute: AttributeInfo) => {
         const name = attribute.name;
         const datumAttribute = datum[name];
-        const value = (datumAttribute instanceof Expression) ? datumAttribute.resolve(datum).simplify() : datum[name];
+        const value = datumAttribute instanceof Expression ? datumAttribute.resolve(datum).simplify() : datum[name];
         const colStyle = {
-          width: getColumnWidth(attribute)
+          width: getColumnWidth(attribute),
         };
 
-        var displayValue = value;
+        let displayValue = value;
 
         if (isDate(datum[name])) {
           displayValue = (datum[name] as Date).toISOString();
         }
 
-        cols.push(<div className={classNames("cell", classFromAttribute(attribute))} key={name} style={colStyle}>
-          <span className="cell-value">{String(displayValue)}</span>
-        </div>);
+        cols.push(
+          <div className={classNames("cell", classFromAttribute(attribute))} key={name} style={colStyle}>
+            <span className="cell-value">{String(displayValue)}</span>
+          </div>
+        );
       });
 
       const rowStyle = { top: rowY, left: leftOffset };
       rowY += ROW_HEIGHT;
-      return <div className="row" style={rowStyle} key={i}>{cols}</div>;
+      return (
+        <div className="row" style={rowStyle} key={i}>
+          {cols}
+        </div>
+      );
     });
   }
 
@@ -283,12 +301,10 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       );
     });
 
-    return <div className="button-bar">
-      {buttons}
-    </div>;
+    return <div className="button-bar">{buttons}</div>;
   }
 
-  download(fileFormat: FileFormat) {
+  download(fileFormat: FileFormat): void {
     const { dataset } = this.state;
     const { essence, timekeeper } = this.props;
     const { dataCube } = essence;
@@ -298,7 +314,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     download({ dataset, options }, fileFormat, makeFileName(dataCube.name, filtersString, "raw"));
   }
 
-  render() {
+  render(): JSX.Element {
     const { essence, onClose } = this.props;
     const { dataset, loading, error, stage } = this.state;
     const { dataCube } = essence;
@@ -314,28 +330,26 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       top: HEADER_HEIGHT,
       right: 0,
       bottom: 0,
-      left: 0
+      left: 0,
     };
 
-    return <Modal
-      className="raw-data-modal"
-      title={title}
-      onClose={onClose}
-    >
-      <div className="content">
-        <ul className="filters">{this.renderFilters()}</ul>
-        <Scroller
-          ref="table"
-          layout={scrollerLayout}
-          topGutter={this.renderHeader()}
-          body={stage && this.renderRows()}
-          onScroll={this.onScroll}
-          onViewportUpdate={this.onScrollerViewportUpdate}
-        />
-        {error ? <QueryError error={error} /> : null}
-        {loading ? <Loader /> : null}
-        {this.renderButtons()}
-      </div>
-    </Modal>;
+    return (
+      <Modal className="raw-data-modal" title={title} onClose={onClose}>
+        <div className="content">
+          <ul className="filters">{this.renderFilters()}</ul>
+          <Scroller
+            ref={this.tableRef}
+            layout={scrollerLayout}
+            topGutter={this.renderHeader()}
+            body={stage && this.renderRows()}
+            onScroll={this.onScroll}
+            onViewportUpdate={this.onScrollerViewportUpdate}
+          />
+          {error ? <QueryError error={error} /> : null}
+          {loading ? <Loader /> : null}
+          {this.renderButtons()}
+        </div>
+      </Modal>
+    );
   }
 }

@@ -21,6 +21,7 @@ function prepareXAxis(axisOptions, additionalOptions) {
     title: getAxisTitle(axisOptions),
     type: getAxisScaleType(axisOptions),
     automargin: true,
+    tickformat: axisOptions.tickFormat || null,
   };
 
   if (additionalOptions.sortX && axis.type === "category") {
@@ -45,6 +46,7 @@ function prepareYAxis(axisOptions) {
     automargin: true,
     autorange: true,
     range: null,
+    tickformat: axisOptions.tickFormat || null,
   };
 }
 
@@ -76,7 +78,7 @@ function preparePieLayout(layout, options, data) {
 }
 
 function prepareDefaultLayout(layout, options, data) {
-  const y2Series = data.filter(s => s.yaxis === "y2");
+  const y2Series = data.filter((s) => s.yaxis === "y2");
 
   layout.xaxis = prepareXAxis(options.xAxis, options);
 
@@ -112,7 +114,14 @@ export default function prepareLayout(element, options, data) {
     legend: {
       traceorder: options.legend.traceorder,
     },
+    hoverlabel: {
+      namelength: -1,
+    },
   };
+
+  if (["line", "area", "column"].includes(options.globalSeriesType)) {
+    layout.hovermode = options.swappedAxes ? "y" : "x";
+  }
 
   switch (options.globalSeriesType) {
     case "pie":

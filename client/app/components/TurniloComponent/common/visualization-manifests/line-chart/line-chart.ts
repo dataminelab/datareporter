@@ -22,7 +22,11 @@ import { NORMAL_COLORS } from "../../models/colors/colors";
 import { DimensionSort, Sort, SortDirection } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
-import { NORMAL_PRIORITY_ACTION, Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
+import {
+  NORMAL_PRIORITY_ACTION,
+  Resolve,
+  VisualizationManifest,
+} from "../../models/visualization-manifest/visualization-manifest";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 import { settings } from "./settings";
@@ -30,19 +34,23 @@ import { settings } from "./settings";
 const COLORS_COUNT = NORMAL_COLORS.length;
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
-  .when(({ dataCube }) => !(dataCube.getDimensionsByKind("time").length || dataCube.getDimensionsByKind("number").length))
+  .when(
+    ({ dataCube }) => !(dataCube.getDimensionsByKind("time").length || dataCube.getDimensionsByKind("number").length)
+  )
   .then(() => Resolve.NEVER)
 
   .when(Predicates.noSplits())
   .then(({ dataCube }) => {
     const continuousDimensions = dataCube.getDimensionsByKind("time").concat(dataCube.getDimensionsByKind("number"));
-    return Resolve.manual(NORMAL_PRIORITY_ACTION, "This visualization requires a continuous dimension split",
-      continuousDimensions.map(continuousDimension => {
+    return Resolve.manual(
+      NORMAL_PRIORITY_ACTION,
+      "This visualization requires a continuous dimension split",
+      continuousDimensions.map((continuousDimension) => {
         return {
           description: `Add a split on ${continuousDimension.title}`,
           adjustment: {
-            splits: Splits.fromSplit(Split.fromDimension(continuousDimension))
-          }
+            splits: Splits.fromSplit(Split.fromDimension(continuousDimension)),
+          },
         };
       })
     );
@@ -61,12 +69,12 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     if (sortStrategy && sortStrategy !== "self") {
       sort = new DimensionSort({
         reference: sortStrategy,
-        direction: SortDirection.ascending
+        direction: SortDirection.ascending,
       });
     } else {
       sort = new DimensionSort({
         reference: continuousDimension.name,
-        direction: SortDirection.ascending
+        direction: SortDirection.ascending,
       });
     }
 
@@ -87,7 +95,9 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     if (continuousDimension.kind === "time") score += 3;
 
     if (!autoChanged) return Resolve.ready(isSelectedVisualization ? 10 : score);
-    return Resolve.automatic(score, { splits: new Splits({ splits: List([continuousSplit]) }) });
+    return Resolve.automatic(score, {
+      splits: new Splits({ splits: List([continuousSplit]) }),
+    });
   })
 
   .when(Predicates.areExactSplitKinds("time", "*"))
@@ -97,7 +107,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     const sort: Sort = new DimensionSort({
       reference: timeDimension.name,
-      direction: SortDirection.ascending
+      direction: SortDirection.ascending,
     });
 
     // Fix time sort
@@ -110,10 +120,10 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       timeSplit = timeSplit.changeLimit(null);
     }
 
-    const colorSplit = splits.getSplit(1).update("limit", limit => clamp(limit, AVAILABLE_LIMITS[0], COLORS_COUNT));
+    const colorSplit = splits.getSplit(1).update("limit", (limit) => clamp(limit, AVAILABLE_LIMITS[0], COLORS_COUNT));
 
     return Resolve.automatic(8, {
-      splits: new Splits({ splits: List([colorSplit, timeSplit]) })
+      splits: new Splits({ splits: List([colorSplit, timeSplit]) }),
     });
   })
 
@@ -127,7 +137,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     const sort: Sort = new DimensionSort({
       reference: timeDimension.name,
-      direction: SortDirection.ascending
+      direction: SortDirection.ascending,
     });
 
     // Fix time sort
@@ -142,7 +152,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       autoChanged = true;
     }
 
-    const colorSplit = splits.getSplit(0).update("limit", limit => {
+    const colorSplit = splits.getSplit(0).update("limit", (limit) => {
       if (limit === null || limit > COLORS_COUNT) {
         autoChanged = true;
         return COLORS_COUNT;
@@ -152,41 +162,38 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     if (!autoChanged) return Resolve.ready(10);
     return Resolve.automatic(8, {
-      splits: new Splits({ splits: List([colorSplit, timeSplit]) })
+      splits: new Splits({ splits: List([colorSplit, timeSplit]) }),
     });
   })
 
   .when(Predicates.haveAtLeastSplitKinds("time"))
   .then(({ splits, dataCube }) => {
-    let timeSplit = splits.splits.find(split => dataCube.getDimension(split.reference).kind === "time");
+    const timeSplit = splits.splits.find((split) => dataCube.getDimension(split.reference).kind === "time");
     return Resolve.manual(NORMAL_PRIORITY_ACTION, "Too many splits on the line chart", [
       {
         description: "Remove all but the time split",
         adjustment: {
-          splits: Splits.fromSplit(timeSplit)
-        }
-      }
+          splits: Splits.fromSplit(timeSplit),
+        },
+      },
     ]);
   })
 
   .otherwise(({ dataCube }) => {
-    let continuousDimensions = dataCube.getDimensionsByKind("time").concat(dataCube.getDimensionsByKind("number"));
-    return Resolve.manual(NORMAL_PRIORITY_ACTION, "The Line Chart needs one continuous dimension split",
-      continuousDimensions.map(continuousDimension => {
+    const continuousDimensions = dataCube.getDimensionsByKind("time").concat(dataCube.getDimensionsByKind("number"));
+    return Resolve.manual(
+      NORMAL_PRIORITY_ACTION,
+      "The Line Chart needs one continuous dimension split",
+      continuousDimensions.map((continuousDimension) => {
         return {
           description: `Split on ${continuousDimension.title} instead`,
           adjustment: {
-            splits: Splits.fromSplit(Split.fromDimension(continuousDimension))
-          }
+            splits: Splits.fromSplit(Split.fromDimension(continuousDimension)),
+          },
         };
       })
     );
   })
   .build();
 
-export const LINE_CHART_MANIFEST = new VisualizationManifest(
-  "line-chart",
-  "Line Chart",
-  rulesEvaluator,
-  settings
-);
+export const LINE_CHART_MANIFEST = new VisualizationManifest("line-chart", "Line Chart", rulesEvaluator, settings);

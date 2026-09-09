@@ -8,7 +8,9 @@ function fetchDataFromJobOrReturnData(data) {
 }
 
 function rejectErrorResponse(data) {
-  return has(data, "error") ? Promise.reject(new Error(data.error.message)) : data;
+  return has(data, "error")
+    ? Promise.reject(new Error(data.error.message))
+    : data;
 }
 
 export default {
@@ -31,13 +33,17 @@ export default {
       params.refresh = true;
     }
     return axios
-      .get(`api/databricks/databases/${data.id}/${databaseName}/tables`, { params })
+      .get(`api/databricks/databases/${data.id}/${databaseName}/tables`, {
+        params,
+      })
       .then(fetchDataFromJobOrReturnData)
       .then(rejectErrorResponse);
   },
   getTableColumns: (data, databaseName, tableName) =>
     axios
-      .get(`api/databricks/databases/${data.id}/${databaseName}/columns/${tableName}`)
+      .get(
+        `api/databricks/databases/${data.id}/${databaseName}/columns/${tableName}`,
+      )
       .then(fetchDataFromJobOrReturnData)
       .then(rejectErrorResponse),
 };

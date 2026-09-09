@@ -47,23 +47,24 @@ export interface MeasureActionsProps {
   onClose: Fn;
 }
 
-export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActionsProps> = props => {
+export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActionsProps> = (props) => {
   const { direction, containerStage, openOn, measure, onClose } = props;
   if (!measure) return null;
 
   const actions = measureActions(props);
 
-  return <BubbleMenu
-    className="measure-actions-menu"
-    direction={direction}
-    containerStage={containerStage}
-    stage={Stage.fromSize(MENU_PADDING + ACTION_WIDTH * actions.length, ACTION_HEIGHT + MENU_PADDING)}
-    fixedSize={true}
-    openOn={openOn}
-    onClose={onClose}
-  >
-    {actions}
-  </BubbleMenu>;
+  return (
+    <BubbleMenu
+      className="measure-actions-menu"
+      direction={direction}
+      containerStage={containerStage}
+      stage={Stage.fromSize(MENU_PADDING + ACTION_WIDTH * actions.length, ACTION_HEIGHT + MENU_PADDING)}
+      fixedSize={true}
+      openOn={openOn}
+      onClose={onClose}>
+      {actions}
+    </BubbleMenu>
+  );
 };
 
 function measureActions(props: MeasureActionsProps): JSX.Element[] {
@@ -77,38 +78,25 @@ function measureActions(props: MeasureActionsProps): JSX.Element[] {
         appendDirtySeries={appendDirtySeries}
         measure={measure}
         series={series}
-        onClose={onClose} />
+        onClose={onClose}
+      />,
     ];
   }
 
   if (measure.isApproximate()) {
     return [
-      <AddMeasureSeriesButton
-        key="Add"
-        addSeries={addSeries}
-        series={series}
-        measure={measure}
-        onClose={onClose} />
+      <AddMeasureSeriesButton key="Add" addSeries={addSeries} series={series} measure={measure} onClose={onClose} />,
     ];
   }
 
   return [
-    <AddMeasureSeriesButton
-      key="Add"
-      addSeries={addSeries}
-      series={series}
-      measure={measure}
-      onClose={onClose} />,
-    <AddPercentSeriesButton
-      key="Percent"
-      addSeries={addSeries}
-      measure={measure}
-      onClose={onClose}
-      series={series} />,
+    <AddMeasureSeriesButton key="Add" addSeries={addSeries} series={series} measure={measure} onClose={onClose} />,
+    <AddPercentSeriesButton key="Percent" addSeries={addSeries} measure={measure} onClose={onClose} series={series} />,
     <AddArithmeticOperationButton
       key="Arithmetic"
       addExpressionPlaceholder={appendDirtySeries}
       measure={measure}
-      onClose={onClose} />
+      onClose={onClose}
+    />,
   ];
 }

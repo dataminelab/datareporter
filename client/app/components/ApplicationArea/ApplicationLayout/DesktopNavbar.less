@@ -58,7 +58,7 @@
       &.ant-menu-submenu-active,
       &:hover,
       &:active {
-        color:  @text-color;
+        color: @text-color;
       }
 
       a,
@@ -81,7 +81,7 @@
 
     &:hover,
     &:active {
-      color:  @text-color;;
+      color: @text-color;
     }
 
     &:after {
@@ -114,8 +114,10 @@
 
         // styles from Antd
         opacity: 1;
-        transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
-          margin-left 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), width 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        transition:
+          opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+          margin-left 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+          width 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
       }
     }
 
@@ -138,16 +140,17 @@
 
 .desktop-navbar-report {
   background: #ffffff;
-  height: 60px;
-  line-height: 60px;
+  height: 50px;
+  line-height: 50px;
   padding: 0 15px;
   margin: 0 15px;
   border-radius: 0 0 5px 5px;
-  .desktop-navbar-profile-menu, .settings-menu {
+  .desktop-navbar-profile-menu,
+  .settings-menu {
     float: right;
   }
   .desktop-navbar-logo {
-    height: 60px;
+    height: 50px;
     line-height: 60px;
     padding: 0;
     margin: 0;
@@ -188,7 +191,7 @@
   .left-border {
     position: relative;
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       left: 0;
       top: 20px;
@@ -196,14 +199,17 @@
       height: 20px;
     }
   }
-  .ant-menu-dark, .ant-menu-sub {
+  .ant-menu-dark,
+  .ant-menu-sub {
     background-color: transparent;
     color: @text-color;
   }
   .desktop-navbar-logo.ant-menu.ant-menu-inline-collapsed img {
     height: 33px;
   }
-  .ant-menu-item, .ant-menu-item-group-title, .ant-menu-item > a {
+  .ant-menu-item,
+  .ant-menu-item-group-title,
+  .ant-menu-item > a {
     color: @text-color;
   }
   .ant-menu-vertical > .ant-menu-item,
@@ -214,7 +220,7 @@
   .ant-menu-vertical-left > .ant-menu-submenu > .ant-menu-submenu-title,
   .ant-menu-vertical-right > .ant-menu-submenu > .ant-menu-submenu-title,
   .ant-menu-inline > .ant-menu-submenu > .ant-menu-submenu-title {
-    height: 60px;
+    height: 50px;
     line-height: 65px;
     width: auto;
     padding: 0 8px !important;
@@ -242,9 +248,14 @@
       background: @dividerColor;
     }
 
+    .ant-menu-item-disabled {
+      color: @textColor!important;
+      opacity: 0.65;
+    }
+
     .ant-menu-item {
       font-weight: 500;
-      color: @textColor;
+      color: @textColor!important;
 
       &:hover,
       &:active {
@@ -273,13 +284,12 @@
 
           &:hover,
           &:active {
-            color:  @text-color;
+            color: @text-color;
           }
         }
       }
     }
   }
-
 }
 
 .ant-menu-vertical .ant-menu-item:not(:last-child),
@@ -289,7 +299,8 @@
   margin-bottom: 0 !important;
 }
 
-.ant-menu-dark, .ant-menu-sub {
+.ant-menu-dark,
+.ant-menu-sub {
   background-color: #ffffff !important;
   color: @text-color !important;
 }
@@ -306,4 +317,3 @@
 .ant-menu-root.ant-menu-inline {
   border: none;
 }
-

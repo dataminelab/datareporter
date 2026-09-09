@@ -1,10 +1,23 @@
-import { isString, isObject, isFunction, extend, omit, sortBy, find, filter } from "lodash";
+import {
+  isString,
+  isObject,
+  isFunction,
+  extend,
+  omit,
+  sortBy,
+  find,
+  filter,
+} from "lodash";
 import { stripBase } from "@/components/ApplicationArea/Router";
 import { currentUser } from "@/services/auth";
 
 class SettingsMenuItem {
   constructor(menuItem) {
-    extend(this, { pathPrefix: `/${menuItem.path}` }, omit(menuItem, ["isActive", "isAvailable"]));
+    extend(
+      this,
+      { pathPrefix: `/${menuItem.path}` },
+      omit(menuItem, ["isActive", "isAvailable"]),
+    );
     if (isFunction(menuItem.isActive)) {
       this.isActive = menuItem.isActive;
     }
@@ -18,7 +31,10 @@ class SettingsMenuItem {
   }
 
   isAvailable() {
-    return this.permission === undefined || currentUser.hasPermission(this.permission);
+    return (
+      this.permission === undefined ||
+      currentUser.hasPermission(this.permission)
+    );
   }
 }
 

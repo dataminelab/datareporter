@@ -28,53 +28,54 @@ describe("Measure", () => {
       {
         name: "price",
         title: "Price",
-        formula: "$main.sum($price)"
+        formula: "$main.sum($price)",
       },
       {
         name: "avg_price",
         title: "Average Price",
-        formula: "$main.average($price)"
+        formula: "$main.average($price)",
       },
       {
         name: "latency",
         title: "Latency",
         units: "ms",
-        formula: "$main.sum($latency)"
+        formula: "$main.sum($latency)",
       },
       {
         name: "item_sum",
         title: "Items",
         formula: "$main.sum($item)",
-        transformation: "none"
+        transformation: "none",
       },
       {
         name: "items_of_parent",
         title: "Items (% of parent)",
         formula: "$main.sum($item)",
-        transformation: "percent-of-parent"
+        transformation: "percent-of-parent",
       },
       {
         name: "items_of_total",
         title: "Items (% of total)",
         formula: "$main.sum($item)",
-        transformation: "percent-of-total"
-      }
+        transformation: "percent-of-total",
+      },
     ]);
   });
 
   describe("back compat", () => {
     it("upgrades expression to formula", () => {
-      expect(Measure.fromJS({
+      expect(
+        Measure.fromJS({
+          name: "avg_price",
+          title: "Average Price",
+          expression: "$main.average($price)",
+        } as any).toJS()
+      ).to.deep.equal({
         name: "avg_price",
         title: "Average Price",
-        expression: "$main.average($price)"
-      } as any).toJS()).to.deep.equal({
-        name: "avg_price",
-        title: "Average Price",
-        formula: "$main.average($price)"
+        formula: "$main.average($price)",
       });
     });
-
   });
 
   describe(".measuresFromAttributeInfo", () => {
@@ -87,17 +88,17 @@ describe("Measure", () => {
           action: "sum",
           expression: {
             name: "price",
-            op: "ref"
-          }
-        }
+            op: "ref",
+          },
+        },
       });
-      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "price",
           title: "Price",
-          formula: "$main.sum($price)"
-        }
+          formula: "$main.sum($price)",
+        },
       ]);
     });
 
@@ -110,17 +111,17 @@ describe("Measure", () => {
           action: "min",
           expression: {
             name: "price",
-            op: "ref"
-          }
-        }
+            op: "ref",
+          },
+        },
       });
-      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "price",
           title: "Price",
-          formula: "$main.min($price)"
-        }
+          formula: "$main.min($price)",
+        },
       ]);
     });
 
@@ -133,18 +134,18 @@ describe("Measure", () => {
           action: "max",
           expression: {
             name: "price",
-            op: "ref"
-          }
-        }
+            op: "ref",
+          },
+        },
       });
 
-      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "price",
           title: "Price",
-          formula: "$main.max($price)"
-        }
+          formula: "$main.max($price)",
+        },
       ]);
     });
 
@@ -152,16 +153,16 @@ describe("Measure", () => {
       const attribute = AttributeInfo.fromJS({
         name: "delta_histogram",
         nativeType: "approximateHistogram",
-        type: "NUMBER"
+        type: "NUMBER",
       });
 
-      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "delta_histogram_p98",
           title: "Delta Histogram P98",
-          formula: "$main.quantile($delta_histogram,0.98)"
-        }
+          formula: "$main.quantile($delta_histogram,0.98)",
+        },
       ]);
     });
 
@@ -169,16 +170,16 @@ describe("Measure", () => {
       const attribute = AttributeInfo.fromJS({
         name: "delta_quantiles",
         nativeType: "quantilesDoublesSketch",
-        type: "NUMBER"
+        type: "NUMBER",
       });
 
-      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "delta_quantiles_p98",
           title: "Delta Quantiles P98",
-          formula: "$main.quantile($delta_quantiles,0.98)"
-        }
+          formula: "$main.quantile($delta_quantiles,0.98)",
+        },
       ]);
     });
 
@@ -186,15 +187,15 @@ describe("Measure", () => {
       const attribute = AttributeInfo.fromJS({
         name: "unique_page",
         nativeType: "hyperUnique",
-        type: "STRING"
+        type: "STRING",
       });
-      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "unique_page",
           title: "Unique Page",
-          formula: "$main.countDistinct($unique_page)"
-        }
+          formula: "$main.countDistinct($unique_page)",
+        },
       ]);
     });
 
@@ -202,15 +203,15 @@ describe("Measure", () => {
       const attribute = AttributeInfo.fromJS({
         name: "page_theta",
         nativeType: "thetaSketch",
-        type: "STRING"
+        type: "STRING",
       });
-      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "page_theta",
           title: "Page Theta",
-          formula: "$main.countDistinct($page_theta)"
-        }
+          formula: "$main.countDistinct($page_theta)",
+        },
       ]);
     });
 
@@ -218,18 +219,17 @@ describe("Measure", () => {
       const attribute = AttributeInfo.fromJS({
         name: "page_hll",
         nativeType: "HLLSketch",
-        type: "STRING"
+        type: "STRING",
       });
-      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "page_hll",
           title: "Page Hll",
-          formula: "$main.countDistinct($page_hll)"
-        }
+          formula: "$main.countDistinct($page_hll)",
+        },
       ]);
     });
-
   });
 
   // TODO: move to ConcreteSeries !!!

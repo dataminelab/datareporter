@@ -21,7 +21,15 @@ import { BaseImmutable, Property } from "immutable-class";
 //const { List } = require("immutable");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 //const { BaseImmutable, Property } = require("immutable-class");
-import { $, AttributeInfo, CountDistinctExpression, deduplicateSort, Expression, QuantileExpression, RefExpression } from "plywood";
+import {
+  $,
+  AttributeInfo,
+  CountDistinctExpression,
+  deduplicateSort,
+  Expression,
+  QuantileExpression,
+  RefExpression,
+} from "plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
 import some from "../../utils/plywood/some";
 import { formatFnFactory, measureDefaultFormat } from "../series/series-format";
@@ -61,7 +69,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static getMeasure(measures: List<Measure>, measureName: string): Measure {
     if (!measureName) return null;
     measureName = measureName.toLowerCase(); // Case insensitive
-    return measures.find(measure => measure.name.toLowerCase() === measureName);
+    return measures.find((measure) => measure.name.toLowerCase() === measureName);
   }
 
   static getReferences(ex: Expression): string[] {
@@ -75,11 +83,11 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   static hasCountDistinctReferences(ex: Expression): boolean {
-    return some(ex, e => e instanceof CountDistinctExpression);
+    return some(ex, (e) => e instanceof CountDistinctExpression);
   }
 
   static hasQuantileReferences(ex: Expression): boolean {
-    return some(ex, e => e instanceof QuantileExpression);
+    return some(ex, (e) => e instanceof QuantileExpression);
   }
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
@@ -92,15 +100,15 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
         return [
           new Measure({
             name: makeUrlSafeName(name),
-            formula: $main.countDistinct(ref).toString()
-          })
+            formula: $main.countDistinct(ref).toString(),
+          }),
         ];
       } else if (nativeType === "approximateHistogram" || nativeType === "quantilesDoublesSketch") {
         return [
           new Measure({
             name: makeUrlSafeName(name + "_p98"),
-            formula: $main.quantile(ref, 0.98).toString()
-          })
+            formula: $main.quantile(ref, 0.98).toString(),
+          }),
         ];
       }
     }
@@ -121,17 +129,20 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
       }
     }
 
-    return [new Measure({
-      name: makeUrlSafeName(name),
-      formula: expression.toString()
-    })];
+    return [
+      new Measure({
+        name: makeUrlSafeName(name),
+        formula: expression.toString(),
+      }),
+    ];
   }
 
   static fromJS(parameters: MeasureJS): Measure {
     // Back compat
     if (!parameters.formula) {
       const parameterExpression = (parameters as any).expression;
-      parameters.formula = (typeof parameterExpression === "string" ? parameterExpression : $("main").sum($(parameters.name)).toString());
+      parameters.formula =
+        typeof parameterExpression === "string" ? parameterExpression : $("main").sum($(parameters.name)).toString();
     }
     return new Measure(BaseImmutable.jsToValue(Measure.PROPERTIES, parameters));
   }
@@ -144,7 +155,11 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     { name: "formula" },
     { name: "description", defaultValue: undefined },
     { name: "format", defaultValue: Measure.DEFAULT_FORMAT },
-    { name: "transformation", defaultValue: Measure.DEFAULT_TRANSFORMATION, possibleValues: Measure.TRANSFORMATIONS }
+    {
+      name: "transformation",
+      defaultValue: Measure.DEFAULT_TRANSFORMATION,
+      possibleValues: Measure.TRANSFORMATIONS,
+    },
   ];
 
   public name: string;
@@ -171,7 +186,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   equals(other: any): boolean {
-    return this === other || Measure.isMeasure(other) && super.equals(other);
+    return this === other || (Measure.isMeasure(other) && super.equals(other));
   }
 
   public getTitleWithUnits(): string {
@@ -192,7 +207,6 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
 
   // Default getter from ImmutableValue
   public getFormat: () => string;
-
 }
 
 BaseImmutable.finalize(Measure);

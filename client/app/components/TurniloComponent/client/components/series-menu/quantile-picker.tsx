@@ -29,5 +29,6 @@ function format(n: number): string {
   return n.toString();
 }
 
-export const QuantilePicker: React.SFC<QuantilePickerProps> = props =>
-  <InputWithPresets<number> {...props} parseCustomValue={parse} formatCustomValue={format} />;
+export const QuantilePicker: React.SFC<QuantilePickerProps> = (props) => (
+  <InputWithPresets<number> {...props} parseCustomValue={parse} formatCustomValue={format} />
+);

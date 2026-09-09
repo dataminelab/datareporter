@@ -40,7 +40,9 @@ export function getMIMEType(fileType: string) {
 
 export function download({ dataset, options }: DataSetWithTabOptions, fileFormat: FileFormat, fileName?: string): void {
   const type = `${getMIMEType(fileFormat)};charset=utf-8`;
-  const blob = new Blob([datasetToFileString(dataset, fileFormat, options)], { type });
+  const blob = new Blob([datasetToFileString(dataset, fileFormat, options)], {
+    type,
+  });
   if (!fileName) fileName = `${new Date()}-data`;
   fileName += `.${fileFormat}`;
   filesaver.saveAs(blob, fileName, true); // true == disable auto BOM
@@ -62,7 +64,9 @@ function dateToFileString(date: Date): string {
 }
 
 export function dateFromFilter(filter: Filter): string {
-  const timeFilter: FixedTimeFilterClause = filter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
+  const timeFilter: FixedTimeFilterClause = filter.clauses.find(
+    (clause) => clause instanceof FixedTimeFilterClause
+  ) as FixedTimeFilterClause;
   if (!timeFilter) return "";
   const { start, end } = timeFilter.values.first();
   return `${dateToFileString(start)}_${dateToFileString(end)}`;
@@ -71,7 +75,7 @@ export function dateFromFilter(filter: Filter): string {
 export function makeFileName(...nameComponents: string[]): string {
   return nameComponents
     .filter(complement(isBlank))
-    .map(name => name.toLowerCase())
+    .map((name) => name.toLowerCase())
     .join("_")
     .slice(0, 200);
 }

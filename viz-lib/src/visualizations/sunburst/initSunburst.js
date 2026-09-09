@@ -28,30 +28,30 @@ function getAncestors(node) {
 function buildNodesFromHierarchyData(data) {
   const grouped = groupBy(data, "sequence");
 
-  return map(grouped, value => {
+  return map(grouped, (value) => {
     const sorted = sortBy(value, "stage");
     return {
       size: value[0].value || 0,
       sequence: value[0].sequence,
-      nodes: map(sorted, i => i.node),
+      nodes: map(sorted, (i) => i.node),
     };
   });
 }
 
 function buildNodesFromTableData(data) {
-  const validKey = key => key !== "value";
+  const validKey = (key) => key !== "value";
   const dataKeys = sortBy(filter(keys(data[0]), validKey), identity);
 
   return map(data, (row, sequence) => ({
     size: row.value || 0,
     sequence,
-    nodes: compact(map(dataKeys, key => row[key])),
+    nodes: compact(map(dataKeys, (key) => row[key])),
   }));
 }
 
 function isDataInHierarchyFormat(data) {
   const firstRow = first(data);
-  return every(["sequence", "stage", "node", "value"], field => has(firstRow, field));
+  return every(["sequence", "stage", "node", "value"], (field) => has(firstRow, field));
 }
 
 function buildHierarchy(data) {
@@ -63,7 +63,7 @@ function buildHierarchy(data) {
     children: [],
   };
 
-  data.forEach(d => {
+  data.forEach((d) => {
     const nodes = d.nodes;
     const size = parseInt(d.size, 10);
 
@@ -82,7 +82,7 @@ function buildHierarchy(data) {
         });
       }
 
-      let childNode = find(children, child => child.name === nodeName);
+      let childNode = find(children, (child) => child.name === nodeName);
 
       if (isLeaf && childNode) {
         childNode.children = childNode.children || [];
@@ -118,19 +118,15 @@ function isDataValid(data) {
 
 export default function initSunburst(data) {
   if (!isDataValid(data)) {
-    return element => {
-      d3.select(element)
-        .selectAll("*")
-        .remove();
+    return (element) => {
+      d3.select(element).selectAll("*").remove();
     };
   }
 
   data = buildHierarchy(data.rows);
 
-  return element => {
-    d3.select(element)
-      .selectAll("*")
-      .remove();
+  return (element) => {
+    d3.select(element).selectAll("*").remove();
 
     // svg dimensions
     const width = element.clientWidth;
@@ -166,15 +162,15 @@ export default function initSunburst(data) {
     const partition = d3.layout
       .partition()
       .size([2 * Math.PI, radius * radius])
-      .value(d => d.size);
+      .value((d) => d.size);
 
     // create arcs for drawing D3 paths
     const arc = d3.svg
       .arc()
-      .startAngle(d => d.x)
-      .endAngle(d => d.x + d.dx)
-      .innerRadius(d => Math.sqrt(d.y))
-      .outerRadius(d => Math.sqrt(d.y + d.dy));
+      .startAngle((d) => d.x)
+      .endAngle((d) => d.x + d.dx)
+      .innerRadius((d) => Math.sqrt(d.y))
+      .outerRadius((d) => Math.sqrt(d.y + d.dy));
 
     /**
      * Define and initialize D3 select references and div-containers
@@ -230,7 +226,7 @@ export default function initSunburst(data) {
     // Update the breadcrumb breadcrumbs to show the current sequence and percentage.
     function updateBreadcrumbs(ancestors, percentageString) {
       // Data join, where primary key = name + depth.
-      const g = breadcrumbs.selectAll("g").data(ancestors, d => d.name + d.depth);
+      const g = breadcrumbs.selectAll("g").data(ancestors, (d) => d.name + d.depth);
 
       // Add breadcrumb and label for entering nodes.
       const breadcrumb = g.enter().append("g");
@@ -249,7 +245,7 @@ export default function initSunburst(data) {
         .attr("dy", "0.35em")
         .attr("font-size", "10px")
         .attr("text-anchor", "middle")
-        .text(d => d.name);
+        .text((d) => d.name);
 
       // Set position for entering and updating nodes.
       g.attr("transform", (d, i) => `translate(${i * (b.w + b.s)}, 0)`);
@@ -286,7 +282,7 @@ export default function initSunburst(data) {
       sunburst.selectAll("path").attr("opacity", 0.3);
       sunburst
         .selectAll("path")
-        .filter(node => ancestors.indexOf(node) >= 0)
+        .filter((node) => ancestors.indexOf(node) >= 0)
         .attr("opacity", 1);
 
       // update summary
@@ -321,12 +317,12 @@ export default function initSunburst(data) {
 
     // Build only nodes of a threshold "visible" sizes to improve efficiency
     // 0.005 radians = 0.29 degrees
-    const nodes = partition.nodes(data).filter(d => d.dx > 0.005 && d.name !== exitNode);
+    const nodes = partition.nodes(data).filter((d) => d.dx > 0.005 && d.name !== exitNode);
 
     // this section is required to update the colors.domain() every time the data updates
     const uniqueNames = (function uniqueNames(a) {
       const output = [];
-      a.forEach(d => {
+      a.forEach((d) => {
         if (output.indexOf(d.name) === -1) output.push(d.name);
       });
       return output;
@@ -341,7 +337,7 @@ export default function initSunburst(data) {
       .enter()
       .append("path")
       .classed("nodePath", true)
-      .attr("display", d => (d.depth ? null : "none"))
+      .attr("display", (d) => (d.depth ? null : "none"))
       .attr("d", arc)
       .attr("fill", colorMap)
       .attr("opacity", 1)

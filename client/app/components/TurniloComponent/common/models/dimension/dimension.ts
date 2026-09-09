@@ -17,7 +17,7 @@
 
 import { Class, Instance } from "immutable-class";
 import { $, Expression } from "plywood";
-import { makeTitle, verifyUrlSafeName } from "../../utils/general/general";
+import { hasOwnProperty, makeTitle, verifyUrlSafeName } from "../../utils/general/general";
 import { granularityEquals, granularityFromJS, GranularityJS, granularityToJS } from "../granularity/granularity";
 import { Bucket } from "../split/split";
 import { DimensionOrGroupVisitor } from "./dimension-group";
@@ -31,17 +31,24 @@ function readKind(kind: string): DimensionKind {
 
 function typeToKind(type: string): DimensionKind {
   if (!type) return "string";
-  return readKind(type.toLowerCase().replace(/_/g, "-").replace(/-range$/, ""));
+  return readKind(
+    type
+      .toLowerCase()
+      .replace(/_/g, "-")
+      .replace(/-range$/, "")
+  );
 }
 
 export enum BucketingStrategy {
   defaultBucket = "defaultBucket",
-  defaultNoBucket = "defaultNoBucket"
+  defaultNoBucket = "defaultNoBucket",
 }
 
-const bucketingStrategies: { [strategy in BucketingStrategy]: BucketingStrategy } = {
+const bucketingStrategies: {
+  [strategy in BucketingStrategy]: BucketingStrategy;
+} = {
   defaultBucket: BucketingStrategy.defaultBucket,
-  defaultNoBucket: BucketingStrategy.defaultNoBucket
+  defaultNoBucket: BucketingStrategy.defaultNoBucket,
 };
 
 export interface DimensionValue {
@@ -72,7 +79,7 @@ export interface DimensionJS {
   sortStrategy?: string;
 }
 
-var check: Class<DimensionValue, DimensionJS>;
+let check: Class<DimensionValue, DimensionJS>;
 
 export class Dimension implements Instance<DimensionValue, DimensionJS> {
   static isDimension(candidate: any): candidate is Dimension {
@@ -89,7 +96,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       formula: parameters.formula || (typeof parameterExpression === "string" ? parameterExpression : null),
       kind: parameters.kind ? readKind(parameters.kind) : typeToKind((parameters as any).type),
       multiValue: parameters.multiValue === true,
-      url: parameters.url
+      url: parameters.url,
     };
 
     if (parameters.granularities) {
@@ -151,7 +158,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       if (!Array.isArray(granularities) || granularities.length !== 5) {
         throw new Error(`must have list of 5 granularities in dimension '${parameters.name}'`);
       }
-      const sameType = granularities.every(g => typeof g === typeof granularities[0]);
+      const sameType = granularities.every((g) => typeof g === typeof granularities[0]);
       if (!sameType) throw new Error("granularities must have the same type of actions");
       this.granularities = granularities;
     }
@@ -176,21 +183,21 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       granularities: this.granularities,
       bucketedBy: this.bucketedBy,
       bucketingStrategy: this.bucketingStrategy,
-      sortStrategy: this.sortStrategy
+      sortStrategy: this.sortStrategy,
     };
   }
 
   public toJS(): DimensionJS {
-    var js: DimensionJS = {
+    const js: DimensionJS = {
       name: this.name,
       title: this.title,
       formula: this.formula,
-      kind: this.kind
+      kind: this.kind,
     };
     if (this.description) js.description = this.description;
     if (this.url) js.url = this.url;
     if (this.multiValue) js.multiValue = this.multiValue;
-    if (this.granularities) js.granularities = this.granularities.map(g => granularityToJS(g));
+    if (this.granularities) js.granularities = this.granularities.map((g) => granularityToJS(g));
     if (this.bucketedBy) js.bucketedBy = granularityToJS(this.bucketedBy);
     if (this.bucketingStrategy) js.bucketingStrategy = this.bucketingStrategy;
     if (this.sortStrategy) js.sortStrategy = this.sortStrategy;
@@ -206,7 +213,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   public equals(other: any): boolean {
-    return Dimension.isDimension(other) &&
+    return (
+      Dimension.isDimension(other) &&
       this.name === other.name &&
       this.title === other.title &&
       this.description === other.description &&
@@ -217,7 +225,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.granularitiesEqual(other.granularities) &&
       granularityEquals(this.bucketedBy, other.bucketedBy) &&
       this.bucketingStrategy === other.bucketingStrategy &&
-      this.sortStrategy === other.sortStrategy;
+      this.sortStrategy === other.sortStrategy
+    );
   }
 
   private granularitiesEqual(otherGranularities: Bucket[]): boolean {
@@ -236,9 +245,9 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   change(propertyName: string, newValue: any): Dimension {
-    var v = this.valueOf();
+    const v = this.valueOf();
 
-    if (!v.hasOwnProperty(propertyName)) {
+    if (hasOwnProperty(v, propertyName)) {
       throw new Error(`Unknown property : ${propertyName}`);
     }
 
@@ -261,7 +270,6 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   public changeFormula(newFormula: string): Dimension {
     return this.change("formula", newFormula);
   }
-
 }
-
+// eslint-disable-next-line
 check = Dimension;

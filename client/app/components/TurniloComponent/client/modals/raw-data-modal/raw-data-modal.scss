@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import '../../imports';
+@import "../../imports";
 
 $header-height: 30px;
 $row-height: 30px;
@@ -55,12 +55,12 @@ $row-height: 30px;
       }
 
       .filter:not(:last-child)::after {
-        content: '; ';
+        content: "; ";
       }
     }
 
     .scroller {
-      @include border-css-variable('border', 1px, solid, 'border-extra-light');
+      @include border-css-variable("border", 1px, solid, "border-extra-light");
       position: absolute;
       top: $control-height;
       bottom: $control-height + $modal-window-padding + $padding;
@@ -78,7 +78,7 @@ $row-height: 30px;
       .header-cell,
       .cell {
         @include ellipsis;
-        @include border-css-variable('border-right', 1px, solid, 'border-extra-light');
+        @include border-css-variable("border-right", 1px, solid, "border-extra-light");
         display: inline-block;
         height: 100%;
         padding-left: 16px;
@@ -91,7 +91,7 @@ $row-height: 30px;
       }
 
       .header-cell {
-        @include border-css-variable('border-bottom', 1px, solid, 'border-extra-light');
+        @include border-css-variable("border-bottom", 1px, solid, "border-extra-light");
         @include css-variable(background-color, background-lightest);
         height: $header-height;
 
@@ -117,4 +117,3 @@ $row-height: 30px;
     }
   }
 }
-

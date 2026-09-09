@@ -82,13 +82,15 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
       max: null,
       step: null,
       loading: false,
-      error: null
+      error: null,
     };
   }
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, rightBound: number): void {
     const { dataCube } = essence;
-    const filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
+    const filterExpression = essence
+      .getEffectiveFilter(timekeeper, { unfilterDimension: dimension })
+      .toExpression(dataCube);
     const $main = $("main");
     const query = ply()
       .apply("main", $main.filter(filterExpression))
@@ -96,33 +98,33 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
       .apply("Max", $main.max($(dimension.name)));
 
     this.setState({
-      loading: true
+      loading: true,
     });
 
-    dataCube.executor(query)
-      .then(
-        (dataset: Dataset) => {
-          if (!this.mounted) return;
-          const min = (dataset.data[0]["Min"] as number);
-          const max = (dataset.data[0]["Max"] as number);
+    dataCube.executor(query).then(
+      // @ts-ignore
+      (dataset: Dataset) => {
+        if (!this.mounted) return;
+        const min = dataset.data[0]["Min"] as number;
+        const max = dataset.data[0]["Max"] as number;
 
-          const step = max && min && isFinite(max) && isFinite(min) ? (max - min) / rightBound : 1;
+        const step = max && min && isFinite(max) && isFinite(min) ? (max - min) / rightBound : 1;
 
-          this.setState({
-            min,
-            max,
-            loading: false,
-            step: step !== 0 && isFinite(step) ? step : 1
-          });
-        },
-        error => {
-          if (!this.mounted) return;
-          this.setState({
-            loading: false,
-            error
-          });
-        }
-      );
+        this.setState({
+          min,
+          max,
+          loading: false,
+          step: step !== 0 && isFinite(step) ? step : 1,
+        });
+      },
+      (error: Error) => {
+        if (!this.mounted) return;
+        this.setState({
+          loading: false,
+          error,
+        });
+      }
+    );
   }
 
   componentDidMount() {
@@ -135,7 +137,6 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
 
     this.setState({ leftOffset, rightBound });
     this.fetchData(essence, timekeeper, dimension, rightBound);
-
   }
 
   componentWillUnmount() {
@@ -169,14 +170,13 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
 
     const isBeforeStart = relativeX < positionStart;
     const isAfterEnd = relativeX > positionEnd + NUB_SIZE;
-    const inBetween = (relativeX < positionEnd) && relativeX > startNubPosition;
+    const inBetween = relativeX < positionEnd && relativeX > startNubPosition;
 
     if (isBeforeStart) {
       this.updateStart(absoluteX - NUB_SIZE);
     } else if (isAfterEnd) {
       this.updateEnd(absoluteX);
     } else if (inBetween) {
-
       const distanceFromEnd = endNubPosition - relativeX;
       const distanceFromStart = relativeX - startNubPosition;
 
@@ -222,38 +222,48 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
       const positionEnd = clamp(relativeEnd, addNubSize(relativeStart), adjustedRightBound);
       const positionStart = start ? clamp(relativeStart, 0, subtractNubSize(positionEnd)) : 0;
 
-      const rangeBarSelected = { left: getAdjustedStartHalf(positionStart), width: positionEnd - positionStart };
+      const rangeBarSelected = {
+        left: getAdjustedStartHalf(positionStart),
+        width: positionEnd - positionStart,
+      };
 
       const absoluteRightBound = leftOffset + rightBound;
 
-      content = <div className="range-slider" onMouseDown={this.onBarClick.bind(this, positionStart, positionEnd)}>
-        <div className="range-bar full" />
-        <div className="range-bar selected" style={rangeBarSelected} />
-        <RangeHandle
-          positionLeft={positionStart}
-          onChange={this.updateStart}
-          isAny={start === ANY_VALUE}
-          isBeyondMin={start !== ANY_VALUE && start < min}
-          leftBound={leftOffset}
-          rightBound={leftOffset + subtractNubSize(positionEnd)}
-          offset={leftOffset}
-        />
-        <RangeHandle
-          positionLeft={positionEnd}
-          onChange={this.updateEnd}
-          isAny={end === ANY_VALUE}
-          isBeyondMax={end !== ANY_VALUE && max < end}
-          leftBound={leftOffset + addNubSize(positionStart)}
-          rightBound={absoluteRightBound}
-          offset={leftOffset}
-        />
-      </div>;
+      content = (
+        <div
+          className="range-slider"
+          // @ts-ignore
+          onMouseDown={this.onBarClick.bind(this, positionStart, positionEnd)}>
+          <div className="range-bar full" />
+          <div className="range-bar selected" style={rangeBarSelected} />
+          <RangeHandle
+            positionLeft={positionStart}
+            onChange={this.updateStart}
+            isAny={start === ANY_VALUE}
+            isBeyondMin={start !== ANY_VALUE && start < min}
+            leftBound={leftOffset}
+            rightBound={leftOffset + subtractNubSize(positionEnd)}
+            offset={leftOffset}
+          />
+          <RangeHandle
+            positionLeft={positionEnd}
+            onChange={this.updateEnd}
+            isAny={end === ANY_VALUE}
+            isBeyondMax={end !== ANY_VALUE && max < end}
+            leftBound={leftOffset + addNubSize(positionStart)}
+            rightBound={absoluteRightBound}
+            offset={leftOffset}
+          />
+        </div>
+      );
     }
 
-    return <div className={classNames("number-range-picker", { inverted: exclude })} ref={this.picker}>
-      {content}
-      {loading && <Loader />}
-      {error && <QueryError error={error} />}
-    </div>;
+    return (
+      <div className={classNames("number-range-picker", { inverted: exclude })} ref={this.picker}>
+        {content}
+        {loading && <Loader />}
+        {error && <QueryError error={error} />}
+      </div>
+    );
   }
 }

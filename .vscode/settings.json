@@ -1,0 +1,23 @@
+{
+  "eslint.workingDirectories": [{ "mode": "auto" }, "./client"],
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportGeneralTypeIssues": "warning",
+    "reportAttributeAccessIssue": "warning",
+    "reportCallIssue": "warning",
+    "reportArgumentType": "warning",
+    "reportOptionalMemberAccess": "warning",
+    "reportIndexIssue": "warning",
+    "reportOperatorIssue": "warning",
+    "reportPrivateUsage": "warning",
+    "reportUnboundVariable": "warning",
+    "reportMissingTypeStubs": "warning",
+    "reportUnknownMemberType": "none",
+    "reportUnknownVariableType": "information"
+  },
+  "githubPullRequests.ignoredPullRequestBranches": ["develop"],
+  "python-envs.defaultEnvManager": "ms-python.python:poetry",
+  "python-envs.defaultPackageManager": "ms-python.python:poetry",
+  "chat.tools.terminal.autoApprove": {
+    "./node_modules/.bin/mocha": true
+  }
+}

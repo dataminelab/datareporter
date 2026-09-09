@@ -50,8 +50,8 @@ class DestinationsList extends React.Component {
                 navigateTo("destinations", true);
               }
             }
-          }
-        )
+          },
+        ),
       )
       .catch(error => this.props.onError(error));
   }
@@ -62,7 +62,9 @@ class DestinationsList extends React.Component {
 
     return Destination.create(target).then(destination => {
       this.setState({ loading: true });
-      Destination.query().then(destinations => this.setState({ destinations, loading: false }));
+      Destination.query().then(destinations =>
+        this.setState({ destinations, loading: false }),
+      );
       return destination;
     });
   };
@@ -112,7 +114,9 @@ class DestinationsList extends React.Component {
   render() {
     const newDestinationProps = {
       type: "primary",
-      onClick: policy.isCreateDestinationEnabled() ? this.showCreateSourceDialog : null,
+      onClick: policy.isCreateDestinationEnabled()
+        ? this.showCreateSourceDialog
+        : null,
       disabled: !policy.isCreateDestinationEnabled(),
     };
 
@@ -124,7 +128,11 @@ class DestinationsList extends React.Component {
             New Alert Destination
           </Button>
         </div>
-        {this.state.loading ? <LoadingState className="" /> : this.renderDestinations()}
+        {this.state.loading ? (
+          <LoadingState className="" />
+        ) : (
+          this.renderDestinations()
+        )}
       </div>
     );
   }
@@ -138,7 +146,7 @@ const DestinationsListPage = wrapSettingsTab(
     path: "destinations",
     order: 5,
   },
-  DestinationsList
+  DestinationsList,
 );
 
 routes.register(
@@ -147,13 +155,15 @@ routes.register(
     path: "/destinations",
     title: "Alert Destinations",
     render: pageProps => <DestinationsListPage {...pageProps} />,
-  })
+  }),
 );
 routes.register(
   "AlertDestinations.New",
   routeWithUserSession({
     path: "/destinations/new",
     title: "Alert Destinations",
-    render: pageProps => <DestinationsListPage {...pageProps} isNewDestinationPage />,
-  })
+    render: pageProps => (
+      <DestinationsListPage {...pageProps} isNewDestinationPage />
+    ),
+  }),
 );

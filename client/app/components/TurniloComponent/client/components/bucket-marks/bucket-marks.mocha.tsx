@@ -25,16 +25,13 @@ import { BucketMarks } from "./bucket-marks";
 
 describe("BucketMarks", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
-      <BucketMarks
-        stage={StageFixtures.defaultA()}
-        ticks={[]}
-        scale={null}
-      />
+    const renderedComponent = renderIntoDocument(
+      <BucketMarks stage={StageFixtures.defaultA()} ticks={[]} scale={null} />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("bucket-marks");
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain(
+      "bucket-marks"
+    );
   });
-
 });

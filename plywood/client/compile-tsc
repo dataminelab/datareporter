@@ -1,0 +1,11 @@
+#!/bin/bash -eu
+
+mkdir -p build
+
+if [ ! -x node_modules/.bin/tsc ]; then
+	echo "compile-tsc: missing local dependencies, running npm install"
+	npm install
+fi
+
+node_modules/.bin/tsc
+./rrollup

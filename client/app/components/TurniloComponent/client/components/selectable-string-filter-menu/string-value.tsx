@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Binary } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
 import { Checkbox, CheckboxType } from "../checkbox/checkbox";
@@ -31,18 +31,19 @@ interface StringValueProps {
 
 const hasModKey = (e: React.MouseEvent<unknown>) => e.altKey || e.ctrlKey || e.metaKey;
 
-export const StringValue: React.SFC<StringValueProps> = props => {
+export const StringValue: React.FunctionComponent<StringValueProps> = (props) => {
   const { value, selected, checkboxStyle, highlight, onRowSelect } = props;
   const label = String(value);
 
-  return <div
-    className={classNames("string-value", { selected })}
-    title={label}
-    onClick={e => onRowSelect(value, hasModKey(e))}
-  >
-    <div className="value-wrapper">
-      <Checkbox type={checkboxStyle as CheckboxType} selected={selected} />
-      <HighlightString className="label" text={label} highlight={highlight} />
+  return (
+    <div
+      className={classNames("string-value", { selected })}
+      title={label}
+      onClick={(e) => onRowSelect(value, hasModKey(e))}>
+      <div className="value-wrapper">
+        <Checkbox type={checkboxStyle as CheckboxType} selected={selected} />
+        <HighlightString className="label" text={label} highlight={highlight} />
+      </div>
     </div>
-  </div>;
+  );
 };

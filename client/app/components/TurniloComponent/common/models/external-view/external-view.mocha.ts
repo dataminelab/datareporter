@@ -23,14 +23,13 @@ describe("ExternalView", () => {
     testImmutableClass(ExternalView, [
       {
         title: "yahoo",
-        linkGenerator: "'http://www.yahoo.com/filters/' + visualization.id"
+        linkGenerator: "'http://www.yahoo.com/filters/' + visualization.id",
       },
       {
         title: "google",
         linkGenerator: "'http://www.google.com/datasource/' + datasource.name",
-        sameWindow: true
-      }
+        sameWindow: true,
+      },
     ]);
   });
-
 });

@@ -1,4 +1,7 @@
-import { expectTagsToContain, typeInTagsSelectAndSave } from "../../support/tags";
+import {
+  expectTagsToContain,
+  typeInTagsSelectAndSave,
+} from "../../support/tags";
 
 describe("Query Tags", () => {
   beforeEach(() => {
@@ -9,7 +12,9 @@ describe("Query Tags", () => {
       query: "SELECT 1 as value",
     };
 
-    cy.createQuery(queryData, false).then(({ id }) => cy.visit(`/queries/${id}`));
+    cy.createQuery(queryData, false).then(({ id }) =>
+      cy.visit(`/queries/${id}`),
+    );
   });
 
   it("is possible to add and edit tags", () => {
@@ -18,17 +23,15 @@ describe("Query Tags", () => {
 
     cy.getByTestId("TagsControl").contains(".label", "Unpublished");
 
-    cy.getByTestId("EditTagsButton")
-      .should("contain", "Add tag")
-      .click();
+    cy.getByTestId("EditTagsButton").should("contain", "Add tag").click();
 
-    typeInTagsSelectAndSave("tag1{enter}tag2{enter}tag3{enter}{esc}");
+    typeInTagsSelectAndSave("tag1{enter}tag2{enter}tag3{enter}");
 
     cy.wait("@QuerySave");
     expectTagsToContain(["tag1", "tag2", "tag3"]);
 
     cy.getByTestId("EditTagsButton").click();
-    typeInTagsSelectAndSave("tag4{enter}{esc}");
+    typeInTagsSelectAndSave("tag4{enter}");
 
     cy.wait("@QuerySave");
     cy.reload();

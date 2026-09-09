@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@use "sass:math";
+@import "../../imports";
 
 $num-size: 16px;
 $bar-top: 6px;
@@ -32,8 +33,8 @@ $bar-height: 6px;
 
     &.full {
       @include css-variable(background-color, background-medium);
-      left: $num-size / 2;
-      right: $num-size / 2;
+      left: math.div($num-size, 2);
+      right: math.div($num-size, 2);
     }
 
     &.selected {
@@ -43,11 +44,14 @@ $bar-height: 6px;
 
   &.inverted {
     .range-bar {
-      &.full { @include css-variable(background-color, brand); }
-      &.selected { @include css-variable(background-color, background-medium); }
+      &.full {
+        @include css-variable(background-color, brand);
+      }
+      &.selected {
+        @include css-variable(background-color, background-medium);
+      }
     }
   }
-
 
   .range-handle {
     position: absolute;

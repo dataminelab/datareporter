@@ -28,10 +28,9 @@ export interface DragPositionJS {
   replace?: number;
 }
 
-var check: Class<DragPositionValue, DragPositionJS>;
+let check: Class<DragPositionValue, DragPositionJS>;
 
 export class DragPosition implements Instance<DragPositionValue, DragPositionJS> {
-
   static isDragPosition(candidate: any): candidate is DragPosition {
     return candidate instanceof DragPosition;
   }
@@ -39,38 +38,46 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
   static calculateFromOffset(offset: number, numItems: number, itemWidth: number, itemGap: number): DragPosition {
     if (!numItems) {
       return new DragPosition({
-        replace: 0
+        replace: 0,
       });
     }
 
     if (offset < 0) {
       return new DragPosition({
-        insert: 0
+        insert: 0,
       });
     }
 
-    var sectionWidth = itemWidth + itemGap;
-    var sectionNumber = Math.floor(offset / sectionWidth);
+    const sectionWidth = itemWidth + itemGap;
+    const sectionNumber = Math.floor(offset / sectionWidth);
     if (numItems <= sectionNumber) {
       return new DragPosition({
-        replace: numItems
+        replace: numItems,
       });
     }
 
-    var offsetWithinSection = offset - sectionWidth * sectionNumber;
+    const offsetWithinSection = offset - sectionWidth * sectionNumber;
     if (offsetWithinSection < itemWidth) {
       return new DragPosition({
-        replace: sectionNumber
+        replace: sectionNumber,
       });
     } else {
       return new DragPosition({
-        insert: sectionNumber + 1
+        insert: sectionNumber + 1,
       });
     }
   }
 
   static fromJS(parameters: DragPositionJS): DragPosition {
     return new DragPosition(parameters);
+  }
+
+  static insertAt(index: number): DragPosition {
+    return new DragPosition({ insert: index });
+  }
+
+  static replaceAt(index: number): DragPosition {
+    return new DragPosition({ replace: index });
   }
 
   public insert: number;
@@ -85,12 +92,12 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
   public valueOf(): DragPositionValue {
     return {
       insert: this.insert,
-      replace: this.replace
+      replace: this.replace,
     };
   }
 
   public toJS(): DragPositionJS {
-    var js: DragPositionJS = {};
+    const js: DragPositionJS = {};
     if (this.insert != null) js.insert = this.insert;
     if (this.replace != null) js.replace = this.replace;
     return js;
@@ -109,9 +116,7 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
   }
 
   public equals(other: DragPosition): boolean {
-    return DragPosition.isDragPosition(other) &&
-      this.insert === other.insert &&
-      this.replace === other.replace;
+    return DragPosition.isDragPosition(other) && this.insert === other.insert && this.replace === other.replace;
   }
 
   public isInsert(): boolean {
@@ -122,6 +127,9 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
     return this.replace !== null;
   }
 
+  public getIndex(): number {
+    return this.isInsert() ? this.insert : this.replace;
+  }
 }
-
+// eslint-disable-next-line
 check = DragPosition;

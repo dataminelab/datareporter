@@ -3,23 +3,23 @@
 CLI to run worker dev server.
 """
 
-import click
-
 import logging
 
+import click
 from flask.cli import FlaskGroup, run_command
+
 from redash.app import create_worker
 
 logger = logging.getLogger(__name__)
 
 
-def create(group):
+def create():
     app = create_worker()
-    group.app = app
 
     @app.shell_context_processor
     def shell_context():
         from redash import models, settings
+
         return {"models": models, "settings": settings}
 
     return app
@@ -31,5 +31,5 @@ def server():
 
 
 server.add_command(run_command, "runserver")
-if __name__ == '__main__':
+if __name__ == "__main__":
     server()

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 $bottom-margin: 12px;
 $title-margin: 6px;
@@ -49,7 +49,7 @@ $title-margin: 6px;
       }
 
       &:last-child {
-        @include border-css-variable('border-right', 1px, solid, 'border-light');
+        @include border-css-variable("border-right", 1px, solid, "border-light");
         border-top-right-radius: $corner;
         border-bottom-right-radius: $corner;
       }

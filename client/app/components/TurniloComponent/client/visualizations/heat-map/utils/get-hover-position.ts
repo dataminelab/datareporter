@@ -24,7 +24,14 @@ export interface HoverPosition {
   left: number;
 }
 
-export default function getHoverPosition(xScale: LinearScale, yScale: LinearScale, x: number, y: number, part: ScrollerPart, { left, top }: ScrollerLayout): HoverPosition | null {
+export default function getHoverPosition(
+  xScale: LinearScale,
+  yScale: LinearScale,
+  x: number,
+  y: number,
+  part: ScrollerPart,
+  { left, top }: ScrollerLayout
+): HoverPosition | null {
   if (part !== "body") return null;
 
   const xOffset = x - left;
@@ -40,6 +47,6 @@ export default function getHoverPosition(xScale: LinearScale, yScale: LinearScal
     top: y,
     left: x,
     row,
-    column
+    column,
   };
 }

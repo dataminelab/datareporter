@@ -22,15 +22,22 @@ import { HEAT_MAP_MANIFEST } from "./heat-map/heat-map";
 import { LINE_CHART_MANIFEST } from "./line-chart/line-chart";
 import { TABLE_MANIFEST } from "./table/table";
 import { TOTALS_MANIFEST } from "./totals/totals";
+import { TableSettings } from "./table/settings";
+import { LineChartSettings } from "./line-chart/settings";
 
-export const MANIFESTS: VisualizationManifest[] = [
+export type AnyVisualizationManifest =
+  | VisualizationManifest<TableSettings>
+  | VisualizationManifest<LineChartSettings>
+  | VisualizationManifest<{}>; // Add other settings types as needed
+
+export const MANIFESTS: AnyVisualizationManifest[] = [
   TOTALS_MANIFEST,
   TABLE_MANIFEST,
   LINE_CHART_MANIFEST,
   BAR_CHART_MANIFEST,
-  HEAT_MAP_MANIFEST
+  HEAT_MAP_MANIFEST,
 ];
 
-export function manifestByName(visualizationName: string): VisualizationManifest {
+export function manifestByName(visualizationName: string): AnyVisualizationManifest {
   return NamedArray.findByName(MANIFESTS, visualizationName);
 }

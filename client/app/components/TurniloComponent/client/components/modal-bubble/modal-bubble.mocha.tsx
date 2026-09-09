@@ -16,20 +16,20 @@
 
 import { expect } from "chai";
 import { mount } from "enzyme";
-import * as React from "react";
+import React from "react";
 import { spy } from "sinon";
 import { noop } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
 import { ModalBubble } from "./modal-bubble";
 
-const mountModalBubbleInDiv = (onClose: Fn = noop) => mount(<div className="root">
-  <ModalBubble
-    left={100}
-    top={200}
-    onClose={onClose} />
-  <div className="outside" />
-</div>);
+const mountModalBubbleInDiv = (onClose: Fn = noop) =>
+  mount(
+    <div className="root">
+      <ModalBubble left={100} top={200} onClose={onClose} />
+      <div className="outside" />
+    </div>
+  );
 
 describe("ModalBubble", () => {
   describe("onMouseDown handler", () => {
@@ -40,7 +40,7 @@ describe("ModalBubble", () => {
       const mouseDownHandler = globalEventListener.prop("mouseDown");
       const outside = modal.find(".outside");
       const target = outside.getDOMNode();
-
+      // @ts-ignore TS2345
       mouseDownHandler.call(null, { target });
 
       expect(onCloseSpy.called).to.be.true;
@@ -53,7 +53,7 @@ describe("ModalBubble", () => {
       const mouseDownHandler = globalEventListener.prop("mouseDown");
       const modalBubble = modal.find(ModalBubble);
       const target = modalBubble.getDOMNode();
-
+      // @ts-ignore TS2345
       mouseDownHandler.call(null, { target });
 
       expect(onCloseSpy.called).to.be.false;

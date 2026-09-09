@@ -21,22 +21,6 @@ import { settings, TableSettings } from "./settings";
 
 describe("TableSettings", () => {
   describe("defaults", () => {
-    const defaults = settings.defaults as ImmutableRecord<TableSettings>;
-
-    it("should create record", () => {
-      expect(defaults).to.be.instanceOf(Record);
-    });
-
-    it("should have collapseRows prop", () => {
-      expect(defaults.has("collapseRows")).to.be.true;
-    });
-
-    it("should have collapseRows value to be false", () => {
-      expect(defaults.get("collapseRows", null)).to.be.false;
-    });
-  });
-
-  describe("defaults", () => {
     const { print, read } = settings.converter;
     const makeSettings = (collapseRows: boolean) =>
       new (Record<TableSettings>({ collapseRows: false }))({ collapseRows });

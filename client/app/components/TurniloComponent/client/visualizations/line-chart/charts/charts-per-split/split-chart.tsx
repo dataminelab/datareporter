@@ -46,8 +46,9 @@ interface SplitChartProps {
   visualisationStage: Stage;
 }
 
-export const SplitChart: React.SFC<SplitChartProps> = props => {
-  const { chartId, interactions, visualisationStage, chartStage, essence, xScale, xTicks, selectDatum, dataset } = props;
+export const SplitChart: React.SFC<SplitChartProps> = (props) => {
+  const { chartId, interactions, visualisationStage, chartStage, essence, xScale, xTicks, selectDatum, dataset } =
+    props;
   const { interaction } = interactions;
   const splitDatum = selectDatum(dataset);
   const splitDataset = selectSplitDataset(splitDatum);
@@ -55,67 +56,79 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
   const series = essence.getConcreteSeries();
 
   const label = <Label essence={essence} datum={splitDatum} />;
-  const hoverContent = isHover(interaction) && <SplitHoverContent
-    interaction={interaction}
-    essence={essence}
-    dataset={splitDataset} />;
+  const hoverContent = isHover(interaction) && (
+    <SplitHoverContent interaction={interaction} essence={essence} dataset={splitDataset} />
+  );
 
   const continuousSplit = getContinuousSplit(essence);
-  const getX = (d: Datum) => d[continuousSplit.reference] as (TimeRange | NumberRange);
+  const getX = (d: Datum) => d[continuousSplit.reference] as TimeRange | NumberRange;
   const domain = extentAcrossSeries(splitDataset, essence);
 
   if (series.count() === 1) {
     const firstSeries = series.first();
-    return <BaseChart
+    return (
+      <BaseChart
+        chartId={chartId}
+        interactions={interactions}
+        hoverContent={hoverContent}
+        timezone={essence.timezone}
+        label={label}
+        xScale={xScale}
+        xTicks={xTicks}
+        chartStage={chartStage}
+        formatter={firstSeries.formatter()}
+        yDomain={domain}
+        visualisationStage={visualisationStage}>
+        {({ yScale, lineStage }) => {
+          return (
+            <SingletonSeriesChartLine
+              xScale={xScale}
+              yScale={yScale}
+              getX={getX}
+              dataset={splitDataset.data}
+              stage={lineStage}
+              essence={essence}
+              series={firstSeries}
+            />
+          );
+        }}
+      </BaseChart>
+    );
+  }
+
+  return (
+    <BaseChart
       chartId={chartId}
-      interactions={interactions}
-      hoverContent={hoverContent}
+      visualisationStage={visualisationStage}
       timezone={essence.timezone}
+      hoverContent={hoverContent}
+      interactions={interactions}
       label={label}
       xScale={xScale}
       xTicks={xTicks}
       chartStage={chartStage}
-      formatter={firstSeries.formatter()}
-      yDomain={domain} visualisationStage={visualisationStage}>
-      {({ yScale, lineStage }) => {
-        return <SingletonSeriesChartLine
-          xScale={xScale}
-          yScale={yScale}
-          getX={getX}
-          dataset={splitDataset.data}
-          stage={lineStage}
-          essence={essence}
-          series={firstSeries} />;
-      }}
-    </BaseChart>;
-  }
-
-  return <BaseChart
-    chartId={chartId}
-    visualisationStage={visualisationStage}
-    timezone={essence.timezone}
-    hoverContent={hoverContent}
-    interactions={interactions}
-    label={label}
-    xScale={xScale}
-    xTicks={xTicks}
-    chartStage={chartStage}
-    formatter={defaultFormatter}
-    yDomain={domain}>
-    {({ yScale, lineStage }) => <React.Fragment>
-      {series.toArray().map((series, index) => {
-        const color = NORMAL_COLORS[index];
-        return <ColoredSeriesChartLine
-          key={series.plywoodKey()}
-          xScale={xScale}
-          yScale={yScale}
-          getX={getX}
-          dataset={splitDataset.data}
-          stage={lineStage}
-          essence={essence}
-          series={series}
-          color={color} />;
-      })}
-    </React.Fragment>}
-  </BaseChart>;
+      formatter={defaultFormatter}
+      yDomain={domain}>
+      {({ yScale, lineStage }) => (
+        <React.Fragment>
+          {series.toArray().map((series, index) => {
+            const color = NORMAL_COLORS[index];
+            return (
+              <ColoredSeriesChartLine
+                key={series.plywoodKey()}
+                xScale={xScale}
+                yScale={yScale}
+                getX={getX}
+                dataset={splitDataset.data}
+                stage={lineStage}
+                essence={essence}
+                series={series}
+                color={color}
+              />
+            );
+          })}
+        </React.Fragment>
+      )}
+    </BaseChart>
+  );
 };

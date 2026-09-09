@@ -1,33 +1,35 @@
 # This configuration file is for the **development** setup.
 # For a production example please refer to kubernetes or CloudRun setups
-version: "3.9"
 x-redash-service: &redash-service
   build:
     context: .
     cache_from:
       - "type=gha"
-    cache_to:
-      - "type=gha,mode=max"
     args:
       skip_frontend_build: "${skip_frontend_build-}"
       skip_dev_deps: "${skip_dev_deps-}"
       skip_ds_deps: "${skip_ds_deps-}"
   volumes:
     - .:/app
+    - /app/client/dist
+  env_file:
+    - .env
 x-redash-environment: &redash-environment
-  REDASH_LOG_LEVEL: "DEBUG"
+  REDASH_LOG_LEVEL: "INFO"
   REDASH_REDIS_URL: "redis://redis:6379/0"
   REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
   REDASH_RATELIMIT_ENABLED: "false"
-  REDASH_MAIL_DEFAULT_SENDER: ""
+  REDASH_MAIL_DEFAULT_SENDER: noreply@datareporter.com
   REDASH_AUTH_TYPE: "api_key"
-  REDASH_MAIL_SERVER: "email"
-  REDASH_ENFORCE_CSRF: "false"
+  REDASH_ENFORCE_CSRF: "true"
   MAILCHIMP_SERVER: "us1"
-  MAILCHIMP_API_KEY: "e4c804be8fbd3c445a0fef9d05b6fc27"
-  MAILCHIMP_LIST_ID: "e48180787b"
-  REDASH_DEBUG: "true"
-  CLIENT_TIMEOUT_DELTA: 100000
+  CLIENT_TIMEOUT: 100000
+  REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
+  # OLLAMA_API_URL: "http://ollama:11434"
+  REDASH_SCHEMAS_REFRESH_TIMEOUT: 500
+  REDASH_VERSION_CHECK: "false"
+  WORKERS_COUNT: 10
+  QUEUES: 100
 services:
   server:
     <<: *redash-service
@@ -40,11 +42,11 @@ services:
       - "5678:5678"
     environment:
       <<: *redash-environment
-      REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
       PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://plywood:3000"
     volumes:
       - .:/app
+      - /app/client/dist
   scheduler:
     <<: *redash-service
     command: dev_scheduler
@@ -64,35 +66,47 @@ services:
       <<: *redash-environment
       PYTHONUNBUFFERED: 0
   redis:
-    image: redis:3-alpine
+    image: redis:7-alpine
     restart: unless-stopped
     ports:
       - "6379"
   postgres:
-    image: postgres:12-alpine
-    # The following turns the DB into less durable, but gains significant performance improvements for the tests run (x3
-    # improvement on my personal machine). We should consider moving this into a dedicated Docker Compose configuration for
-    # tests.
+    image: pgautoupgrade/pgautoupgrade:latest
     ports:
       - "15432:5432"
       - "5432:5432"
+    # The following turns the DB into less durable, but gains significant performance improvements for the tests run (x3
+    # improvement on my personal machine). We should consider moving this into a dedicated Docker Compose configuration for
+    # tests.
+    command: "postgres -c fsync=off -c full_page_writes=off -c synchronous_commit=OFF"
     restart: unless-stopped
     environment:
       POSTGRES_HOST_AUTH_METHOD: "trust"
   email:
-    image: djfarrelly/maildev
+    image: maildev/maildev
     ports:
-      - "1080:80"
+      - "1080:1080"
+      - "1025:1025"
     restart: unless-stopped
   plywood:
-    image: node:14.5.0-alpine
+    build:
+      context: ./plywood
+      dockerfile: Dockerfile
     working_dir: /app
-    command: npm run watch-node
+    command: npm start
     ports:
       - "3000:3000"
       - "9231:9229"
     volumes:
-      - ./plywood/server:/app
+      - ./plywood:/app
+      - /app/node_modules
+      - /app/client/build
+      - /app/dist
     environment:
       - LOG_MODE=request_and_response
-
+  # ollama:
+  #   image: ollama/ollama
+  #   volumes:
+  #     - ./ollama-models:/root/.ollama
+  #   ports:
+  #     - 11434:11434

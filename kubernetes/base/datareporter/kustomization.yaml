@@ -1,0 +1,12 @@
+resources:
+  - env-configmap.yaml
+  - scripts-configmap.yaml
+  - serviceaccount.yaml
+  - adhocworker-deployment.yaml
+  - genericworker-deployment.yaml
+  - plywood-deployment.yaml
+  - scheduledworker-deployment.yaml
+  - scheduler-deployment.yaml
+  - server-deployment.yaml
+  - service.yaml
+  - plywood-service.yaml

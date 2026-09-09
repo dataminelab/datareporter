@@ -40,25 +40,42 @@ interface SplitTilesProps {
   openOverflowMenu: Fn;
 }
 
-export const SplitTiles: React.SFC<SplitTilesProps> = props => {
-  const { overflowOpen, closeOverflowMenu, openOverflowMenu, essence, maxItems, removeSplit, updateSplit, openedSplit, openMenu, closeMenu, dragStart, menuStage } = props;
+export const SplitTiles: React.SFC<SplitTilesProps> = (props) => {
+  const {
+    overflowOpen,
+    closeOverflowMenu,
+    openOverflowMenu,
+    essence,
+    maxItems,
+    removeSplit,
+    updateSplit,
+    openedSplit,
+    openMenu,
+    closeMenu,
+    dragStart,
+    menuStage,
+  } = props;
 
   const splits = essence.splits.splits.toArray();
 
-  const splitTiles = splits.map(split => {
+  const splitTiles = splits.map((split) => {
     const dimension = essence.dataCube.getDimension(split.reference);
-    return <SplitTile
-      key={split.toKey()}
-      split={split}
-      dimension={dimension}
-      removeSplit={removeSplit}
-      updateSplit={updateSplit}
-      open={split.equals(openedSplit)}
-      openMenu={openMenu}
-      closeMenu={closeMenu}
-      dragStart={dragStart}
-      containerStage={menuStage}
-      essence={essence} />;
+    return (
+      // @ts-ignore
+      <SplitTile
+        key={split.toKey()}
+        split={split}
+        dimension={dimension}
+        removeSplit={removeSplit}
+        updateSplit={updateSplit}
+        open={split.equals(openedSplit)}
+        openMenu={openMenu}
+        closeMenu={closeMenu}
+        dragStart={dragStart}
+        containerStage={menuStage}
+        essence={essence}
+      />
+    );
   });
 
   const visibleSplits = splitTiles
@@ -71,19 +88,20 @@ export const SplitTiles: React.SFC<SplitTilesProps> = props => {
     return <React.Fragment>{visibleSplits}</React.Fragment>;
   }
 
-  const anyOverflowTileOpen = splits.slice(maxItems).some(split => split.equals(openedSplit));
+  const anyOverflowTileOpen = splits.slice(maxItems).some((split) => split.equals(openedSplit));
   const overflowOpened = overflowOpen || anyOverflowTileOpen;
 
-  const splitOverflow = <TileOverflowContainer
-    className="dimension"
-    key="overflow-menu"
-    items={overflowSplits}
-    open={overflowOpened}
-    openOverflowMenu={openOverflowMenu}
-    closeOverflowMenu={closeOverflowMenu}
-    x={visibleSplits.length * SECTION_WIDTH} />;
+  const splitOverflow = (
+    <TileOverflowContainer
+      className="dimension"
+      key="overflow-menu"
+      items={overflowSplits}
+      open={overflowOpened}
+      openOverflowMenu={openOverflowMenu}
+      closeOverflowMenu={closeOverflowMenu}
+      x={visibleSplits.length * SECTION_WIDTH}
+    />
+  );
 
-  return <React.Fragment>
-    {[...visibleSplits, splitOverflow]}
-  </React.Fragment>;
+  return <React.Fragment>{[...visibleSplits, splitOverflow]}</React.Fragment>;
 };

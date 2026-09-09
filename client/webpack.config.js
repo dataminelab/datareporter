@@ -1,17 +1,15 @@
 /* eslint-disable */
-
 const webpack = require("webpack");
+const { IgnorePlugin } = webpack;
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const WebpackBuildNotifierPlugin = require("webpack-build-notifier");
 const ManifestPlugin = require("webpack-manifest-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const LessPluginAutoPrefix = require("less-plugin-autoprefix");
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
-  .BundleAnalyzerPlugin;
-const fs = require("fs");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const path = require("path");
-const { CheckerPlugin } = require('awesome-typescript-loader')
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
 function optionalRequire(module, defaultReturn = undefined) {
   try {
@@ -30,18 +28,20 @@ function optionalRequire(module, defaultReturn = undefined) {
 const CONFIG = optionalRequire("../scripts/config", {});
 
 const isProduction = process.env.NODE_ENV === "production";
+const isDevelopment = !isProduction;
+const isHotReloadingEnabled = isDevelopment && process.env.HOT_RELOAD === "true";
 
 const redashBackend = process.env.REDASH_BACKEND || "http://localhost:5000";
 const turniloBackend = process.env.TURNILO_BACKEND || "http://localhost:3000";
+const ollamaBackend = process.env.OLLAMA_BACKEND || "http://localhost:11434";
 const baseHref = CONFIG.baseHref || "/";
 const staticPath = CONFIG.staticPath || "/static/";
-const htmlTitle = CONFIG.title || "Datareporter";
+const htmlTitle = CONFIG.title || "Data Reporter";
 
 const basePath = path.join(__dirname);
 const appPath = path.join(__dirname, "app");
 
-const extensionsRelativePath =
-  process.env.EXTENSIONS_DIRECTORY || path.join("app", "extensions");
+const extensionsRelativePath = process.env.EXTENSIONS_DIRECTORY || path.join("app", "extensions");
 const extensionPath = path.join(__dirname, extensionsRelativePath);
 
 // Function to apply configuration overrides (see scripts/README)
@@ -56,43 +56,53 @@ function maybeApplyOverrides(config) {
   console.info("Custom overrides applied successfully.");
   return newConfig;
 }
+
 const babelLoader = {
-  loader: "babel-loader",
+  loader: require.resolve("babel-loader"),
   options: {
     presets: [
-      ["@babel/preset-env", {
-        modules: false
-      }]
-    ]
-  }
+      "@babel/preset-react",
+      [
+        "@babel/preset-env",
+        {
+          modules: false,
+        },
+      ],
+      "@babel/preset-typescript",
+    ],
+    plugins: [
+      ...(isHotReloadingEnabled ? ["react-refresh/babel"] : []),
+      "@babel/plugin-proposal-optional-chaining",
+      "@babel/plugin-proposal-nullish-coalescing-operator",
+    ],
+  },
 };
 
 const config = {
   mode: isProduction ? "production" : "development",
   entry: {
-    app: [
-      "./app/index.js",
-      "./app/assets/less/main.less",
-      "./app/assets/less/ant.less"
-    ],
-    server: ["./app/assets/less/server.less"]
+    app: ["./app/index.js", "./app/assets/less/main.less", "./app/assets/less/ant.less"],
+    server: ["./app/assets/less/server.less"],
   },
   output: {
     path: path.join(basePath, "./dist"),
     filename: isProduction ? "[name].[chunkhash].js" : "[name].js",
-    publicPath: staticPath
+    publicPath: staticPath,
+  },
+  node: {
+    fs: "empty",
+    path: "empty",
   },
   resolve: {
     symlinks: false,
-    extensions: [".js", ".jsx", ".ts", ".tsx"],
+    extensions: [".js", ".jsx", ".ts", ".tsx", ".mjs"],
     alias: {
       "@": appPath,
-      extensions: extensionPath
-    }
+      extensions: extensionPath,
+    },
   },
   plugins: [
-    new CheckerPlugin(),
-    new WebpackBuildNotifierPlugin({ title: "Redash" }),
+    new WebpackBuildNotifierPlugin({ title: "Data Reporter" }),
     // bundle only default `moment` locale (`en`)
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
     new HtmlWebpackPlugin({
@@ -102,19 +112,23 @@ const config = {
       release: process.env.BUILD_VERSION || "dev",
       staticPath,
       baseHref,
-      title: htmlTitle
+      title: htmlTitle,
     }),
     new HtmlWebpackPlugin({
       template: "./app/multi_org.html",
       filename: "multi_org.html",
-      excludeChunks: ["server"]
+      excludeChunks: ["server"],
     }),
     new MiniCssExtractPlugin({
-      filename: "[name].[chunkhash].css"
+      filename: "[name].[chunkhash].css",
     }),
     new ManifestPlugin({
       fileName: "asset-manifest.json",
-      publicPath: ""
+      publicPath: "",
+    }),
+    new IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
     }),
     new CopyWebpackPlugin([
       { from: "app/assets/robots.txt" },
@@ -122,93 +136,148 @@ const config = {
       { from: "app/unsupported.html" },
       { from: "app/unsupportedRedirect.js" },
       { from: "app/assets/css/*.css", to: "styles/", flatten: true },
-      { from: "app/assets/fonts", to: "fonts/" }
-    ])
-  ],
+      { from: "app/assets/fonts", to: "fonts/" },
+    ]),
+    isHotReloadingEnabled && new ReactRefreshWebpackPlugin({ overlay: false }),
+  ].filter(Boolean),
   optimization: {
     splitChunks: {
-      chunks: chunk => {
+      chunks: (chunk) => {
         return chunk.name != "server";
-      }
-    }
+      },
+    },
   },
   module: {
     rules: [
       {
-        test: /\.js|jsx?$/,
-        exclude: /node_modules/,
-        use: [
-          babelLoader
-        ]
+        enforce: "pre",
+        test: /\.js$/,
+        use: ["source-map-loader"],
+        exclude: [
+          /node_modules\/mutationobserver-shim/,
+          /node_modules\/@plotly\/mapbox-gl/,
+          /node_modules\/@redash\/viz/,
+          /node_modules\/druid-query-toolkit/,
+          /node_modules\/plywood/,
+        ],
       },
+      // Rule for druid-query-toolkit (needs nullish coalescing support)
       {
-        test: /\.(ts|tsx)$/,
-        exclude: /node_modules/,
-        use: [
-          babelLoader,
-          {
-            loader: 'awesome-typescript-loader?{configFileName: "tsconfig.json"}',
-            options: {
-              configFile: "tsconfig.json"
-            }
-          }
-        ]
+        test: /\.(js|mjs)$/,
+        include: [/node_modules\/druid-query-toolkit/, /node_modules\/plywood\/node_modules\/druid-query-toolkit/],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              [
+                "@babel/preset-env",
+                {
+                  targets: { browsers: ["last 2 versions"] },
+                },
+              ],
+            ],
+            plugins: ["@babel/plugin-proposal-optional-chaining", "@babel/plugin-proposal-nullish-coalescing-operator"],
+          },
+        },
+      },
+      // Rule for @redash/viz
+      {
+        test: /\.js$/,
+        include: [path.resolve(__dirname, "node_modules/@redash/viz")],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              [
+                "@babel/preset-env",
+                {
+                  targets: { browsers: ["last 2 versions"] },
+                },
+              ],
+            ],
+            plugins: ["@babel/plugin-proposal-optional-chaining", "@babel/plugin-proposal-nullish-coalescing-operator"],
+          },
+        },
+      },
+      // Rule for react-draggable (uses optional chaining)
+      {
+        test: /\.js$/,
+        include: [/node_modules\/react-draggable/],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              [
+                "@babel/preset-env",
+                {
+                  targets: { browsers: ["last 2 versions"] },
+                },
+              ],
+            ],
+            plugins: ["@babel/plugin-proposal-optional-chaining", "@babel/plugin-proposal-nullish-coalescing-operator"],
+          },
+        },
+      },
+      // Main rule for app code (JS/TS/JSX/TSX)
+      {
+        test: /\.(t|j)sx?$/,
+        exclude: {
+          and: [/node_modules/],
+          not: [/react-syntax-highlighter/],
+        },
+        use: [babelLoader],
       },
       {
         test: /\.html$/,
         exclude: [/node_modules/, /index\.html/, /multi_org\.html/],
         use: [
           {
-            loader: "raw-loader"
-          }
-        ]
+            loader: "raw-loader",
+          },
+        ],
       },
       {
         test: /\.css$/,
         use: [
           {
-            loader: MiniCssExtractPlugin.loader
+            loader: MiniCssExtractPlugin.loader,
           },
           {
             loader: "css-loader",
-            options: {
-              minimize: process.env.NODE_ENV === "production"
-            }
-          }
-        ]
+          },
+        ],
       },
       {
         test: /\.less$/,
         use: [
           {
-            loader: MiniCssExtractPlugin.loader
+            loader: MiniCssExtractPlugin.loader,
           },
           {
             loader: "css-loader",
-            options: {
-              minimize: process.env.NODE_ENV === "production"
-            }
           },
           {
             loader: "less-loader",
             options: {
-              plugins: [
-                new LessPluginAutoPrefix({ browsers: ["last 3 versions"] })
-              ],
-              javascriptEnabled: true
-            }
-          }
-        ]
+              plugins: [new LessPluginAutoPrefix({ browsers: ["last 3 versions"] })],
+              javascriptEnabled: true,
+            },
+          },
+        ],
       },
       {
         test: /\.s[ac]ss$/i,
         use: [
-          // Creates `style` nodes from JS strings
-          'style-loader',
-          // Translates CSS into CommonJS
-          'css-loader',
-          // Compiles Sass to CSS
-          'sass-loader',
+          "style-loader",
+          "css-loader",
+          {
+            loader: "sass-loader",
+            options: {
+              sassOptions: {
+                silenceDeprecations: ["legacy-js-api", "import", "global-builtin", "function-units", "color-functions"],
+              },
+            },
+          },
         ],
       },
       {
@@ -219,10 +288,10 @@ const config = {
             options: {
               context: path.resolve(appPath, "./assets/images/"),
               outputPath: "images/",
-              name: "[path][name].[ext]"
-            }
-          }
-        ]
+              name: "[path][name].[ext]",
+            },
+          },
+        ],
       },
       {
         test: /\.(svg)(\?.*)?$/,
@@ -233,10 +302,10 @@ const config = {
             options: {
               context: path.resolve(appPath, "./assets/images/"),
               outputPath: "images/",
-              name: "[path][name].[ext]"
-            }
-          }
-        ]
+              name: "[path][name].[ext]",
+            },
+          },
+        ],
       },
       {
         test: /\.svg$/,
@@ -251,10 +320,10 @@ const config = {
             loader: "file-loader",
             options: {
               outputPath: "data/",
-              name: "[hash:7].[name].[ext]"
-            }
-          }
-        ]
+              name: "[hash:7].[name].[ext]",
+            },
+          },
+        ],
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
@@ -263,73 +332,83 @@ const config = {
             loader: "url-loader",
             options: {
               limit: 10000,
-              name: "fonts/[name].[hash:7].[ext]"
-            }
-          }
-        ]
-      }
-    ]
+              name: "fonts/[name].[hash:7].[ext]",
+            },
+          },
+        ],
+      },
+    ],
   },
-  devtool: isProduction ? "source-map" : "cheap-eval-module-source-map",
+  devtool: "source-map",
   stats: {
     children: false,
     modules: false,
-    chunkModules: false
+    chunkModules: false,
   },
   watchOptions: {
-    ignored: /\.sw.$/
+    ignored: /\.sw.$/,
   },
   devServer: {
-    inline: true,
-    index: "/static/index.html",
+    client: {
+      overlay: {
+        runtimeErrors: (error) => {
+          if (error?.message === "ResizeObserver loop completed with undelivered notifications.") {
+            console.error(error);
+            return false;
+          }
+          return true;
+        },
+      },
+    },
+    devMiddleware: {
+      index: "/static/index.html",
+      publicPath: staticPath,
+      stats: {
+        modules: false,
+        chunkModules: false,
+      },
+    },
     historyApiFallback: {
       index: "/static/index.html",
-      rewrites: [{ from: /./, to: "/static/index.html" }]
+      rewrites: [{ from: /./, to: "/static/index.html" }],
     },
-    contentBase: false,
-    publicPath: staticPath,
     proxy: [
       {
-        context: [
-          "/login",
-          "/logout",
-          "/invite",
-          "/setup",
-          "/status.json",
-          "/api",
-          "/oauth"
-        ],
+        context: ["/login", "/logout", "/invite", "/setup", "/status.json", "/api", "/oauth", "/forgot"],
         target: redashBackend + "/",
         changeOrigin: false,
-        secure: false
+        secure: false,
       },
       {
-        context: [
-          '/plywood',
-          '/config-turnilo'
-        ],
+        context: ["/plywood", "/config-turnilo"],
         target: turniloBackend + "/",
         changeOrigin: true,
-        secure: false
+        secure: false,
       },
       {
-        context: path => {
-          // CSS/JS for server-rendered pages should be served from backend
+        context: ["/ollama", "/ollama-api"],
+        target: ollamaBackend + "/",
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: {
+          "^/ollama/": "/",
+          "^/ollama-api": "/api",
+        },
+      },
+      {
+        context: (path) => {
           return /^\/static\/[a-z]+\.[0-9a-fA-F]+\.(css|js)$/.test(path);
         },
         target: redashBackend + "/",
         changeOrigin: true,
-        secure: false
-      }
+        secure: false,
+      },
     ],
-    stats: {
-      modules: false,
-      chunkModules: false
-    }
+    hot: isHotReloadingEnabled,
   },
   performance: {
-    hints: false
-  }
+    hints: false,
+  },
 };
 
 if (process.env.DEV_SERVER_HOST) {

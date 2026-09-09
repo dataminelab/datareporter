@@ -30,18 +30,11 @@ describe("getXDomain", () => {
   let selectFirstSplitDatumsStub: sinon.SinonStub;
 
   beforeEach(() => {
-    firstSplitRefStub = sinon
-      .stub(splitsModule, "firstSplitRef")
-      .returns("dummy-ref");
+    firstSplitRefStub = sinon.stub(splitsModule, "firstSplitRef").returns("dummy-ref");
 
     selectFirstSplitDatumsStub = sinon
       .stub(selectorsModule, "selectFirstSplitDatums")
-      .returns([
-        { "dummy-ref": "foo" },
-        { "dummy-ref": "bar" },
-        { "dummy-ref": "bazz" },
-        { "dummy-ref": "qvux" }
-      ]);
+      .returns([{ "dummy-ref": "foo" }, { "dummy-ref": "bar" }, { "dummy-ref": "bazz" }, { "dummy-ref": "qvux" }]);
   });
 
   afterEach(() => {

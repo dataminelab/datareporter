@@ -1,57 +1,57 @@
-from typing import List
-
-import yaml
+from typing import Dict, List, Union
 
 import pydash
+import yaml
 
-from redash.models.models import Model
 from redash.plywood.objects.report_serializer import ReportMetaData
 from redash.plywood.plywood import PlywoodApi
 from redash.utils.big_query_utils import get_price_for_query
 
 
 def lower_kind(obj: dict):
-    for v in obj['dimensions']:
-        if 'kind' in v:
-            v['kind'] = v['kind'].lower()
+    for v in obj["dimensions"]:
+        if "kind" in v:
+            v["kind"] = v["kind"].lower()
 
 
 class DataCube:
-    def __init__(self, model: Model):
+    def __init__(self, model):
         self._model = model
 
     @property
     def null_value(self):
-        if self.ply_engine == 'postgres':
+        if self.ply_engine == "postgres":
             return "IS NULL"
-        elif self.ply_engine == 'bigquery':
+        elif self.ply_engine == "bigquery":
             return "IS NULL"
-        elif self.ply_engine == 'mysql':
+        elif self.ply_engine == "mysql":
             return "IS NULL"
-        elif self.ply_engine == 'athena':
+        elif self.ply_engine == "athena":
+            return "IS NULL"
+        elif self.ply_engine == "druid":
             return "IS NULL"
         return "IS NULL"
 
-    def get_meta(self, queries: List[dict]) -> ReportMetaData:
+    def get_meta(self, queries: List[dict]) -> Union[ReportMetaData, None]:
         meta = ReportMetaData()
-        if self.ply_engine == 'athena':
+        if self.ply_engine == "athena":
             for query in queries:
-                meta_data = query['query_result']['data']['metadata']
+                meta_data = query["query_result"]["data"]["metadata"]
 
-                if 'query_cost' in meta_data:
-                    meta.price += meta_data['query_cost']
-                if 'data_scanned' in meta_data:
-                    meta.proceed_data += meta_data['data_scanned']
+                if "query_cost" in meta_data:
+                    meta.price += meta_data["query_cost"]
+                if "data_scanned" in meta_data:
+                    meta.proceed_data += meta_data["data_scanned"]
 
-        if self.ply_engine == 'bigquery':
+        if self.ply_engine == "bigquery":
             for query in queries:
-                meta_data = query['query_result']['data']['metadata']
+                meta_data = query["query_result"]["data"]["metadata"]
 
-                cache_hit = meta_data.get('cache_hit', False)
+                cache_hit = meta_data.get("cache_hit", False)
 
                 if cache_hit is False:
-                    if 'data_scanned' in meta_data:
-                        meta.proceed_data += meta_data['data_scanned']
+                    if "data_scanned" in meta_data:
+                        meta.proceed_data += meta_data["data_scanned"]
 
             price = get_price_for_query(meta.proceed_data)
             meta.price = price
@@ -70,9 +70,10 @@ class DataCube:
     @property
     def attributes(self):
         """Returns DataCube attributes"""
-        config = yaml.load(self._model.config.content, Loader=yaml.FullLoader)
-        data_cube = pydash.head(config["dataCubes"])
-        attributes = data_cube["attributes"] if data_cube else []
+        config = self.config
+        data_cubes = config.get("dataCubes", []) if isinstance(config, dict) else []
+        data_cube = pydash.head(data_cubes)
+        attributes = data_cube["attributes"] if isinstance(data_cube, dict) and "attributes" in data_cube else []
         return attributes
 
     def _get_table_name(self):
@@ -85,24 +86,22 @@ class DataCube:
     @property
     def config(self) -> dict:
         """Returns full config for model the example if above the file"""
-        return yaml.load(self._model.config.content, Loader=yaml.FullLoader)
+        if not self._model.config or not self._model.config.content:
+            return {}
+        return yaml.load(self._model.config.content, Loader=yaml.FullLoader) or {}
 
     @property
-    def data_cube(self, lower_case_kind=True):
+    def data_cube(self, lower_case_kind=True) -> Union[None, "DataCube"]:
         if not self._model.config:
             return None
         data_cube = pydash.head(self.config["dataCubes"])
 
-        if lower_case_kind:
+        if lower_case_kind and isinstance(data_cube, dict):
             lower_kind(data_cube)
 
-        return data_cube
+        return data_cube  # type: ignore
 
     @property
-    def context(self) -> dict:
+    def context(self) -> Dict:
         """Returns context of the DataCube in dict format"""
-        return {
-            "engine": self.ply_engine,
-            "source": self._get_table_name(),
-            "attributes": self.attributes
-        }
+        return {"engine": self.ply_engine, "source": self._get_table_name(), "attributes": self.attributes}

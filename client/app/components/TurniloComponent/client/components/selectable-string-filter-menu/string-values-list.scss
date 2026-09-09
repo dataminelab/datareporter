@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import '../../imports';
+@import "../../imports";
 
 .no-string-values {
   @include pin-full;
@@ -22,7 +22,6 @@
   font-style: italic;
 }
 
-.no-result {  
-  position:inherit;
+.no-result {
+  position: inherit;
 }
-

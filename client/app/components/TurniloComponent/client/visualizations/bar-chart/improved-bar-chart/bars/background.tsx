@@ -26,18 +26,20 @@ interface BackgroundProps {
   yScale: LinearScale;
 }
 
-export const Background: React.SFC<BackgroundProps> = props => {
+export const Background: React.SFC<BackgroundProps> = (props) => {
   const { gridStage, yScale } = props;
   const ticks = pickTicks(yScale);
-  return <React.Fragment>
-    <GridLines
-      orientation="horizontal"
-      scale={yScale}
-      ticks={ticks}
-      stage={gridStage}
-    />
-    <BottomBorder stage={gridStage} tickLength={TICK_LENGTH} />
-    <RightBorder stage={gridStage}/>
-
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <GridLines
+        orientation="horizontal"
+        // @ts-ignore
+        scale={yScale}
+        ticks={ticks}
+        stage={gridStage}
+      />
+      <BottomBorder stage={gridStage} tickLength={TICK_LENGTH} />
+      <RightBorder stage={gridStage} />
+    </React.Fragment>
+  );
 };

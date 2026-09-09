@@ -28,5 +28,5 @@ function equals(a: any, b: unknown): boolean {
 
 export function equalProps<T extends object>(oldProps: T, newProps: T): boolean {
   const keys = Object.keys(oldProps) as Array<keyof T>;
-  return keys.every(key => equals(oldProps[key], newProps[key]));
+  return keys.every((key) => equals(oldProps[key], newProps[key]));
 }

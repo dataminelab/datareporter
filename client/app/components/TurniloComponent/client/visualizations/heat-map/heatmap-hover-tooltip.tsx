@@ -29,7 +29,7 @@ interface HeatmapHoverTooltip {
   dataset: Datum[];
   position: HoverPosition;
   essence: Essence;
-  scroll: { left: number, top: number };
+  scroll: { left: number; top: number };
 }
 
 interface ContentProps {
@@ -38,35 +38,38 @@ interface ContentProps {
   series: ConcreteSeries;
 }
 
-const Content: React.SFC<ContentProps> = props => {
+const Content: React.SFC<ContentProps> = (props) => {
   const { showComparison, series, datum } = props;
   if (!showComparison) {
     return <React.Fragment>{series.formatValue(datum)}</React.Fragment>;
   }
-  return <MeasureBubbleContent
-    lowerIsBetter={series.measure.lowerIsBetter}
-    formatter={series.formatter()}
-    current={series.selectValue(datum)}
-    previous={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
-  />;
+  return (
+    <MeasureBubbleContent
+      lowerIsBetter={series.measure.lowerIsBetter}
+      formatter={series.formatter()}
+      current={series.selectValue(datum)}
+      previous={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
+    />
+  );
 };
 
-export const HeatmapHoverTooltip: React.SFC<HeatmapHoverTooltip> = props => {
-  const { dataset, essence, scroll, position: { column, row, top, left } } = props;
+export const HeatmapHoverTooltip: React.SFC<HeatmapHoverTooltip> = (props) => {
+  const {
+    dataset,
+    essence,
+    scroll,
+    position: { column, row, top, left },
+  } = props;
   const [, datum] = datumByPosition(dataset, { row, column });
   if (!datum) return null;
 
   const series = essence.getConcreteSeries().first();
-  return <TooltipWithBounds
-    key={`${row}-${column}`}
-    top={top - scroll.top}
-    left={left - scroll.left}>
-    <SegmentBubbleContent
-      title={modalTitle({ row, column }, dataset, essence)}
-      content={<Content
-        datum={datum}
-        showComparison={essence.hasComparison()}
-        series={series} />}
-    />
-  </TooltipWithBounds>;
+  return (
+    <TooltipWithBounds key={`${row}-${column}`} top={top - scroll.top} left={left - scroll.left}>
+      <SegmentBubbleContent
+        title={modalTitle({ row, column }, dataset, essence)}
+        content={<Content datum={datum} showComparison={essence.hasComparison()} series={series} />}
+      />
+    </TooltipWithBounds>
+  );
 };

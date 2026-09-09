@@ -26,19 +26,22 @@ import { hasNominalSplit } from "./splits";
 export function extentAcrossSeries(dataset: Dataset, essence: Essence): Extent {
   const hasComparison = essence.hasComparison();
   const series = essence.getConcreteSeries().toArray();
-  const getters = flatMap(series, s => seriesSelectors(s, hasComparison));
+  const getters = flatMap(series, (s) => seriesSelectors(s, hasComparison));
   return datumsExtent(dataset.data, getters);
 }
 
 export function extentAcrossSplits(dataset: Dataset, essence: Essence, series: ConcreteSeries): Extent {
   const getters = seriesSelectors(series, essence.hasComparison());
   if (hasNominalSplit(essence)) {
-    return dataset.data.reduce((acc, datum) => {
-      const splitDataset = selectSplitDataset(datum);
-      if (!splitDataset) return acc;
-      const extent = datumsExtent(splitDataset.data, getters);
-      return d3.extent([...acc, ...extent]);
-    }, [0, 0]) as Extent;
+    return dataset.data.reduce(
+      (acc, datum) => {
+        const splitDataset = selectSplitDataset(datum);
+        if (!splitDataset) return acc;
+        const extent = datumsExtent(splitDataset.data, getters);
+        return d3.extent([...acc, ...extent]);
+      },
+      [0, 0]
+    ) as Extent;
   }
 
   return datumsExtent(dataset.data, getters);

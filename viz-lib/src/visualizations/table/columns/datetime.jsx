@@ -18,7 +18,7 @@ function Editor({ column, onChange }) {
         }
         data-test="Table.ColumnEditor.DateTime.Format"
         defaultValue={column.dateTimeFormat}
-        onChange={event => onChangeDebounced({ dateTimeFormat: event.target.value })}
+        onChange={(event) => onChangeDebounced({ dateTimeFormat: event.target.value })}
       />
     </Section>
   );

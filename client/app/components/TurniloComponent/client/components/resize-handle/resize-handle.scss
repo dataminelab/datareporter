@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@use "sass:math";
+@import "../../imports";
 
 .resize-handle {
   $size: 18px;
 
   z-index: 1;
   position: absolute;
-
 
   > .svg-icon {
     width: 20px;
@@ -36,7 +36,8 @@
     }
   }
 
-  &.left, &.right {
+  &.left,
+  &.right {
     cursor: ew-resize;
     height: 100%;
     width: $size;
@@ -48,15 +49,16 @@
 
   &.left {
     transform: translate(-50%, 0);
-    margin-left: -$tile-margin-h / 2;
+    margin-left: math.div(-$tile-margin-h, 2);
   }
 
   &.right {
     transform: translate(50%, 0);
-    margin-right: -$tile-margin-h / 2;
+    margin-right: math.div(-$tile-margin-h, 2);
   }
 
-  &.top, &.bottom {
+  &.top,
+  &.bottom {
     cursor: ns-resize;
     height: $size;
     width: 100%;

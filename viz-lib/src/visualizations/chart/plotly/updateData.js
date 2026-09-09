@@ -28,7 +28,7 @@ function createTextFormatter(options) {
   if (options.textFormat === "") {
     return options.globalSeriesType === "pie" ? defaultFormatSeriesTextForPie : defaultFormatSeriesText;
   }
-  return item => formatSimpleTemplate(options.textFormat, item);
+  return (item) => formatSimpleTemplate(options.textFormat, item);
 }
 
 function formatValue(value, axis, options) {
@@ -55,13 +55,13 @@ function updateSeriesText(seriesList, options) {
 
   const defaultY = options.missingValuesAsZero ? 0.0 : null;
 
-  each(seriesList, series => {
+  each(seriesList, (series) => {
     const seriesOptions = options.seriesOptions[series.name] || { type: options.globalSeriesType };
 
     series.text = [];
     series.hover = [];
     const xValues = options.globalSeriesType === "pie" ? series.labels : series.x;
-    xValues.forEach(x => {
+    xValues.forEach((x) => {
       const text = {
         "@@name": series.name,
       };
@@ -99,17 +99,17 @@ function updatePercentValues(seriesList, options) {
     // Some series may not have corresponding x-values;
     // do calculations for each x only for series that do have that x
     const sumOfCorrespondingPoints = new Map();
-    each(seriesList, series => {
-      series.sourceData.forEach(item => {
+    each(seriesList, (series) => {
+      series.sourceData.forEach((item) => {
         const sum = sumOfCorrespondingPoints.get(item.x) || 0;
         sumOfCorrespondingPoints.set(item.x, sum + Math.abs(item.y || 0.0));
       });
     });
 
-    each(seriesList, series => {
+    each(seriesList, (series) => {
       const yValues = [];
 
-      series.sourceData.forEach(item => {
+      series.sourceData.forEach((item) => {
         if (isNil(item.y) && !options.missingValuesAsZero) {
           item.yPercent = null;
         } else {
@@ -126,9 +126,9 @@ function updatePercentValues(seriesList, options) {
 
 function getUnifiedXAxisValues(seriesList, sorted) {
   const set = new Set();
-  each(seriesList, series => {
+  each(seriesList, (series) => {
     // `Map.forEach` will walk items in insertion order
-    series.sourceData.forEach(item => {
+    series.sourceData.forEach((item) => {
       set.add(item.x);
     });
   });
@@ -140,11 +140,11 @@ function getUnifiedXAxisValues(seriesList, sorted) {
 function updateUnifiedXAxisValues(seriesList, options) {
   const unifiedX = getUnifiedXAxisValues(seriesList, options.sortX);
   const defaultY = options.missingValuesAsZero ? 0.0 : null;
-  each(seriesList, series => {
+  each(seriesList, (series) => {
     series.x = [];
     series.y = [];
     series.error_y.array = [];
-    each(unifiedX, x => {
+    each(unifiedX, (x) => {
       series.x.push(x);
       const item = series.sourceData.get(x);
       if (item) {
@@ -170,7 +170,7 @@ function updateLineAreaData(seriesList, options) {
 
     // Calculate cumulative value for each x tick
     const cumulativeValues = {};
-    each(seriesList, series => {
+    each(seriesList, (series) => {
       series.y = map(series.y, (y, i) => {
         if (isNil(y) && !options.missingValuesAsZero) {
           return null;
@@ -207,7 +207,7 @@ function updateDefaultData(seriesList, options) {
 
 export default function updateData(seriesList, options) {
   // Use only visible series
-  const visibleSeriesList = filter(seriesList, s => s.visible === true);
+  const visibleSeriesList = filter(seriesList, (s) => s.visible === true);
 
   if (visibleSeriesList.length > 0) {
     switch (options.globalSeriesType) {

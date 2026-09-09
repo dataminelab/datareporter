@@ -17,7 +17,14 @@
 import { expect, use } from "chai";
 import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
 import equivalent from "../../../utils/test-utils/equivalent";
-import { getContinuousDimension, getContinuousReference, getContinuousSplit, getNominalDimension, getNominalSplit, hasNominalSplit } from "./splits";
+import {
+  getContinuousDimension,
+  getContinuousReference,
+  getContinuousSplit,
+  getNominalDimension,
+  getNominalSplit,
+  hasNominalSplit,
+} from "./splits";
 
 use(equivalent);
 
@@ -104,5 +111,4 @@ describe("splits", () => {
       });
     });
   });
-
 });

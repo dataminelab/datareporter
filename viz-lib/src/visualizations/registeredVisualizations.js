@@ -81,8 +81,8 @@ export default registeredVisualizations;
 export function getDefaultVisualization() {
   // return any visualization explicitly marked as default, or any non-deprecated otherwise
   return (
-    find(registeredVisualizations, visualization => visualization.isDefault) ||
-    find(registeredVisualizations, visualization => !visualization.isDeprecated)
+    find(registeredVisualizations, (visualization) => visualization.isDefault) ||
+    find(registeredVisualizations, (visualization) => !visualization.isDeprecated)
   );
 }
 

@@ -44,14 +44,16 @@ function lineCoordinates(orientation: "horizontal" | "vertical", value: number, 
   }
 }
 
-export const GridLines: React.SFC<GridLinesProps> = props => {
+export const GridLines: React.SFC<GridLinesProps> = (props) => {
   const { orientation, stage, ticks, scale } = props;
 
-  return <g className={classNames("grid-lines", orientation)} transform={stage.getTransform()}>
-    {ticks.map((tick: unknown) => {
-      const value = roundToHalfPx(scale(tick));
-      const coordinates = lineCoordinates(orientation, value, stage);
-      return <line key={String(tick)} {...coordinates} />;
-    })}
-  </g>;
+  return (
+    <g className={classNames("grid-lines", orientation)} transform={stage.getTransform()}>
+      {ticks.map((tick: unknown) => {
+        const value = roundToHalfPx(scale(tick));
+        const coordinates = lineCoordinates(orientation, value, stage);
+        return <line key={String(tick)} {...coordinates} />;
+      })}
+    </g>
+  );
 };

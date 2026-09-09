@@ -15,7 +15,13 @@
  */
 
 import { FilterClause, StringFilterAction, TimeFilterPeriod } from "../../../models/filter-clause/filter-clause";
-import { boolean, numberRange, stringWithAction, timePeriod, timeRange } from "../../../models/filter-clause/filter-clause.fixtures";
+import {
+  boolean,
+  numberRange,
+  stringWithAction,
+  timePeriod,
+  timeRange,
+} from "../../../models/filter-clause/filter-clause.fixtures";
 import { Filter } from "../../../models/filter/filter";
 import { defaultTimeClause, mockEssence } from "../../test/essence.fixture";
 import { FilterClauseDefinition, filterDefinitionConverter } from "../filter-definition";
@@ -26,16 +32,14 @@ import {
   numberRangeFilterDefinition,
   previousTimeFilterDefinition,
   stringFilterDefinition,
-  timeRangeFilterDefinition
+  timeRangeFilterDefinition,
 } from "../filter-definition.fixtures";
 import { mockViewDefinition } from "../view-definition-4.fixture";
 import { assertConversionToEssence } from "./utils";
 
-const mockViewDefinitionWithFilters = (...filters: FilterClauseDefinition[]) =>
-  mockViewDefinition({ filters });
+const mockViewDefinitionWithFilters = (...filters: FilterClauseDefinition[]) => mockViewDefinition({ filters });
 
-const mockEssenceWithFilters = (...clauses: FilterClause[]) =>
-  mockEssence({ filter: Filter.fromClauses(clauses) });
+const mockEssenceWithFilters = (...clauses: FilterClause[]) => mockEssence({ filter: Filter.fromClauses(clauses) });
 
 const defaultTimeClauseDefinition = filterDefinitionConverter.fromFilterClause(defaultTimeClause);
 
@@ -52,19 +56,22 @@ describe("Filter", () => {
         it("single value", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(booleanFilterDefinition("string_a", [true])),
-            mockEssenceWithFiltersAndTime(boolean("string_a", [true])));
+            mockEssenceWithFiltersAndTime(boolean("string_a", [true]))
+          );
         });
 
         it("multiple values", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(booleanFilterDefinition("string_a", [true, false])),
-            mockEssenceWithFiltersAndTime(boolean("string_a", [true, false])));
+            mockEssenceWithFiltersAndTime(boolean("string_a", [true, false]))
+          );
         });
 
         it("heterogeneous values", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(booleanFilterDefinition("string_a", [true, "Unknown"])),
-            mockEssenceWithFiltersAndTime(boolean("string_a", [true, "Unknown"])));
+            mockEssenceWithFiltersAndTime(boolean("string_a", [true, "Unknown"]))
+          );
         });
       });
 
@@ -72,19 +79,22 @@ describe("Filter", () => {
         it("single value", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(booleanFilterDefinition("string_a", [true], true)),
-            mockEssenceWithFiltersAndTime(boolean("string_a", [true], true)));
+            mockEssenceWithFiltersAndTime(boolean("string_a", [true], true))
+          );
         });
 
         it("multiple values", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(booleanFilterDefinition("string_a", [true, false], true)),
-            mockEssenceWithFiltersAndTime(boolean("string_a", [true, false], true)));
+            mockEssenceWithFiltersAndTime(boolean("string_a", [true, false], true))
+          );
         });
 
         it("heterogeneous values", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(booleanFilterDefinition("string_a", [true, "Unknown"], true)),
-            mockEssenceWithFiltersAndTime(boolean("string_a", [true, "Unknown"], true)));
+            mockEssenceWithFiltersAndTime(boolean("string_a", [true, "Unknown"], true))
+          );
         });
       });
     });
@@ -100,21 +110,27 @@ describe("Filter", () => {
 
         it("multiple values", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFiltersAndTime(stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz", "qvux"])),
+            mockViewDefinitionWithFiltersAndTime(
+              stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz", "qvux"])
+            ),
             mockEssenceWithFiltersAndTime(stringWithAction("string_a", StringFilterAction.IN, ["bazz", "qvux"]))
           );
         });
 
         it("single value excluded", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFiltersAndTime(stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz"], true)),
+            mockViewDefinitionWithFiltersAndTime(
+              stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz"], true)
+            ),
             mockEssenceWithFiltersAndTime(stringWithAction("string_a", StringFilterAction.IN, ["bazz"], true))
           );
         });
 
         it("multiple values excluded", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFiltersAndTime(stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz", "qvux"], true)),
+            mockViewDefinitionWithFiltersAndTime(
+              stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz", "qvux"], true)
+            ),
             mockEssenceWithFiltersAndTime(stringWithAction("string_a", StringFilterAction.IN, ["bazz", "qvux"], true))
           );
         });
@@ -123,7 +139,9 @@ describe("Filter", () => {
       describe("CONTAINS action", () => {
         it("single value", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFiltersAndTime(stringFilterDefinition("string_a", StringFilterAction.CONTAINS, ["bazz"])),
+            mockViewDefinitionWithFiltersAndTime(
+              stringFilterDefinition("string_a", StringFilterAction.CONTAINS, ["bazz"])
+            ),
             mockEssenceWithFiltersAndTime(stringWithAction("string_a", StringFilterAction.CONTAINS, ["bazz"]))
           );
         });
@@ -132,7 +150,9 @@ describe("Filter", () => {
       describe("MATCH action", () => {
         it("single value", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFiltersAndTime(stringFilterDefinition("string_a", StringFilterAction.MATCH, ["^foo$"])),
+            mockViewDefinitionWithFiltersAndTime(
+              stringFilterDefinition("string_a", StringFilterAction.MATCH, ["^foo$"])
+            ),
             mockEssenceWithFiltersAndTime(stringWithAction("string_a", StringFilterAction.MATCH, ["^foo$"]))
           );
         });
@@ -144,30 +164,35 @@ describe("Filter", () => {
         it("open bounds", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, 100, "()")),
-            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "()")));
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "()"))
+          );
         });
         it("closed bounds", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, 100, "[]")),
-            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "[]")));
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "[]"))
+          );
         });
 
         it("mixed bounds", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, 100, "[)")),
-            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "[)")));
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "[)"))
+          );
         });
 
         it("empty start", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", null, 100, "[)")),
-            mockEssenceWithFiltersAndTime(numberRange("numeric", null, 100, "[)")));
+            mockEssenceWithFiltersAndTime(numberRange("numeric", null, 100, "[)"))
+          );
         });
 
         it("empty end", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, null, "[)")),
-            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, null, "[)")));
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, null, "[)"))
+          );
         });
       });
 
@@ -175,30 +200,35 @@ describe("Filter", () => {
         it("open bounds", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, 100, "()", true)),
-            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "()", true)));
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "()", true))
+          );
         });
         it("closed bounds", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, 100, "[]", true)),
-            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "[]", true)));
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "[]", true))
+          );
         });
 
         it("mixed bounds", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, 100, "[)", true)),
-            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "[)", true)));
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "[)", true))
+          );
         });
 
         it("empty start", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", null, 100, "[)", true)),
-            mockEssenceWithFiltersAndTime(numberRange("numeric", null, 100, "[)", true)));
+            mockEssenceWithFiltersAndTime(numberRange("numeric", null, 100, "[)", true))
+          );
         });
 
         it("empty end", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, null, "[)", true)),
-            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, null, "[)", true)));
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, null, "[)", true))
+          );
         });
       });
     });
@@ -209,74 +239,86 @@ describe("Filter", () => {
         const end = new Date("2018-01-02T00:00:00");
         assertConversionToEssence(
           mockViewDefinitionWithFilters(timeRangeFilterDefinition("time", start.toISOString(), end.toISOString())),
-          mockEssenceWithFilters(timeRange("time", start, end)));
+          mockEssenceWithFilters(timeRange("time", start, end))
+        );
       });
 
       describe("Latest period", () => {
         it("latest hour", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(latestTimeFilterDefinition("time", -1, "PT1H")),
-            mockEssenceWithFilters(timePeriod("time", "PT1H", TimeFilterPeriod.LATEST)));
+            mockEssenceWithFilters(timePeriod("time", "PT1H", TimeFilterPeriod.LATEST))
+          );
         });
 
         it("latest two hours", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(latestTimeFilterDefinition("time", -2, "PT1H")),
-            mockEssenceWithFilters(timePeriod("time", "PT2H", TimeFilterPeriod.LATEST)));
+            mockEssenceWithFilters(timePeriod("time", "PT2H", TimeFilterPeriod.LATEST))
+          );
         });
 
         it("latest fifteen minutes", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(latestTimeFilterDefinition("time", -15, "PT1M")),
-            mockEssenceWithFilters(timePeriod("time", "PT15M", TimeFilterPeriod.LATEST)));
+            mockEssenceWithFilters(timePeriod("time", "PT15M", TimeFilterPeriod.LATEST))
+          );
         });
 
         it("latest day", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(latestTimeFilterDefinition("time", -1, "P1D")),
-            mockEssenceWithFilters(timePeriod("time", "P1D", TimeFilterPeriod.LATEST)));
+            mockEssenceWithFilters(timePeriod("time", "P1D", TimeFilterPeriod.LATEST))
+          );
         });
 
         it("latest two days", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(latestTimeFilterDefinition("time", -2, "P1D")),
-            mockEssenceWithFilters(timePeriod("time", "P2D", TimeFilterPeriod.LATEST)));
+            mockEssenceWithFilters(timePeriod("time", "P2D", TimeFilterPeriod.LATEST))
+          );
         });
 
         it("latest week", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(latestTimeFilterDefinition("time", -1, "P1W")),
-            mockEssenceWithFilters(timePeriod("time", "P1W", TimeFilterPeriod.LATEST)));
+            mockEssenceWithFilters(timePeriod("time", "P1W", TimeFilterPeriod.LATEST))
+          );
         });
 
         it("latest month", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(latestTimeFilterDefinition("time", -1, "P1M")),
-            mockEssenceWithFilters(timePeriod("time", "P1M", TimeFilterPeriod.LATEST)));
+            mockEssenceWithFilters(timePeriod("time", "P1M", TimeFilterPeriod.LATEST))
+          );
         });
 
         it("latest quarter", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(latestTimeFilterDefinition("time", -3, "P1M")),
-            mockEssenceWithFilters(timePeriod("time", "P3M", TimeFilterPeriod.LATEST)));
+            mockEssenceWithFilters(timePeriod("time", "P3M", TimeFilterPeriod.LATEST))
+          );
         });
 
         it("latest year", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(latestTimeFilterDefinition("time", -1, "P1Y")),
-            mockEssenceWithFilters(timePeriod("time", "P1Y", TimeFilterPeriod.LATEST)));
+            mockEssenceWithFilters(timePeriod("time", "P1Y", TimeFilterPeriod.LATEST))
+          );
         });
 
         it("latest three years", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(latestTimeFilterDefinition("time", -3, "P1Y")),
-            mockEssenceWithFilters(timePeriod("time", "P3Y", TimeFilterPeriod.LATEST)));
+            mockEssenceWithFilters(timePeriod("time", "P3Y", TimeFilterPeriod.LATEST))
+          );
         });
 
         it("handles multiplied duration", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(latestTimeFilterDefinition("time", -1, "P3Y")),
-            mockEssenceWithFilters(timePeriod("time", "P3Y", TimeFilterPeriod.LATEST)));
+            mockEssenceWithFilters(timePeriod("time", "P3Y", TimeFilterPeriod.LATEST))
+          );
         });
       });
 
@@ -284,61 +326,71 @@ describe("Filter", () => {
         it("current hour", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(currentTimeFilterDefinition("time", "PT1H")),
-            mockEssenceWithFilters(timePeriod("time", "PT1H", TimeFilterPeriod.CURRENT)));
+            mockEssenceWithFilters(timePeriod("time", "PT1H", TimeFilterPeriod.CURRENT))
+          );
         });
 
         it("current two hours", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(currentTimeFilterDefinition("time", "PT2H")),
-            mockEssenceWithFilters(timePeriod("time", "PT2H", TimeFilterPeriod.CURRENT)));
+            mockEssenceWithFilters(timePeriod("time", "PT2H", TimeFilterPeriod.CURRENT))
+          );
         });
 
         it("current fifteen minutes", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(currentTimeFilterDefinition("time", "PT15M")),
-            mockEssenceWithFilters(timePeriod("time", "PT15M", TimeFilterPeriod.CURRENT)));
+            mockEssenceWithFilters(timePeriod("time", "PT15M", TimeFilterPeriod.CURRENT))
+          );
         });
 
         it("current day", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(currentTimeFilterDefinition("time", "P1D")),
-            mockEssenceWithFilters(timePeriod("time", "P1D", TimeFilterPeriod.CURRENT)));
+            mockEssenceWithFilters(timePeriod("time", "P1D", TimeFilterPeriod.CURRENT))
+          );
         });
 
         it("current two days", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(currentTimeFilterDefinition("time", "P2D")),
-            mockEssenceWithFilters(timePeriod("time", "P2D", TimeFilterPeriod.CURRENT)));
+            mockEssenceWithFilters(timePeriod("time", "P2D", TimeFilterPeriod.CURRENT))
+          );
         });
 
         it("current week", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(currentTimeFilterDefinition("time", "P1W")),
-            mockEssenceWithFilters(timePeriod("time", "P1W", TimeFilterPeriod.CURRENT)));
+            mockEssenceWithFilters(timePeriod("time", "P1W", TimeFilterPeriod.CURRENT))
+          );
         });
 
         it("current month", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(currentTimeFilterDefinition("time", "P1M")),
-            mockEssenceWithFilters(timePeriod("time", "P1M", TimeFilterPeriod.CURRENT)));
+            mockEssenceWithFilters(timePeriod("time", "P1M", TimeFilterPeriod.CURRENT))
+          );
         });
 
         it("current quarter", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(currentTimeFilterDefinition("time", "P3M")),
-            mockEssenceWithFilters(timePeriod("time", "P3M", TimeFilterPeriod.CURRENT)));
+            mockEssenceWithFilters(timePeriod("time", "P3M", TimeFilterPeriod.CURRENT))
+          );
         });
 
         it("current year", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(currentTimeFilterDefinition("time", "P1Y")),
-            mockEssenceWithFilters(timePeriod("time", "P1Y", TimeFilterPeriod.CURRENT)));
+            mockEssenceWithFilters(timePeriod("time", "P1Y", TimeFilterPeriod.CURRENT))
+          );
         });
 
         it("current three years", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(currentTimeFilterDefinition("time", "P3Y")),
-            mockEssenceWithFilters(timePeriod("time", "P3Y", TimeFilterPeriod.CURRENT)));
+            mockEssenceWithFilters(timePeriod("time", "P3Y", TimeFilterPeriod.CURRENT))
+          );
         });
       });
 
@@ -346,61 +398,71 @@ describe("Filter", () => {
         it("previous hour", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(previousTimeFilterDefinition("time", "PT1H")),
-            mockEssenceWithFilters(timePeriod("time", "PT1H", TimeFilterPeriod.PREVIOUS)));
+            mockEssenceWithFilters(timePeriod("time", "PT1H", TimeFilterPeriod.PREVIOUS))
+          );
         });
 
         it("previous two hours", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(previousTimeFilterDefinition("time", "PT2H")),
-            mockEssenceWithFilters(timePeriod("time", "PT2H", TimeFilterPeriod.PREVIOUS)));
+            mockEssenceWithFilters(timePeriod("time", "PT2H", TimeFilterPeriod.PREVIOUS))
+          );
         });
 
         it("previous fifteen minutes", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(previousTimeFilterDefinition("time", "PT15M")),
-            mockEssenceWithFilters(timePeriod("time", "PT15M", TimeFilterPeriod.PREVIOUS)));
+            mockEssenceWithFilters(timePeriod("time", "PT15M", TimeFilterPeriod.PREVIOUS))
+          );
         });
 
         it("previous day", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(previousTimeFilterDefinition("time", "P1D")),
-            mockEssenceWithFilters(timePeriod("time", "P1D", TimeFilterPeriod.PREVIOUS)));
+            mockEssenceWithFilters(timePeriod("time", "P1D", TimeFilterPeriod.PREVIOUS))
+          );
         });
 
         it("previous two days", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(previousTimeFilterDefinition("time", "P2D")),
-            mockEssenceWithFilters(timePeriod("time", "P2D", TimeFilterPeriod.PREVIOUS)));
+            mockEssenceWithFilters(timePeriod("time", "P2D", TimeFilterPeriod.PREVIOUS))
+          );
         });
 
         it("previous week", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(previousTimeFilterDefinition("time", "P1W")),
-            mockEssenceWithFilters(timePeriod("time", "P1W", TimeFilterPeriod.PREVIOUS)));
+            mockEssenceWithFilters(timePeriod("time", "P1W", TimeFilterPeriod.PREVIOUS))
+          );
         });
 
         it("previous month", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(previousTimeFilterDefinition("time", "P1M")),
-            mockEssenceWithFilters(timePeriod("time", "P1M", TimeFilterPeriod.PREVIOUS)));
+            mockEssenceWithFilters(timePeriod("time", "P1M", TimeFilterPeriod.PREVIOUS))
+          );
         });
 
         it("previous quarter", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(previousTimeFilterDefinition("time", "P3M")),
-            mockEssenceWithFilters(timePeriod("time", "P3M", TimeFilterPeriod.PREVIOUS)));
+            mockEssenceWithFilters(timePeriod("time", "P3M", TimeFilterPeriod.PREVIOUS))
+          );
         });
 
         it("previous year", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(previousTimeFilterDefinition("time", "P1Y")),
-            mockEssenceWithFilters(timePeriod("time", "P1Y", TimeFilterPeriod.PREVIOUS)));
+            mockEssenceWithFilters(timePeriod("time", "P1Y", TimeFilterPeriod.PREVIOUS))
+          );
         });
 
         it("previous three years", () => {
           assertConversionToEssence(
             mockViewDefinitionWithFilters(previousTimeFilterDefinition("time", "P3Y")),
-            mockEssenceWithFilters(timePeriod("time", "P3Y", TimeFilterPeriod.PREVIOUS)));
+            mockEssenceWithFilters(timePeriod("time", "P3Y", TimeFilterPeriod.PREVIOUS))
+          );
         });
       });
     });

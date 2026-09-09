@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .segment-bubble {
   @extend %menu-cont;
@@ -24,7 +24,7 @@
   background: rgba($white, 0.9);
   transform: translate(-50%, -100%);
 
-  .segment-action-buttons:nth-child(n+2) {
+  .segment-action-buttons:nth-child(n + 2) {
     margin-top: 7px;
   }
 

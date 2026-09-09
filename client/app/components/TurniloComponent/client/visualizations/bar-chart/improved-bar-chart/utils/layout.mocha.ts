@@ -32,7 +32,7 @@ describe("layout", () => {
         x: 0,
         y: 30,
         height: 50,
-        width: 100
+        width: 100,
       });
       expect(calculateChartStage(stage)).to.be.equivalent(expected);
     });
@@ -45,7 +45,7 @@ describe("layout", () => {
         x: 0,
         y: 30,
         height: 50,
-        width: 60
+        width: 60,
       });
       expect(calculateYAxisStage(stage)).to.be.equivalent(expected);
     });
@@ -66,7 +66,6 @@ describe("layout", () => {
     });
 
     describe("segment", () => {
-
       it("should pass stage with margins and rest of parameters", () => {
         calculateLayout(bodyStage, 100, 3);
         const stageWithMargins = Stage.fromClientRect({
@@ -75,7 +74,7 @@ describe("layout", () => {
           top: 0,
           bottom: 40,
           height: 760,
-          width: 935
+          width: 935,
         });
         expect(calculateSegmentStageStub.calledWith(stageWithMargins, 100, 3)).to.be.true;
       });
@@ -90,7 +89,7 @@ describe("layout", () => {
           bottom: 40,
           left: 5,
           right: 60,
-          top: 0
+          top: 0,
         };
         expect(layout.scroller).to.be.deep.equal(expected);
       });

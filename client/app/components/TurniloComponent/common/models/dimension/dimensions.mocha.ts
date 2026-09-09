@@ -35,13 +35,20 @@ describe("Dimensions", () => {
 
   it("should throw when converting tree with duplicate dimension names", () => {
     const dimensionsWithDuplicateDimensionName = [DimensionFixtures.wikiTimeJS(), DimensionFixtures.wikiTimeJS()];
-    expect(() => Dimensions.fromJS(dimensionsWithDuplicateDimensionName)).to.throw("found duplicate dimension or group with names: 'time'");
+    expect(() => Dimensions.fromJS(dimensionsWithDuplicateDimensionName)).to.throw(
+      "found duplicate dimension or group with names: 'time'"
+    );
   });
 
   it("should throw when converting tree with duplicate dimension or group names", () => {
-    const fakeDimensionWithDuplicateName: DimensionJS = { name: "comment_group", formula: "$comment_group" };
+    const fakeDimensionWithDuplicateName: DimensionJS = {
+      name: "comment_group",
+      formula: "$comment_group",
+    };
     const dimensionsWithDuplicateDimensionName = [fakeDimensionWithDuplicateName, ...DimensionsFixtures.wikiJS()];
-    expect(() => Dimensions.fromJS(dimensionsWithDuplicateDimensionName)).to.throw("found duplicate dimension or group with names: 'comment_group'");
+    expect(() => Dimensions.fromJS(dimensionsWithDuplicateDimensionName)).to.throw(
+      "found duplicate dimension or group with names: 'comment_group'"
+    );
   });
 
   it("should count dimensions", () => {
@@ -66,22 +73,22 @@ describe("Dimensions", () => {
   });
 
   it("should map dimensions", () => {
-    const dimensionNames = dimensions.mapDimensions(dimension => dimension.name);
+    const dimensionNames = dimensions.mapDimensions((dimension) => dimension.name);
 
     expect(dimensionNames).to.deep.equal(DimensionsFixtures.wikiNames());
   });
 
   it("should filter dimensions", () => {
     const countDimensionsJS = dimensions
-      .filterDimensions(dimension => dimension.name === "time")
-      .map(dimension => dimension.toJS());
+      .filterDimensions((dimension) => dimension.name === "time")
+      .map((dimension) => dimension.toJS());
 
     expect(countDimensionsJS).to.deep.equal([DimensionFixtures.wikiTimeJS()]);
   });
 
   it("should traverse dimensions", () => {
-    let dimensionTitles: string[] = [];
-    dimensions.forEachDimension(dimension => dimensionTitles.push(dimension.title));
+    const dimensionTitles: string[] = [];
+    dimensions.forEachDimension((dimension) => dimensionTitles.push(dimension.title));
 
     expect(dimensionTitles).to.deep.equal(DimensionsFixtures.wikiTitles());
   });

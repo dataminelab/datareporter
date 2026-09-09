@@ -24,12 +24,12 @@ import { QuantileSeries } from "./quantile-series";
 const quantileMeasure = Measure.fromJS({
   title: "Quantile Title",
   name: "my-quantile",
-  formula: "$main.quantile($histogram, 0.93, 'tuning')"
+  formula: "$main.quantile($histogram, 0.93, 'tuning')",
 });
 
 const quantileSeries = new QuantileSeries({
   reference: "my-quantile",
-  percentile: 75
+  percentile: 75,
 });
 
 const quantileConcreteSeries = new QuantileConcreteSeries(quantileSeries, quantileMeasure);

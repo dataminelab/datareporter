@@ -1,9 +1,19 @@
-import { each, filter, map, toLower, toString, trim, upperFirst, without } from "lodash";
+import {
+  each,
+  filter,
+  map,
+  toLower,
+  toString,
+  trim,
+  upperFirst,
+  without,
+} from "lodash";
 import Mousetrap from "mousetrap";
 import "mousetrap/plugins/global-bind/mousetrap-global-bind";
-
 const modKey = /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? "Cmd" : "Ctrl";
-const altKey = /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? "Option" : "Alt";
+const altKey = /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+  ? "Option"
+  : "Alt";
 
 export function humanReadableShortcut(shortcut, limit = Infinity) {
   const modifiers = {
@@ -12,7 +22,10 @@ export function humanReadableShortcut(shortcut, limit = Infinity) {
   };
 
   shortcut = toLower(toString(shortcut));
-  shortcut = filter(map(shortcut.split(","), trim), s => s !== "").slice(0, limit);
+  shortcut = filter(map(shortcut.split(","), trim), s => s !== "").slice(
+    0,
+    limit,
+  );
   shortcut = map(shortcut, sc => {
     sc = filter(map(sc.split("+")), s => s !== "");
     return map(sc, s => modifiers[s] || upperFirst(s)).join(" + ");
@@ -35,10 +48,7 @@ const KeyboardShortcuts = {
 
   bind: keymap => {
     each(keymap, (fn, key) => {
-      const keys = key
-        .toLowerCase()
-        .split(",")
-        .map(trim);
+      const keys = key.toLowerCase().split(",").map(trim);
       each(keys, k => {
         handlers[k] = [...without(handlers[k], fn), fn];
         Mousetrap.bindGlobal(k, onShortcut);
@@ -48,10 +58,7 @@ const KeyboardShortcuts = {
 
   unbind: keymap => {
     each(keymap, (fn, key) => {
-      const keys = key
-        .toLowerCase()
-        .split(",")
-        .map(trim);
+      const keys = key.toLowerCase().split(",").map(trim);
       each(keys, k => {
         handlers[k] = without(handlers[k], fn);
         if (handlers[k].length === 0) {
